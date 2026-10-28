@@ -1,0 +1,36 @@
+# Lead Performance API (filled in by ec2/setup.sh → /etc/caddy/Caddyfile). Caddy gets and renews the HTTPS certificate itself.
+__API_DOMAIN__ {
+	encode gzip
+
+	# the app's query builder calls /rest/v1/...; PostgREST answers on localhost:3000
+	handle_path /rest/v1/* {
+		@preflight method OPTIONS
+		header {
+			Access-Control-Allow-Origin "__APP_URL__"
+			Access-Control-Allow-Methods "GET, POST, PATCH, DELETE, OPTIONS"
+			Access-Control-Allow-Headers "authorization, apikey, content-type, prefer, range, range-unit, x-org-id, x-client-info, accept-profile, content-profile"
+			Access-Control-Expose-Headers "content-range, content-profile"
+			Access-Control-Max-Age "600"
+			Vary "Origin"
+			defer
+		}
+		respond @preflight 204
+		reverse_proxy 127.0.0.1:3000 {
+			header_down -Access-Control-Allow-Origin
+			header_down -Access-Control-Allow-Credentials
+		}
+	}
+
+	handle /health {
+		respond "ok" 200
+	}
+	handle {
+		respond "Lead Performance API" 404
+	}
+
+	header {
+		Strict-Transport-Security "max-age=31536000"
+		X-Content-Type-Options "nosniff"
+		-Server
+	}
+}
