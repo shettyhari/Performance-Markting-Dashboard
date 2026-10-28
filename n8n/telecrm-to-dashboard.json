@@ -1,0 +1,154 @@
+{
+  "name": "TeleCRM → Lead Performance (every 30 minutes)",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 30
+            }
+          ]
+        }
+      },
+      "name": "Every 30 minutes",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "a1b2c3d4-0001-4000-8000-000000000001"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://next.telecrm.in/autoupdate/v2/enterprise/YOUR_ENTERPRISE_ID/lead/search",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "limit",
+              "value": "100"
+            },
+            {
+              "name": "skip",
+              "value": "0"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{}",
+        "options": {
+          "pagination": {
+            "pagination": {
+              "paginationMode": "updateAParameterInEachRequest",
+              "parameters": {
+                "parameters": [
+                  {
+                    "type": "qs",
+                    "name": "skip",
+                    "value": "={{ $pageCount * 100 }}"
+                  }
+                ]
+              },
+              "paginationCompleteWhen": "other",
+              "completeExpression": "={{ !$response.body.data || $response.body.data.length < 100 || $pageCount >= 4 }}",
+              "limitPagesFetched": true,
+              "maxRequests": 5,
+              "requestInterval": 500
+            }
+          }
+        }
+      },
+      "name": "TeleCRM: latest 500 leads",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        260,
+        0
+      ],
+      "id": "a1b2c3d4-0002-4000-8000-000000000002",
+      "notes": "Pick your existing TeleCRM credential (Header Auth: Authorization = Bearer <Sync token>). Replace YOUR_ENTERPRISE_ID (TeleCRM › Settings › Website and API)."
+    },
+    {
+      "parameters": {
+        "jsCode": "// Turns TeleCRM search results into one batch for the dashboard.\n// TeleCRM's API may not return a created time. Leads seen for the first time (after the first run)\n// get the time n8n found them as Created On (at most ~30 min late). On the very first run nothing is\n// dated, so older leads don't land on today. A TeleCRM export upload later fills exact times.\nconst sd = $getWorkflowStaticData('global');\nconst firstRun = !Array.isArray(sd.seen);\nconst seen = new Set(sd.seen || []);\nconst now = new Date().toISOString();\nconst leads = [];\nfor (const item of $input.all()) {\n  const arr = Array.isArray(item.json.data) ? item.json.data : [item.json];\n  for (const l of arr) {\n    if (!l || !l.id) continue;\n    const row = Object.assign({}, l.fields || {});\n    row['Lead id'] = String(l.id);\n    if (l.status !== undefined && row.status === undefined) row.status = l.status;\n    if (l.rating !== undefined && row.rating === undefined) row.rating = l.rating;\n    if (l.employeeid && row.assignee === undefined) row.assignee = l.employeeid;\n    const hasCreated = Object.keys(row).some((k) => /created/i.test(k));\n    if (!hasCreated && !firstRun && !seen.has(String(l.id))) row['Created On'] = now;\n    leads.push(row);\n    seen.add(String(l.id));\n  }\n}\nsd.seen = Array.from(seen).slice(-20000);\nreturn [{ json: { leads } }];"
+      },
+      "name": "Shape leads for dashboard",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        520,
+        0
+      ],
+      "id": "a1b2c3d4-0003-4000-8000-000000000003"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://YOUR-DASHBOARD-ADDRESS/api/crm-push",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ leads: $json.leads }) }}",
+        "options": {
+          "timeout": 60000
+        }
+      },
+      "name": "Send to dashboard",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        780,
+        0
+      ],
+      "id": "a1b2c3d4-0004-4000-8000-000000000004",
+      "notes": "Create a Header Auth credential: Name = x-push-key, Value = a CRM push key from Settings › Workspace › API keys (the key decides the workspace). Replace YOUR-DASHBOARD-ADDRESS in the URL."
+    }
+  ],
+  "connections": {
+    "Every 30 minutes": {
+      "main": [
+        [
+          {
+            "node": "TeleCRM: latest 500 leads",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "TeleCRM: latest 500 leads": {
+      "main": [
+        [
+          {
+            "node": "Shape leads for dashboard",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Shape leads for dashboard": {
+      "main": [
+        [
+          {
+            "node": "Send to dashboard",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

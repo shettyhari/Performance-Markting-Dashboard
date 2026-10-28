@@ -1,0 +1,34 @@
+{
+  "functions": {
+    "api/meta.js": {
+      "maxDuration": 60
+    },
+    "api/meta-cron.js": {
+      "maxDuration": 60
+    },
+    "api/crm-push.js": {
+      "maxDuration": 60
+    },
+    "api/google.js": {
+      "maxDuration": 60
+    },
+    "api/google-cron.js": {
+      "maxDuration": 60
+    },
+    "api/alerts.js": {
+      "maxDuration": 60
+    },
+    "api/alerts-cron.js": {
+      "maxDuration": 60
+    },
+    "api/suite.js": {
+      "maxDuration": 60
+    },
+    "api/collect.js": {
+      "maxDuration": 10
+    }
+  },
+  "rewrites": [
+    { "source": "/api/mcp", "destination": "/api/suite?op=mcp" }
+  ]
+}

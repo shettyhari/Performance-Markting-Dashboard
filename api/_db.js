@@ -1,0 +1,175 @@
+// Shared server core for a multi-company deployment.
+// Every request works on exactly one workspace (organization). withOrg(org, fn) puts it in an AsyncLocalStorage context, so
+// sbFetch() below always reads and writes that workspace only, even when one function instance serves several requests at once:
+//   reads / updates / deletes get "org_id=eq.<org>" added, inserts get org_id set, on_conflict keys get org_id in front,
+//   and every call sends the x-org-id header the database functions read (private.current_org()).
+// Tokens per workspace (Meta, Conversions API, audiences, Google) come from Supabase Vault through orgSecret(key).
+const crypto = require("crypto");
+const { AsyncLocalStorage } = require("async_hooks");
+const als = new AsyncLocalStorage();
+
+const SB_URL = () => process.env.SUPABASE_URL || "";
+const SB_ANON = () => process.env.SUPABASE_ANON_KEY || "";
+const SVC = () => process.env.SUPABASE_SERVICE_ROLE_KEY || "";
+const GLOBAL = new Set(["organizations", "org_api_keys", "app_config"]);   // tables without workspace scoping (looked up by id / hash only)
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const ORG_COLS = "id,public_id,name,logo,currency,tz_offset_min,crm_name,active";
+
+function send(res, code, body, headers) {
+  res.statusCode = code;
+  res.setHeader("content-type", "application/json; charset=utf-8");
+  res.setHeader("cache-control", "no-store");
+  Object.keys(headers || {}).forEach((k) => res.setHeader(k, headers[k]));
+  res.end(JSON.stringify(body));
+}
+function same(a, b) {
+  const x = crypto.createHash("sha256").update(String(a || "")).digest(), y = crypto.createHash("sha256").update(String(b || "")).digest();
+  return crypto.timingSafeEqual(x, y);
+}
+const sha256 = (s) => crypto.createHash("sha256").update(String(s)).digest("hex");
+
+/* ---------- workspace context ---------- */
+const ctx = () => als.getStore() || null;
+const currentOrg = () => { const c = ctx(); return c && c.org ? c.org.id : null; };
+const org = () => { const c = ctx(); if (!c || !c.org) throw new Error("No workspace selected."); return c.org; };
+function withOrg(o, fn) { return als.run({ org: o, secrets: {}, settings: null }, fn); }
+
+/* ---------- database ---------- */
+async function parse(r) {
+  const t = await r.text(); let b = null; try { b = t ? JSON.parse(t) : null; } catch (e) {}
+  if (!r.ok) throw new Error("Database answered " + r.status + ": " + String((b && (b.message || b.error)) || t).slice(0, 300));
+  return b;
+}
+/* service-role call with no workspace scoping (global tables, cross-workspace lookups) */
+function raw(path, opt) {
+  opt = Object.assign({}, opt || {});
+  opt.headers = Object.assign({ apikey: SVC(), authorization: "Bearer " + SVC(), "content-type": "application/json" }, opt.headers || {});
+  return fetch(SB_URL() + "/rest/v1/" + path, opt).then(parse);
+}
+/* path rewrite for the current workspace (exported for tests) */
+function scopePath(path, method, orgId) {
+  const i = path.indexOf("?"), table = (i < 0 ? path : path.slice(0, i)), q = i < 0 ? "" : path.slice(i + 1);
+  if (table.indexOf("rpc/") === 0 || GLOBAL.has(table)) return path;
+  let params = q ? q.split("&") : [];
+  params = params.map((p) => { if (p.indexOf("on_conflict=") !== 0) return p; const v = decodeURIComponent(p.slice(12)); return /(^|,)org_id(,|$)/.test(v) ? p : "on_conflict=" + encodeURIComponent("org_id," + v); });
+  if (method !== "POST") params = params.filter((p) => p.indexOf("org_id=") !== 0).concat(["org_id=eq." + orgId]);
+  return table + (params.length ? "?" + params.join("&") : "");
+}
+function scopeBody(body, orgId) {
+  if (typeof body !== "string" || !body) return body;
+  let b; try { b = JSON.parse(body); } catch (e) { return body; }
+  const set = (o) => (o && typeof o === "object" && !Array.isArray(o) ? Object.assign({}, o, { org_id: orgId }) : o);
+  return JSON.stringify(Array.isArray(b) ? b.map(set) : set(b));
+}
+function sbFetch(path, opt) {
+  opt = Object.assign({}, opt || {});
+  const method = String(opt.method || "GET").toUpperCase(), table = path.split("?")[0];
+  if (GLOBAL.has(table)) return raw(path, opt);
+  const o = currentOrg(); if (!o) return Promise.reject(new Error("No workspace selected for " + table + "."));
+  opt.headers = Object.assign({ "x-org-id": o }, opt.headers || {});
+  const p = scopePath(path, method, o);
+  if (method === "POST" && table.indexOf("rpc/") !== 0) opt.body = scopeBody(opt.body, o);
+  return raw(p, opt);
+}
+async function sbAll(path, cap) {
+  let out = [];
+  for (let off = 0; off < (cap || 100000); off += 1000) {
+    const rows = await sbFetch(path, { headers: { range: off + "-" + (off + 999), "range-unit": "items" } });
+    out = out.concat(rows || []);
+    if (!rows || rows.length < 1000) break;
+  }
+  return out;
+}
+/* row count of a filtered select in the current workspace */
+async function sbCount(path) {
+  const o = currentOrg(), p = scopePath(path, "HEAD", o);
+  const r = await fetch(SB_URL() + "/rest/v1/" + p, { method: "HEAD", headers: { apikey: SVC(), authorization: "Bearer " + SVC(), prefer: "count=exact", "x-org-id": o } });
+  return Number(String(r.headers.get("content-range") || "").split("/")[1]) || 0;
+}
+
+/* ---------- workspace lookups ---------- */
+async function orgById(id) {
+  if (!UUID.test(String(id || ""))) return null;
+  const r = await raw("organizations?select=" + ORG_COLS + "&id=eq." + id + "&active=is.true");
+  return r && r[0] ? r[0] : null;
+}
+async function orgByPublicId(pid) {
+  if (!/^[0-9a-f]{8,40}$/i.test(String(pid || ""))) return null;
+  const r = await raw("organizations?select=" + ORG_COLS + "&public_id=eq." + pid + "&active=is.true");
+  return r && r[0] ? r[0] : null;
+}
+/* machine key (CRM push / API) → its workspace, or null */
+async function orgFromKey(key, kind) {
+  const k = String(key || "").trim(); if (k.length < 24) return null;
+  const r = await raw("org_api_keys?select=org_id,kind&key_hash=eq." + sha256(k) + "&revoked_at=is.null&limit=1");
+  if (!r || !r[0] || (kind && r[0].kind !== kind)) return null;
+  return orgById(r[0].org_id);
+}
+const bearer = (req) => String(req.headers.authorization || "").replace(/^Bearer\s+/i, "").trim();
+
+/* the signed-in person and their role in the workspace named by the x-org-id header */
+async function auth(req) {
+  const h = String(req.headers.authorization || "");
+  if (!/^Bearer\s+\S+/.test(h)) return { status: 401, error: "Sign in first." };
+  const u = await fetch(SB_URL() + "/auth/v1/user", { headers: { apikey: SB_ANON(), authorization: h } });
+  if (!u.ok) return { status: 401, error: "Sign in again." };
+  const user = await u.json(), email = String(user.email || "").toLowerCase();
+  if (!email || !user.id) return { status: 401, error: "Sign in again." };
+  const proven = !!user.email_confirmed_at && !!(user.confirmation_sent_at || user.invited_at);
+  const want = String(req.headers["x-org-id"] || (req.query && req.query.org) || "");
+  if (!UUID.test(want)) return { status: 400, error: "No workspace selected." };
+  const rows = await raw("org_members?select=role,user_id,email&org_id=eq." + want + "&or=" + encodeURIComponent("(user_id.eq." + user.id + ",email.eq." + email + ")"));
+  const m = (rows || []).filter((r) => r.user_id === user.id || (!r.user_id && r.email === email && proven))[0];
+  if (!m) return { status: 403, error: "You're not a member of this workspace." };
+  const o = await orgById(want);
+  if (!o) return { status: 403, error: "This workspace isn't active." };
+  return { email, userId: user.id, role: m.role, org: o };
+}
+/* scheduler: CRON_SECRET header, or the Vault key pg_cron sends */
+async function cronAllowed(req) {
+  const secret = process.env.CRON_SECRET || "", given = String(req.headers["x-cron-secret"] || bearer(req));
+  if (secret && given && same(given, secret)) return true;
+  const k = req.headers["x-cron-key"];
+  if (!k || String(k).length < 32) return false;
+  try { return (await raw("rpc/cron_key_ok", { method: "POST", body: JSON.stringify({ k: String(k) }) })) === true; } catch (e) { return false; }
+}
+
+/* ---------- per-workspace settings and tokens ---------- */
+async function orgSettings(fresh) {
+  const c = ctx(); if (c && c.settings && !fresh) return c.settings;
+  const r = await sbFetch("org_settings?select=settings,updated_at");
+  const S = (r && r[0] && r[0].settings) || {};
+  if (c) { c.settings = S; c.settingsAt = r && r[0] ? r[0].updated_at : null; }
+  return S;
+}
+const settingsUpdatedAt = () => { const c = ctx(); return c ? c.settingsAt : null; };
+const ENV_FALLBACK = { meta_access_token: "META_ACCESS_TOKEN", meta_capi_token: "META_CAPI_TOKEN", meta_audience_token: "META_AUDIENCE_TOKEN", google_refresh_token: "GOOGLE_ADS_REFRESH_TOKEN", google_login_customer_id: "GOOGLE_ADS_LOGIN_CUSTOMER_ID" };
+async function orgSecret(key) {
+  const c = ctx(); if (!c || !c.org) return "";
+  if (key in c.secrets) return c.secrets[key];
+  let v = "";
+  try { v = (await raw("rpc/get_org_secret", { method: "POST", body: JSON.stringify({ p_org: c.org.id, p_key: key }) })) || ""; } catch (e) { v = ""; }
+  if (!v && process.env.APP_SINGLE_ORG === "1" && ENV_FALLBACK[key]) v = process.env[ENV_FALLBACK[key]] || "";   // one-company deployments may keep env tokens
+  c.secrets[key] = String(v || "");
+  return c.secrets[key];
+}
+
+/* ---------- workspace time, money and names ---------- */
+const tzMin = () => { const c = ctx(); const m = c && c.org ? Number(c.org.tz_offset_min) : 330; return isFinite(m) ? m : 330; };
+const tzMs = () => tzMin() * 60000;
+const orgNow = () => Date.now() + tzMs();                 // wall-clock of the workspace, as a UTC timestamp
+const orgDay = (off) => new Date(orgNow() + (off || 0) * 864e5).toISOString().slice(0, 10);
+const tzLabel = () => { const m = tzMin(); if (m === 330) return "IST"; const s = m < 0 ? "-" : "+", a = Math.abs(m); return "UTC" + s + Math.floor(a / 60) + (a % 60 ? ":" + String(a % 60).padStart(2, "0") : ""); };
+const SYM = { INR: "₹", USD: "$", EUR: "€", GBP: "£", AED: "AED ", SAR: "SAR ", SGD: "S$", AUD: "A$", CAD: "C$" };
+const currency = () => { const c = ctx(); return (c && c.org && c.org.currency) || "INR"; };
+const cur = () => SYM[currency()] || currency() + " ";
+const locale = () => (currency() === "INR" ? "en-IN" : "en-US");
+const crm = () => { const c = ctx(); return (c && c.org && c.org.crm_name) || "CRM"; };
+const orgName = () => { const c = ctx(); return (c && c.org && c.org.name) || "Lead Performance"; };
+const CC = { INR: "91", AED: "971", SAR: "966", USD: "1", CAD: "1", GBP: "44", EUR: "", AUD: "61", SGD: "65" };
+/* phone country code for hashing numbers saved without one (Settings › Attribution & sync › phone country code, else from the currency) */
+const phoneCC = () => { const c = ctx(), s = c && c.settings; return String((s && s.phoneCountryCode) || CC[currency()] || "91").replace(/\D+/g, ""); };
+const appUrl = (req) => (process.env.APP_URL || (req && req.headers && req.headers.host ? "https://" + req.headers.host : "")).replace(/\/+$/, "");
+
+module.exports = { send, same, sha256, raw, sbFetch, sbAll, sbCount, scopePath, scopeBody, withOrg, currentOrg, org, orgById, orgByPublicId, orgFromKey, bearer, auth,
+  cronAllowed, orgSettings, settingsUpdatedAt, orgSecret, tzMin, tzMs, orgNow, orgDay, tzLabel, cur, currency, locale, crm, orgName, appUrl, phoneCC, UUID, SB_URL, SB_ANON };

@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lead Performance · CRM numbers</title>
+<style>
+  body{font:14px/1.5 system-ui,sans-serif;margin:0;padding:16px;min-width:320px;max-width:520px;color:#111;background:#fff}
+  @media (prefers-color-scheme: dark){body{color:#eee;background:#1b1b1b} input{background:#222;color:#eee;border-color:#444}}
+  h1{font-size:16px;margin:0 0 12px} label{display:block;margin:12px 0 4px;font-weight:600}
+  input{width:100%;box-sizing:border-box;padding:8px;border:1px solid #bbb;font:inherit}
+  button{margin-top:14px;padding:8px 14px;font:inherit;cursor:pointer} p{font-size:12px;color:#777;margin:6px 0}
+  #msg{margin-top:10px;font-size:13px}
+</style>
+</head>
+<body>
+<h1>CRM numbers in Ads Manager</h1>
+<label for="url">Dashboard URL</label>
+<input id="url" type="url" placeholder="https://your-dashboard.example.com">
+<label for="token">API key</label>
+<input id="token" type="password" autocomplete="off" placeholder="API key (Settings › Workspace › API keys)">
+<p>A workspace admin creates it. It stays in this browser.</p>
+<label for="days">Period (days)</label>
+<input id="days" type="number" min="1" max="92" value="30">
+<button id="save" type="button">Save and test</button>
+<div id="msg" role="status"></div>
+<script src="options.js"></script>
+</body>
+</html>

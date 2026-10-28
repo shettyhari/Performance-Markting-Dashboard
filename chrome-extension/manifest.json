@@ -1,0 +1,17 @@
+{
+  "manifest_version": 3,
+  "name": "Lead Performance: CRM numbers in Ads Manager",
+  "version": "1.0.0",
+  "description": "Shows CRM leads, qualified leads, CPQL and sales from your Lead Performance workspace next to each campaign in Meta Ads Manager and Google Ads.",
+  "permissions": ["storage"],
+  "host_permissions": [],
+  "optional_host_permissions": ["https://*/*"],
+  "background": { "service_worker": "background.js" },
+  "content_scripts": [{
+    "matches": ["https://adsmanager.facebook.com/*", "https://business.facebook.com/adsmanager/*", "https://ads.google.com/*"],
+    "js": ["content.js"],
+    "run_at": "document_idle"
+  }],
+  "options_page": "options.html",
+  "action": { "default_title": "Lead Performance", "default_popup": "options.html" }
+}
