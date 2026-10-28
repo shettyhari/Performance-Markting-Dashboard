@@ -1,5 +1,5 @@
 // Tests for the monitoring module (api/_monitor.js) and the change-alert format (api/_activity.js).
-// Run: node tests/monitor.test.js   — no network, no real data: Supabase, Meta and Telegram are replaced by in-memory fakes.
+// Run: node tests/monitor.test.js   — no network, no real data: the database API, Meta and Telegram are replaced by in-memory fakes.
 const assert = require("assert");
 process.env.META_ACCESS_TOKEN = "test"; process.env.TELEGRAM_BOT_TOKEN = "test";
 const M = require("../api/_monitor");
@@ -20,6 +20,9 @@ function fixture() {
     add("Coastal", "Coastal | Form", o, 2000, o === -1 ? 5 : 20, 20000, 200); addCrm("Coastal", o, o === -1 ? 1 : 19, 8);
     if (o >= -3) add("Arco", "Arco | WA", o, 1500, 10, 10000, 100);
   }
+  // Arco also ran two small days in the last full Mon–Sun week (whatever weekday the tests run on): too little to judge
+  const dow = (new Date(istDay(0) + "T00:00:00Z").getUTCDay() + 6) % 7, lastMon = -dow - 7;
+  [lastMon, lastMon + 1].forEach((o) => { if (o < -3) add("Arco", "Arco | WA", o, 300, 2, 2000, 20); });
   add("Nexus", "Nexus | Leads", 0, 3000, 15, 30000, 300); addCrm("Nexus", 0, 14, 0);
   add("Coastal", "Coastal | WA", 0, 1000, 10, 10000, 100);
   add("Coastal", "Coastal | Form", 0, 1600, 0, 9000, 90);      // spending, no leads, used to get leads
@@ -237,8 +240,10 @@ test("weekly report: Mon–Sun vs previous week, ratios from weekly totals, smal
   const ap = txt.split("🏢 Arco")[1].split("━━")[0];
   assert.ok(/Not enough data to judge/.test(ap) && /Month budget: not set/.test(ap) && /Previous CPL: N\/A/.test(ap), ap);
   assert.ok(/No activity/.test(txt.split("🏢 Tundra")[1].split("━━")[0]));
-  assert.ok(/Budget \(month to date, 1 brand with a budget\)/.test(txt) && /Improving: 0 · 📉 Deteriorating: 0/.test(txt));
-  assert.ok(/WEEKLY MANAGEMENT SUMMARY/.test(txt) && /PRIORITIES FOR NEXT WEEK/.test(txt) && /Best Lead Quality: Coastal — QL rate 42%/.test(txt) && !/CPL up \+100%/.test(txt.split('PRIORITIES FOR NEXT WEEK')[1]));
+  // on a Monday, yesterday (the fixture's Coastal lead drop) is inside last week, so Coastal counts as deteriorating
+  const monday = new Date(D.today + "T00:00:00Z").getUTCDay() === 1;
+  assert.ok(/Budget \(month to date, 1 brand with a budget\)/.test(txt) && new RegExp("Improving: 0 · 📉 Deteriorating: " + (monday ? 1 : 0)).test(txt));
+  assert.ok(/WEEKLY MANAGEMENT SUMMARY/.test(txt) && /PRIORITIES FOR NEXT WEEK/.test(txt) && new RegExp("Best Lead Quality: Coastal — QL rate " + (monday ? "49%" : "42%")).test(txt) && !/CPL up \+100%/.test(txt.split('PRIORITIES FOR NEXT WEEK')[1]));
   assert.strictEqual(rep.total.cpl, rep.total.spend / rep.total.leads);
 });
 test("reach only where it can't double-count: one dedicated ad account whose spend equals the brand's", async () => {

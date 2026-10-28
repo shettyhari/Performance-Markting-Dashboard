@@ -138,7 +138,7 @@ function daily(D, found, opt) {
     "📥 Last " + DB.crm() + " lead received: " + (F.crm ? istStamp(Date.parse(F.crm.at)) : "none yet"),
     (recOk ? "🧮 Totals check: ✅ overall = sum of the " + listed.length + " brand blocks" : "🧮 Totals check: ⚠️ brand blocks " + inr(sumCheck) + " vs overall " + inr(tot.spend)) +
       (out.spend > 0 ? " · " + inr(out.spend) + " spent outside the listed brands (" + esc(out.names.join(", ")) + ") — not included" : "")];
-  if (noImp) first.push("<i>Impressions / clicks unavailable until supabase/monitoring.sql is run.</i>");
+  if (noImp) first.push("<i>Impressions / clicks unavailable until the database setup is updated (ec2/setup.sh).</i>");
   if (D.errors && D.errors.length) first.push("<i>" + esc(D.errors.join(" · ")) + "</i>");
   const head = (i, n) => "📊 <b>" + DB.orgName() + " " + "DAILY PERFORMANCE REPORT</b>" + (n > 1 ? " · Part " + i + "/" + n : "") + "\n📅 Date: " + dayLabel(day) + (partial ? " (partial)" : "") + "\n🕒 Updated: " + istStamp() + "\n🆔 " + id;
   const parts = split(head, first, ["<b>BRAND-WISE PERFORMANCE</b>\n\n" + blocks[0]].concat(blocks.slice(1)), [ins.join("\n"), act.join("\n")]);
@@ -235,7 +235,7 @@ function weeklyFull(D, found, opt) {
     "📈 Improving: " + nImp + " · 📉 Deteriorating: " + nDet + " · not enough data: " + rows.filter((r) => !r.judge && r.labels[0] !== "No activity").length + " · no activity: " + rows.filter((r) => r.labels[0] === "No activity").length,
     "🚨 Account / tracking issues: " + (major.length ? major.slice(0, 4).map((x) => esc((x.brand || x.account || "") + (x.brand || x.account ? ": " : "") + x.title)).join("; ") + (major.length > 4 ? " +" + (major.length - 4) + " more" : "") : "none open"),
     (recOk ? "🧮 Totals check: ✅ overall = sum of the " + listed.length + " brand blocks" : "🧮 Totals check: ⚠️ brand blocks " + inr(sumCheck) + " vs overall " + inr(tot.spend)) + (out.spend > 0 ? " · " + inr(out.spend) + " outside the listed brands — not included" : "")];
-  if (noImp) first.push("<i>Impressions / clicks unavailable until supabase/monitoring.sql is run.</i>");
+  if (noImp) first.push("<i>Impressions / clicks unavailable until the database setup is updated (ec2/setup.sh).</i>");
   const head = (i, n) => "📅 <b>" + DB.orgName() + " " + "WEEKLY PERFORMANCE REPORT</b>" + (n > 1 ? " · Part " + i + "/" + n : "") + "\nPeriod: " + dayLabel(wb.from) + " – " + dayLabel(wb.to) + " (Mon–Sun)\n🆔 " + id;
   const parts = split(head, first, ["<b>BRAND-WISE WEEKLY PERFORMANCE</b>\n\n" + blocks[0]].concat(blocks.slice(1)), [summ.join("\n"), pri.join("\n")]);
   return { id, from: wb.from, to: wb.to, parts, brands: rows.map((r) => r.b), total: tot, prevTotal: ptot, recon: recOk };

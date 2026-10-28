@@ -237,7 +237,7 @@
     var T = load("tracking-status", {days: 7});
     box.appendChild(head("Website tracking", "Visits and form fills recorded by lp-track.js on your sites (last 7 days)."));
     if (!T) box.appendChild(waiting("tracking-status", {days: 7}, "website tracking"));
-    else if (!T.setup) box.appendChild(el("div", {cls: "banner warn", text: "Run supabase/attribution-suite.sql first. (" + (T.error || "") + ")"}));
+    else if (!T.setup) box.appendChild(el("div", {cls: "banner warn", text: "The database isn't set up for this yet: whoever runs the site re-runs ec2/setup.sh on the database server (it applies db/*.sql; data stays). (" + (T.error || "") + ")"}));
     else {
       box.appendChild(el("div", {cls: "kpis"}, kpi("Visitors", fInt(T.visitors), "anonymous"), kpi("Events", fInt(T.events), T.lastEvent ? "last " + T.lastEvent.replace("T", " ").slice(0, 16) + " UTC" : "none yet"),
         kpi("Form fills", fInt(T.forms), fInt(T.identified) + " with phone / email"), kpi("WhatsApp clicks", fInt(T.whatsappClicks), ""), kpi("Allowed sites", fInt(T.allowedDomains.length), T.allowedDomains.join(", ") || "none — add them in Settings")));
@@ -251,7 +251,7 @@
       if (canEdit()) box.appendChild(el("div", null, el("button", {cls: "btn ghost", type: "button", id: "aud-run", onclick: function(){ var b = document.getElementById("aud-run"); b.disabled = true; b.textContent = "Syncing…";
         api("audiences-run", {}, {}).then(function(d){ toast(d.skipped || "Audience sync finished"); load("audiences-status", {}, true); }).catch(function(e){ toast(e.message); render(); }); }}, "Sync now")));
       box.appendChild(table("aud", [{k: "name", label: "Audience", t: "text", cls: "name"}, {k: "account_id", label: "Ad account", t: "text"}, {k: "members", label: "People sent", t: "int"},
-        {k: "last_sync", label: "Last sync", t: "text", get: function(r){ return (r.last_sync || "").replace("T", " ").slice(0, 16); }}, {k: "last_error", label: "Last error", t: "text", cls: "remarks"}], Au.lists || [], {empty: Au.error ? "Run supabase/attribution-suite.sql first." : "No audiences yet."}));
+        {k: "last_sync", label: "Last sync", t: "text", get: function(r){ return (r.last_sync || "").replace("T", " ").slice(0, 16); }}, {k: "last_error", label: "Last error", t: "text", cls: "remarks"}], Au.lists || [], {empty: Au.error ? "Couldn't load audiences: " + Au.error : "No audiences yet."}));
     }
     return box;
   }
@@ -380,7 +380,7 @@
           .then(function(list){ var me = list.filter(function(x){ return x.id === sb.org.id; })[0]; sbUseOrg(me); if (state.raw) recompute(); else render(); toast("Workspace saved"); })
           .catch(function(e){ toast("Not saved: " + (e.message || e)); }); }}, "Save workspace") : null));
     /* tokens */
-    var tokCard = h.card("Tokens", "Kept encrypted in the database (Supabase Vault) for this workspace only. Nobody can read them back from here, not even admins: paste a new one to replace it.");
+    var tokCard = h.card("Tokens", "Kept encrypted in the database vault for this workspace only. Nobody can read them back from here, not even admins: paste a new one to replace it.");
     if (!W.secrets) tokCard.appendChild(el("div", {cls: "small", text: W.err ? "Couldn't load: " + W.err : "Loading…"}));
     else TOKENS.forEach(function(t){
       var cur = W.secrets[t[0]], inp = el("input", {type: "password", autocomplete: "off", placeholder: cur ? "Set · ends …" + cur.last4 : "Not set", disabled: admin ? null : true, "aria-label": t[1]});

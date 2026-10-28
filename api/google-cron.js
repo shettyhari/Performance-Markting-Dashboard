@@ -1,5 +1,5 @@
 // Google Ads auto-sync (every 30 minutes) for one workspace: POST /api/google-cron?org=<id>, called once per workspace by pg_cron
-// (x-cron-key checked against Supabase Vault) or any scheduler sending x-cron-secret = CRON_SECRET. On/off: Settings › Data connections › Google Ads.
+// (ec2/fanout.sh) or any scheduler sending x-cron-secret = CRON_SECRET. On/off: Settings › Data connections › Google Ads.
 const D = require("./_db");
 const G = require("./_gadslib");
 const { syncGoogle } = require("./_gadsync");

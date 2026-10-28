@@ -62,7 +62,7 @@ async function loadData(S, sbFetch, opt) {
   const exc = S.excludedCampaigns || [];
   try { D.brandRows = await rpcAll(sbFetch, "mon_brand_daily", { p_from: from, p_excluded: exc }); D.v2 = true; }
   catch (e) {   // monitoring.sql not run yet: fall back to the alerts function (no impressions / clicks)
-    D.v2 = false; errors.push("Run supabase/monitoring.sql for CTR / CPC / CPM and campaign alerts.");
+    D.v2 = false; errors.push("CTR / CPC / CPM and campaign alerts need the latest database setup: whoever runs the site re-runs ec2/setup.sh on the database server (it applies db/*.sql; data stays).");
     D.brandRows = (await sbFetch("rpc/alerts_brand_daily", { method: "POST", body: JSON.stringify({ p_from: from, p_excluded: exc }) }) || []).map((r) => Object.assign({ impressions: 0, clicks: 0 }, r)); }
   try { D.campRows = D.v2 ? await rpcAll(sbFetch, "mon_campaign_daily", { p_from: addDays(today, -8), p_excluded: exc }) : []; } catch (e) { D.campRows = []; errors.push("campaigns: " + e.message); }
   try { D.uploads = await sbFetch("uploads?select=meta_files,crm_file,uploaded_at,meta_rows,crm_rows&order=uploaded_at.desc&limit=60") || []; } catch (e) { D.uploads = []; errors.push("feeds: " + e.message); }

@@ -1,7 +1,7 @@
 // Meta Marketing API (direct) → Meta Ads daily rows for the dashboard.
-// The workspace's token (a System User token with ads_read) is saved by an admin in Settings › Data connections and kept in Supabase Vault;
+// The workspace's token (a System User token with ads_read) is saved by an admin in Settings › Data connections and kept in the database vault;
 // it never reaches the browser. Optional platform env: META_API_VERSION (default v23.0).
-// Every call carries the signed-in user's Supabase token and the workspace (x-org-id); only admins / editors can list accounts or pull data.
+// Every call carries the signed-in user's token (api/auth.js) and the workspace (x-org-id); only admins / editors can list accounts or pull data.
 //   GET /api/meta?op=status
 //   GET /api/meta?op=accounts
 //   GET /api/meta?op=funds[&accounts=act_1,act_2]   (any team member; live, not stored)

@@ -2935,7 +2935,7 @@ function viewForms(){
   if (F.status === "loading"){ sec.appendChild(el("div", {cls: "empty", text: F.progress || "Reading lead forms from Meta…"})); return sec; }
   if (F.status === "error"){ sec.appendChild(el("div", {cls: "msg err", text: "Couldn't read lead forms: " + F.err})); return sec; }
   var rows = fmRows(), real = rows.filter(function(r){ return !r.special; });
-  if (rows.some(function(r){ return r.key === "~noid"; }) && !real.length) sec.appendChild(el("div", {cls: "banner warn", text: "Ad IDs aren't in the data yet, so ads can't be linked to their forms. Run supabase/creative-report.sql once in Supabase, then Settings › Data connections › Sync now for these dates (the 30-minute sync also fills them in from now on)."}));
+  if (rows.some(function(r){ return r.key === "~noid"; }) && !real.length) sec.appendChild(el("div", {cls: "banner warn", text: "Ad IDs aren't in the data yet, so ads can't be linked to their forms. Settings › Data connections › Sync now for these dates (the 30-minute sync also fills them in from now on)."}));
   var pageErr = (F.errors || []).filter(function(e){ return /pages_|permission|\(#200\)|\(#10\)|Pages:/i.test(e); });
   if (real.some(function(r){ return !r.name; }) || pageErr.length) sec.appendChild(el("div", {cls: "banner warn", text: "Some form names couldn't be read" + (pageErr.length ? " (" + pageErr.slice(0, 3).join("; ") + ")" : "") + ". They show as “Form <id>”. To see names: Meta Business Settings › Users › System users › the dashboard's system user › Assign assets › Pages › tick each brand's Page (allow Create ads / Leads access) › Save, then Refresh from Meta."}));
   var T = sumRows(real); T.label = "TOTAL (lead forms)"; T.gap = T.ui - T.crm; T.sync = T.ui > 0 ? T.crm / T.ui : null; T.nAds = real.reduce(function(s0, r){ return s0 + r.nAds; }, 0);
@@ -3096,7 +3096,7 @@ function leakAddAccount(a){ var S = state.settings, list = S.metaAccounts || (S.
   if (ex) ex.on = true; else list.push({id: a.id, name: a.name, brand: "", on: true});
   provSave(); render(); toast(a.name + " added. Its data arrives with the next automatic sync (within 30 minutes). Set its brand in Settings › Data connections if campaign names don't show it."); }
 function leakGoMap(){ state.tab = "settings"; state.setTab = "brands"; render(); setTimeout(function(){ var e = document.getElementById("srcmap"); if (e) e.scrollIntoView({behavior: "smooth", block: "start"}); }, 80); }
-/* ================= History: who changed what, when (recorded by the database, supabase/change-history.sql) ================= */
+/* ================= History: who changed what, when (recorded by the database, db/10-schema.sql) ================= */
 var HIST_KEYS = {brands: "Brands", keywords: "Brand rules (campaign word → brand)", slaMin: "Speed-to-lead target (minutes)", diffAlert: "UI vs CRM difference alert", slaTarget: "Within-SLA target",
   platform: "Platform", report: "Reports", qlPos: "Qualified-lead statuses", qlNeg: "Not-qualified statuses", qlOverride: "Lead status overrides", excludedCampaigns: "Campaigns left out of Leads in UI",
   includedCampaigns: "Campaigns kept in Leads in UI", autoExcludeNonLead: "Leave out non-lead campaigns automatically", sourceMap: "Leads without a campaign", holidays: "Holidays",
@@ -3187,7 +3187,7 @@ function viewHistory(){
   if (H.status === "nosb"){ sec.appendChild(el("div", {cls: "empty", text: "History is kept in the workspace database. Open the live dashboard and sign in to see it."})); return sec; }
   if (H.status === "loading"){ sec.appendChild(el("div", {cls: "empty", text: "Loading history…"})); return sec; }
   if (H.status === "error"){ if (H.err === "setup") sec.appendChild(el("div", {cls: "banner warn"}, el("div", null, el("b", {text: "History isn't switched on yet. "}),
-      "An admin runs the file supabase/change-history.sql once in Supabase › SQL Editor (copy all of it › Run). From then on every change is recorded here.")));
+      "The database isn't set up for this yet: " + "whoever runs the site re-runs ec2/setup.sh on the database server (it applies db/*.sql; data stays). From then on every change is recorded here.")));
     else sec.appendChild(el("div", {cls: "msg err", text: "Couldn't load history: " + H.err})); sec.appendChild(el("button", {cls: "btn ghost", type: "button", onclick: function(){ histLoad(); }}, "Try again")); return sec; }
   var F = H.f, people = {}; H.rows.forEach(function(e){ people[e.actor] = 1; });
   var whoSel = el("select", {"aria-label": "Person"}, [el("option", {value: "", text: "Everyone"})].concat(Object.keys(people).sort().map(function(p){ return el("option", {value: p, selected: F.who === p ? true : null, text: p}); })));
@@ -3257,7 +3257,7 @@ function dupSection(){
     el("div", {cls: "tbl-tools"}, searchBox("dups", "Search lead id, earlier lead id or campaign")),
     table("dups", cols, list, {empty: R.dupKeys ? "No duplicate leads for this filter." : "Duplicate detection needs Phone, Email or Facebook Lead ID in the CRM data."}));
 }
-/* ================= live Meta Ads data: Meta API direct (the workspace's token is kept in Supabase Vault, never in the page) ================= */
+/* ================= live Meta Ads data: Meta API direct (the workspace's token is kept in the database vault, never in the page) ================= */
 var PROV = {
   meta: {api: "meta", label: "Meta API (direct)", key: "metaAccounts", prefix: "Meta API · ", env: "meta_access_token", what: "System User access token",
     help: "Meta Business Settings › Users › System users › your system user › Generate new token (tick ads_read; give the system user access to the ad accounts under Assigned assets)"},
@@ -3432,7 +3432,7 @@ function alertsPanel(){
   var tgCard = el("div", {cls: "group"}, el("h3", {text: "Telegram"}));
   if (!St) tgCard.appendChild(el("div", {cls: "small", text: "Checking…"}));
   else if (St.err) tgCard.appendChild(el("div", {cls: "msg err", text: St.err}));
-  else if (St.setup) tgCard.appendChild(el("div", {cls: "banner warn", text: "Alerts aren't set up in the database yet: whoever runs the site runs supabase/install.sql."}));
+  else if (St.setup) tgCard.appendChild(el("div", {cls: "banner warn", text: "Alerts aren't set up in the database yet: whoever runs the site re-runs ec2/setup.sh on the database server (it applies db/*.sql; data stays)."}));
   else if (!St.configured) tgCard.appendChild(el("div", {cls: "banner warn"}, el("div", null, el("b", {text: "Bot not added yet. "}),
     "Telegram isn't switched on for this site yet: whoever runs the site sets TELEGRAM_BOT_TOKEN (from @BotFather) and redeploys.")));
   else {
@@ -3517,7 +3517,7 @@ function viewActivity(){
     el("div", {cls: "rep-actions"}, el("button", {cls: "btn", type: "button", disabled: A.status === "syncing" || A.status === "loading" ? true : null, onclick: function(){ actLoad(true); }}, A.status === "syncing" ? "Checking Meta…" : "Check Meta now"))));
   if (A.syncMsg) sec.appendChild(el("div", {cls: "small", style: "margin:-4px 0 8px", text: A.syncMsg}));
   if (A.status === "loading" && !A.rows){ sec.appendChild(el("div", {cls: "empty", text: "Loading changes…"})); return sec; }
-  if (A.status === "error"){ sec.appendChild(A.err === "setup" ? el("div", {cls: "banner warn", text: "Not set up yet: run supabase/alerts.sql once in Supabase › SQL Editor. Changes are then collected every 5 minutes (the first run also loads the last 7 days)."}) : el("div", {cls: "msg err", text: A.err})); return sec; }
+  if (A.status === "error"){ sec.appendChild(A.err === "setup" ? el("div", {cls: "banner warn", text: "Not set up yet: whoever runs the site re-runs ec2/setup.sh on the database server (it applies db/*.sql; data stays). Changes are then collected every 5 minutes (the first run also loads the last 7 days)."}) : el("div", {cls: "msg err", text: A.err})); return sec; }
   var ql = F.q.trim().toLowerCase();
   var list = rows.filter(function(r){ if (F.brand && r.brand !== F.brand) return false; if (F.who && r.who !== F.who) return false; if (F.impact && r.impact !== F.impact) return false;
     if (F.type){ var t = ACT_TYPE_OF[r.category] || r.category; if (F.type === "other" ? ACT_TYPES.some(function(x){ return x[0] && x[0] !== "other" && x[0] === t; }) : t !== F.type) return false; }
@@ -3727,7 +3727,7 @@ function viewMonitor(){
   if (M.status === "error"){ sec.appendChild(el("div", {cls: "msg err", text: M.err})); sec.appendChild(el("button", {cls: "btn ghost", type: "button", onclick: monLoad}, "Try again")); return sec; }
   if (!M.d){ sec.appendChild(el("div", {cls: "empty", text: "Loading…"})); return sec; }
   var d = M.d, fe = d.feeds || {}, issues = d.issues || [], open = issues.filter(function(r){ return r.status === "open"; }), resolved = issues.filter(function(r){ return r.status === "resolved"; });
-  if (d.setup) sec.appendChild(el("div", {cls: "banner warn", text: "One step left: an admin runs supabase/monitoring.sql once in Supabase › SQL Editor (adds the issue list; changes nothing existing). Until then alerts fall back to the old 30-minute update."}));
+  if (d.setup) sec.appendChild(el("div", {cls: "banner warn", text: "One step left: whoever runs the site re-runs ec2/setup.sh on the database server (it applies db/*.sql; data stays). Until then alerts fall back to the 30-minute update."}));
   var st = function(label, ok, txt){ return el("div", {cls: "mon-stat"}, el("span", {cls: "small", text: label}), el("span", {cls: "pill " + (ok === null ? "mut" : ok ? "good" : "bad"), text: txt})); };
   var crit = open.filter(function(r){ return r.severity === "critical"; }).length;
   sec.appendChild(el("div", {cls: "mon-stats"},
@@ -3875,13 +3875,13 @@ function metaAutoBox(st, canRun, saved){
   box.appendChild(el("div", {cls: "small", text: cur === "2" || cur === "today" ? "Each run refreshes these days for every ticked account." :
     "Each run refreshes yesterday + today first, then older days of the range in 7-day pieces, as many as fit in one run; a long range is fully refreshed within a few runs. To follow a new dashboard date range, pick “Dates shown on the dashboard” again."}));
   if (!st.cronReady) box.appendChild(el("div", {cls: "banner warn"}, el("div", null, el("b", {text: "One-time setup needed. "}),
-    "The site isn't fully set up (SUPABASE_SERVICE_ROLE_KEY). Ask whoever runs it.")));
+    "The site isn't fully set up (API_URL / JWT_SECRET). Ask whoever runs it.")));
   else if (on && !saved.some(function(a){ return a.on !== false; })) box.appendChild(el("div", {cls: "small", text: "Tick at least one ad account above."}));
   if (auto){
     var cf = String(auto.crm_file || ""), err = cf.indexOf("Last run errors") === 0 ? cf : "", note = cf.indexOf("Auto-sync:") === 0 ? cf.replace(/^Auto-sync:\s*/, "") : "";
     var age = (Date.now() - Date.parse(auto.uploaded_at)) / 60000;
     box.appendChild(el("div", {cls: "small", text: "Last auto-sync: " + new Date(auto.uploaded_at).toLocaleString("en-IN", {dateStyle: "medium", timeStyle: "short"}) + " (" + (age < 60 ? Math.round(age) + " min ago" : (age / 60).toFixed(1) + " h ago") + ") · " + fInt(auto.meta_rows) + " rows stored by auto-sync" + (note ? " · " + note : "")}));
-    if (on && age > 50) box.appendChild(el("div", {cls: "banner warn", text: "The last run was more than 30 minutes ago, so the scheduler isn't calling the sync on time. GitHub's schedule is often delayed by hours; switch on the Supabase scheduler (one SQL script, see the README › Meta API auto-sync) so it runs every 30 minutes."}));
+    if (on && age > 50) box.appendChild(el("div", {cls: "banner warn", text: "The last run was more than 30 minutes ago, so the schedule isn't calling the sync on time. Whoever runs the site checks the database server's schedule (journalctl -t lp-fanout) and that APP_URL / CRON_SECRET match on the server and in Vercel."}));
     if (err) box.appendChild(el("div", {cls: "msg err", text: err}));
   } else if (on && st.cronReady) box.appendChild(el("div", {cls: "small", text: "Waiting for the first run (within 30 minutes)."}));
   return box;
@@ -4272,7 +4272,7 @@ function trendCols(){ var R = state.R, up = function(k){ return function(r){ ret
 function lcplLoad(){
   var L = state.lcpl || (state.lcpl = {}); if (L.loading) return; L.loading = true;
   alertsApi("cpl", {n: 60}).then(function(d){ L.now = d.now; L.events = d.events || []; L.at = Date.now(); L.err = null; })
-    .catch(function(e){ L.err = e.message === "NOAPI" ? "Live CPL updates work on the live site." : /alert_log|alerts_brand_daily|schema cache|does not exist/i.test(e.message) ? "Run supabase/alerts.sql once in Supabase to switch this on." : e.message; })
+    .catch(function(e){ L.err = e.message === "NOAPI" ? "Live CPL updates work on the live site." : /alert_log|alerts_brand_daily|schema cache|does not exist/i.test(e.message) ? "Not set up in the database yet: whoever runs the site re-runs ec2/setup.sh on the database server (it applies db/*.sql; data stays)." : e.message; })
     .then(function(){ L.loading = false; if (state.tab === "trends") render(); });
   if (!window._lcplTimer) window._lcplTimer = setInterval(function(){ if (state.tab === "trends" && alertsAllowed() && document.visibilityState !== "hidden") lcplLoad(); }, 5 * 60000);
 }
@@ -4316,7 +4316,7 @@ function liveCplPanel(){
 function insLoad(){
   var I = state.ins || (state.ins = {}); if (I.loading) return; I.loading = true;
   alertsApi("insights").then(function(d){ I.d = d; I.at = Date.now(); I.err = null; })
-    .catch(function(e){ I.err = e.message === "NOAPI" ? "Updates & issues work on the live site." : /alert_log|meta_activity|alerts_brand_daily|schema cache|does not exist/i.test(e.message) ? "Run supabase/alerts.sql once in Supabase to switch this on." : e.message; })
+    .catch(function(e){ I.err = e.message === "NOAPI" ? "Updates & issues work on the live site." : /alert_log|meta_activity|alerts_brand_daily|schema cache|does not exist/i.test(e.message) ? "Not set up in the database yet: whoever runs the site re-runs ec2/setup.sh on the database server (it applies db/*.sql; data stays)." : e.message; })
     .then(function(){ I.loading = false; if (state.tab === "trends") render(); });
   if (!window._insTimer) window._insTimer = setInterval(function(){ if (state.tab === "trends" && alertsAllowed() && document.visibilityState !== "hidden") insLoad(); }, 5 * 60000);
 }
@@ -5808,7 +5808,7 @@ function renderHeaderSafe(){ if (state.R) renderHeader(); }
 function openSaveForTeam(){ var x = document.getElementById("saved"); if (x.hidden) toggleSaved(); else renderSavedPanel(); setTimeout(function(){ var n = document.getElementById("db-add") || document.getElementById("sb-email"); if (n) n.focus(); }, 60); }
 document.getElementById("btn-save").addEventListener("click", openSaveForTeam);
 
-/* ================= Supabase database (Vercel site) =================
+/* ================= workspace database (Vercel site + database server) =================
    Sign in with email + password, then work in one workspace (organization) at a time: every request carries its id in the x-org-id header
    and the database's row level security only lets a member of that workspace through (db/10-schema.sql). Sign-in is our own (api/auth.js, lpAuth below);
    supabase-js is used only as the query builder for the database API (PostgREST on the server at API_URL).
@@ -6221,7 +6221,7 @@ function dbLoadGoogle(range, onProgress){
     sb.days = (res[2] || []).map(function(r){ return dayOf(Date.parse(r.d + "T00:00:00Z")); }).sort(function(a, b){ return a - b; });
     if (res[3] && res[3].settings){ state.settings = mergeSettings(res[3].settings); sb.settingsAt = res[3].updated_at; }
     return {meta: meta, crm: crm, metaRows: res[0].length, crmRows: res[1].length};
-  }).catch(function(e){ if (/google_ad_rows|v_crm_google|schema cache|does not exist|PGRST205/i.test((e && (e.message + " " + e.code)) || "")) throw new Error("Google Ads isn't set up in the database yet: an admin runs supabase/google-ads.sql once in Supabase › SQL Editor."); throw e; });
+  }).catch(function(e){ if (/google_ad_rows|v_crm_google|schema cache|does not exist|PGRST205/i.test((e && (e.message + " " + e.code)) || "")) throw new Error("Google Ads isn't set up in the database yet: whoever runs the site re-runs ec2/setup.sh on the database server (it applies db/*.sql; data stays)."); throw e; });
 }
 function setPlatform(v){
   v = v === "google" ? "google" : "meta"; if (state.platform === v) return;
@@ -6298,7 +6298,7 @@ function renderUploadDb(){
 function renderDbSection(x){
   var box = el("div", {cls: "group team-box"}), editable = sbCanWrite();
   box.appendChild(el("div", {cls: "sec-head"}, el("h3", {text: "Workspace database"}),
-    el("span", {cls: "note", text: "Every upload is added to one shared database (Supabase), so history builds up and any date range can be opened. Re-uploading the same days or leads updates them instead of duplicating."})));
+    el("span", {cls: "note", text: "Every upload is added to one shared database (the workspace's own, on the database server), so history builds up and any date range can be opened. Re-uploading the same days or leads updates them instead of duplicating."})));
   x.appendChild(box);
   if (sb.status === "loading"){ box.appendChild(el("div", {cls: "small", text: "Connecting…"})); return; }
   if (sb.status === "error"){ box.appendChild(el("div", {cls: "banner warn", text: "The database is unavailable: " + sb.err})); return; }

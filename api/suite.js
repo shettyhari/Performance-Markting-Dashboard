@@ -1,5 +1,5 @@
 // Attribution suite endpoint (one Vercel function for all of it, to stay within the plan's function limit).
-// Members (Supabase login + x-org-id header, same rule as the database):
+// Members (sign-in token + x-org-id header, same rule as the database):
 //   GET  ?op=perf|attribution|trend&from=&to=&brand=[&model=&by=&granularity=]   · ?op=journey&id=   · ?op=find&q=
 //   GET  ?op=capi-status[&days=7] · ?op=audiences-status · ?op=tracking-status[&days=7]
 //   POST ?op=capi-run · ?op=audiences-run   (admins / editors)       POST ?op=ask {question, history}

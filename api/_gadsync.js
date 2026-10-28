@@ -1,4 +1,4 @@
-// Google Ads → google_ad_rows (Supabase). Used by api/google-cron.js (every 30 min) and api/google.js?op=sync ("Sync now").
+// Google Ads → google_ad_rows (database). Used by api/google-cron.js (every 30 min) and api/google.js?op=sync ("Sync now").
 // For every ticked account: one query for the whole range (campaign × day), then that account's days in the range are replaced,
 // so renamed campaigns never count twice and late conversions (Google adds them for days) are picked up.
 const DB = require("./_db");

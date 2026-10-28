@@ -34,31 +34,38 @@ Anyone can belong to several workspaces (agencies, groups); switch from the prof
 
 ## Running the site (one deployment serves every company)
 
-**Stack:** static `index.html` + `attribution.js` (ES5, no build), Vercel serverless functions in `api/`, Supabase (Postgres, Auth, RLS, Vault, pg_cron, pg_net).
+**Stack:** static `index.html` + `attribution.js` (ES5, no build) and serverless functions in `api/` on **Vercel**; one **database server on AWS EC2** running Postgres 16 (localhost only), PostgREST (the REST API the page and functions use; row level security per workspace) and Caddy (HTTPS). Sign-in is the site's own (`api/auth.js`): email + password, email confirmation, password reset.
 
-1. **Supabase** (new project): SQL Editor › run `supabase/install.sql`, then the line at its end with your site address: `update public.app_config set site_url = 'https://your-site' where id = 1;`. Authentication › Email: keep **Confirm email ON** (a login gets a workspace role only with a proven email). Authentication › URL configuration: your site address.
+1. **Database server.** Launch an EC2 instance (Ubuntu 24.04, e.g. t4g.small, 20 GB gp3) with an Elastic IP; security group: 22 from your IP, 80 and 443 from anywhere. Optionally point a domain (e.g. `api.yourdomain.com`) at the Elastic IP. Then from this repo:
+
+   ```bash
+   scp -r db ec2 ubuntu@<elastic-ip>:~/lp/
+   ssh ubuntu@<elastic-ip> "sudo APP_URL=https://your-site.vercel.app bash ~/lp/ec2/setup.sh"
+   ```
+
+   Add `API_DOMAIN=api.yourdomain.com` if you set up a domain (otherwise it uses `<ip>.sslip.io`), `ADMIN_IP=<your ip>` to limit SSH, `BACKUP_S3_URI=s3://bucket/path` for off-server backups. It installs everything, creates the database from `db/*.sql`, turns on nightly backups (14 days) and the schedules, and prints `API_URL`, `JWT_SECRET` and `CRON_SECRET` once (they stay in `/etc/lp.env` on the server, root only). Run it again after pulling database changes: it keeps the data and secrets.
 2. **Vercel** (this repo), environment variables:
 
 | Variable | What |
 |---|---|
-| `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY` | Supabase project |
-| `APP_URL` | the site address (used for Telegram's webhook and links in reports) |
+| `API_URL`, `JWT_SECRET`, `CRON_SECRET` | printed by `ec2/setup.sh` |
+| `APP_URL` | the site address (email links, Telegram's webhook, links in reports); same as on the server |
+| `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `MAIL_FROM` | sign-up confirmation and password-reset emails, through any SMTP server (Amazon SES, Gmail, Zoho, your host's mail). Without them nobody can sign up. |
 | `TELEGRAM_BOT_TOKEN` | optional: one bot for every workspace's alerts (@BotFather) |
 | `ANTHROPIC_API_KEY` | optional: Ask AI and the AI digest (Claude) |
 | `GOOGLE_ADS_CLIENT_ID`, `GOOGLE_ADS_CLIENT_SECRET` | optional: one Google OAuth client; each workspace adds its own refresh token |
-| `CRON_SECRET` | optional: lets another scheduler call `/api/*-cron?org=<id>` |
-| `APP_NAME` | optional: product name on the sign-in page (default "Lead Performance") |
+| `APP_NAME` | optional: product name on the sign-in page and in emails (default "Lead Performance") |
 
-3. Deploy. Sign up, create the first workspace.
+3. Deploy. Sign up, open the confirmation email, create the first workspace.
 
-Schedules run inside the database (`install.sql`): each one calls the site **once per active workspace** (`?org=<id>`), so every company gets its own 60-second budget. Tokens per workspace are stored in Supabase Vault (`set_org_secret`; only the server can read them back). Machine keys (CRM push, API) are stored as sha256 hashes and shown once.
+Schedules run on the database server (`/etc/cron.d/lp-fanout`, UTC): each one calls the site **once per active workspace** (`?org=<id>`, with `x-cron-secret`), so every company gets its own 60-second budget; results in `journalctl -t lp-fanout`. Tokens per workspace are stored encrypted in the database vault (`set_org_secret`; only the server can read them back). Machine keys (CRM push, API) are stored as sha256 hashes and shown once. Passwords are stored as scrypt hashes; email links as sha256 hashes; a password change or reset ends every other session.
 
 
 **Not included:** billing / plans, a platform super-admin console, custom domains per workspace, call tracking, daylight-saving time zones (time zones are fixed offsets).
 
 ## Developing
 
-- `npm run test:ui` — `tests/ui.smoke.js`: loads the page in jsdom with a fake Supabase and walks sign-up → workspace wizard → settings pages (needs `npm install` for jsdom).
-- `npm test` — `tests/monitor.test.js` (alerts and reports), `tests/suite.test.js` (definitions, attribution, Conversions API, MCP, collector), `tests/tenancy.test.js` (workspace isolation: scoped queries, concurrent requests, keys, collector domains, invite rules). No network; Supabase / Meta / Telegram are faked.
+- `npm run test:ui` — `tests/ui.smoke.js`: loads the page in jsdom with a fake database API and walks sign-in → workspace wizard → settings pages → the email-confirmation link (needs `npm install` for jsdom).
+- `npm test` — `tests/monitor.test.js` (alerts and reports), `tests/suite.test.js` (definitions, attribution, Conversions API, MCP, collector), `tests/tenancy.test.js` (workspace isolation: scoped queries, concurrent requests, keys, collector domains, invite rules, sign-in tokens), `tests/db.test.js` (the real `db/*.sql` in PGlite: isolation between workspaces under row level security), `tests/auth.test.js` (sign-up, confirmation, sign-in, lockout, reset, session ending, against the real SQL). No network; Meta / Telegram / email are faked.
 - Before pushing: `node --check api/*.js`, ES5 parse of the inline script in `index.html`, `attribution.js` and `lp-track.js`, `npm test`. Keep phone width working (no horizontal scroll).
-- Server code never calls Supabase directly: use `api/_db.js` (`withOrg`, `sbFetch`, `orgSecret`, `orgSettings`), which scopes everything to the request's workspace.
+- Server code never calls the database API directly: use `api/_db.js` (`withOrg`, `sbFetch`, `orgSecret`, `orgSettings`), which scopes everything to the request's workspace.

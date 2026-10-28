@@ -1,4 +1,4 @@
-// Google Ads API (direct) for the dashboard. Every call carries the signed-in user's Supabase token and the workspace (x-org-id).
+// Google Ads API (direct) for the dashboard. Every call carries the signed-in user's token (api/auth.js) and the workspace (x-org-id).
 //   GET /api/google?op=status                       (any member)
 //   GET /api/google?op=accounts                     (admin / editor: every account the workspace's Google login can reach, direct or through a manager / MCC)
 //   GET /api/google?op=sync[&from=YYYY-MM-DD&to=…]  (admin / editor: "Sync now" — same as the 30-minute auto-sync)

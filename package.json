@@ -1,7 +1,7 @@
 {
   "name": "lead-performance",
   "private": true,
-  "description": "Lead Performance: multi-company lead and ad performance dashboard (Meta / Google Ads vs CRM) on Vercel + Supabase",
+  "description": "Lead Performance: multi-company lead and ad performance dashboard (Meta / Google Ads vs CRM) on Vercel + one database server (Postgres + PostgREST)",
   "dependencies": {
     "@anthropic-ai/sdk": "0.133.0",
     "nodemailer": "10.1.0"

@@ -1,6 +1,6 @@
 // Auto-sync (every 30 minutes): pulls the chosen date range from the Meta Marketing API for the ad accounts ticked in Settings,
 // and replaces the stored Meta rows for those ad accounts and days (nothing is counted twice, even after a campaign is renamed).
-// POST /api/meta-cron?org=<workspace id>: called once per workspace by the Supabase scheduler (pg_cron, sends x-cron-key, checked against Vault),
+// POST /api/meta-cron?org=<workspace id>: called once per workspace by the database server's schedule (ec2/fanout.sh, sends x-cron-secret),
 // or by any scheduler that sends x-cron-secret = CRON_SECRET. Uses the workspace's own Meta token (Settings › Data connections).
 // Range (dashboard › Settings › Meta API › Auto-sync): yesterday + today, last 3 / 7 / 14 / 30 days, this month, or the dashboard's dates.
 // Every run refreshes yesterday + today first; older days in the range are refreshed in 7-day pieces, as many as fit in ~50 seconds,

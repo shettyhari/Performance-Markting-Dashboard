@@ -1,4 +1,4 @@
-// Alerts schedule for one workspace, called once per workspace by Supabase pg_cron (x-cron-key, checked against Vault)
+// Alerts schedule for one workspace, called once per workspace by the database server's schedule (ec2/fanout.sh, x-cron-secret)
 // or any scheduler with x-cron-secret = CRON_SECRET.
 //   POST /api/alerts-cron?org=<id>&mode=activity   every 5 minutes: Meta ad account changes (who changed what)
 //   POST /api/alerts-cron?org=<id>&mode=summary    every 30 minutes: CPL events (dashboard) + monitoring (alerts with open / resolved tracking, daily / weekly reports)
