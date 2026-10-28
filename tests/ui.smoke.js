@@ -93,5 +93,16 @@ const ok = (c, m) => { if (!c) { console.log("✗ " + m); process.exitCode = 1; 
   w.eval("state.tab = 'settings'; state.setTab = 'growth'; render();"); await wait(30);
   ok(/data-org=\\?"pub123/.test(text()) || /data-org="pub123"/.test(text()), "tracking snippet carries the workspace id");
   ok(!errors.length, "no script errors" + (errors.length ? ": " + errors.slice(0, 3).join(" | ") : ""));
+  /* a site without its Supabase settings says so, instead of quietly showing upload-only mode */
+  const d2 = new JSDOM(html, { url: "https://app.example.test/", runScripts: "dangerously", pretendToBeVisual: true, beforeParse(x) {
+    x.XLSX = {}; x.scrollTo = () => {}; x.matchMedia = () => ({ matches: false, addListener() {}, addEventListener() {} });
+    x.fetch = () => Promise.resolve({ ok: false, status: 503, json: () => Promise.resolve({ error: "SUPABASE_URL and SUPABASE_ANON_KEY are not set on this site yet." }), text: () => Promise.resolve("") });
+    x.addEventListener("error", (e) => errors.push("setup page: " + e.message)); } });
+  await wait(300);
+  const t2 = () => d2.window.document.getElementById("view").textContent;
+  ok(/isn't connected to its database yet/.test(t2()) && /SUPABASE_URL and SUPABASE_ANON_KEY are not set/.test(t2()), "missing site settings → a setup screen that names what's missing");
+  [...d2.window.document.querySelectorAll("button")].filter((b) => /Use without an account/.test(b.textContent))[0].click(); await wait(50);
+  ok(/No report yet/.test(t2()) && /Upload-only mode/.test(t2()), "“Use without an account” opens upload-only mode");
+  ok(!errors.length, "no script errors on the setup screen" + (errors.length ? ": " + errors.slice(0, 3).join(" | ") : ""));
   process.exit();
 })().catch((e) => { console.log("CRASH", e.stack); process.exit(1); });

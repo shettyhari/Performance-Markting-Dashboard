@@ -965,7 +965,7 @@ tr.total-bottom td{position:static!important;background:#dce3f0!important;color:
       <div class="dp" id="dp"></div>
       <button class="btn" id="btn-load" type="button" hidden>Lead data upload</button>
       <button class="btn ghost" id="btn-saved" type="button" hidden>Saved data</button>
-      <span id="save-wrap" hidden><button class="btn ghost" id="btn-save" type="button">Save for team</button></span>
+      <span id="save-wrap" hidden><button class="btn ghost" id="btn-save" type="button">Save to workspace</button></span>
       <button class="btn ghost" id="btn-xlsx" type="button" hidden>Download Excel</button>
     </div>
   </div>
@@ -2042,7 +2042,7 @@ function holidayPanel(){
   var box = el("div", {cls: "panel hol-panel", id: "holidays"});
   box.appendChild(el("div", {cls: "sec-head"}, el("h2", {text: "Holidays"}),
     el("span", {cls: "note", text: "Working-hours TAT counts " + whText() + " and skips days off and the active holidays below. Overall TAT is never affected." +
-      (sb.cfg ? (canEdit ? " Changes are shared with the whole team." : " Only admins and editors can change holidays.") : " Saved in this browser and with Save for team.")})));
+      (sb.cfg ? (canEdit ? " Changes are shared with the whole team." : " Only admins and editors can change holidays.") : " Saved in this browser.")})));
   if (canEdit){
     var nm = el("input", {type: "text", id: "hol-name", maxlength: "80", placeholder: "e.g. Diwali"}), dt = el("input", {type: "date", id: "hol-date"});
     var wd = el("span", {cls: "small", id: "hol-wd"});
@@ -4801,19 +4801,33 @@ function renderEmpty(){
     return;
   }
   v.appendChild(el("section", {cls: "panel"},
-    el("div", {cls: "sec-head"}, el("h2", {text: "No report yet"}), el("span", {cls: "note", text: "Your numbers stay in this browser until you choose Save for team."})),
+    el("div", {cls: "sec-head"}, el("h2", {text: "No report yet"}), el("span", {cls: "note", text: "Upload-only mode: your numbers stay in this browser. Sign in to a workspace to share them with your team."})),
     el("div", {cls: "kpis"},
       step(1, "Export from Meta", "One ads report per brand, or one for all. CSV or XLSX, any column order. Add Breakdown › By time › Day to filter spend by date."),
       step(2, "Export from the CRM", "Leads for the same dates. All columns are fine."),
       step(3, "Load the files", "Drop all Meta reports in the first box and the CRM export in the second. The report builds as soon as both are in."),
       step(4, "Pick dates and brands", "Use the date picker and brand chips to view any day, week or month."),
-      step(5, "Share", "Download Excel, or Save for team so your manager sees the same report.")),
+      step(5, "Share", "Download Excel to send the report to anyone.")),
     el("div", {cls: "actions"}, el("button", {cls: "btn", type: "button", onclick: function(){ var u = document.getElementById("upload"); u.hidden = false; u.scrollIntoView({block: "nearest"}); }}, "Lead data upload"),
       (saved.ok && saved.list.length) || team.list.length ? el("button", {cls: "btn ghost", type: "button", onclick: toggleSaved}, "Open saved data (" + (saved.list.length + team.list.length) + ")")
         : sb.cfg && sb.status !== "ready" ? el("button", {cls: "btn ghost", type: "button", onclick: toggleSaved}, "Sign in to the workspace database")
         : team.status === "locked" ? el("button", {cls: "btn ghost", type: "button", onclick: toggleSaved}, "Open team data") : null)));
 }
 function gated(){ return !!sb.cfg && sb.status !== "ready"; }
+/* the site isn't connected to its Supabase project yet (whoever runs it adds the Vercel environment variables) */
+function renderSetup(){
+  ["btn-load", "btn-saved", "btn-xlsx", "save-wrap"].forEach(function(id){ document.getElementById(id).hidden = true; });
+  setChrome(false); renderUserBox();
+  var v = document.getElementById("view"); v.textContent = "";
+  var S = sb.setup, noApi = S.status === 404 || S.status === 0;
+  v.appendChild(el("section", {cls: "login"},
+    el("div", {cls: "login-head"}, el("div", {cls: "eyebrow", text: "Lead Performance"}), el("h2", {text: "This site isn't connected to its database yet"})),
+    el("div", {cls: "msg err", role: "alert", text: noApi ? "The site's API isn't running here (" + (S.status ? "/api/config answered " + S.status : "no answer from /api/config") + "). Deploy the whole repository on Vercel, including the api folder; opening index.html on its own only works in upload-only mode."
+      : (S.error || "The site's database settings are missing (" + S.status + ").")}),
+    el("div", {cls: "small", text: "Whoever runs this site: Vercel › your project › Settings › Environment Variables › add SUPABASE_URL, SUPABASE_ANON_KEY and SUPABASE_SERVICE_ROLE_KEY from this product's own Supabase project (Project Settings › API), then Deployments › ⋯ › Redeploy. The database itself is created by running supabase/install.sql in that project. Full list in the README."}),
+    el("div", {cls: "actions"}, el("button", {cls: "btn", type: "button", onclick: function(){ location.reload(); }}, "Check again"),
+      el("button", {cls: "btn ghost", type: "button", onclick: function(){ sb.offlineOk = true; render(); }}, "Use without an account (files stay in this browser)"))));
+}
 function setChrome(on){
   ["brand-chips", "dp"].forEach(function(id){ var e = document.getElementById(id); if (!on) e.textContent = ""; });
   document.querySelector(".filters").hidden = !on; document.body.classList.toggle("gated", !on);
@@ -4981,6 +4995,7 @@ function friendlyAuthError(e){
   return m || "Something went wrong. Try again.";
 }
 function render(){
+  if (sb.setup && !sb.offlineOk){ renderSetup(); return; }
   if (gated()){ renderLogin(); return; }
   setChrome(true); applyAccess();
   if (!state.R){ renderEmpty(); if (state.tab === "help"){ var hv = document.getElementById("view"); hv.textContent = ""; hv.appendChild(viewHelp()); var h1 = document.querySelector("header.top h1"); if (h1) h1.textContent = "Help & terms"; } return; }
@@ -5806,8 +5821,11 @@ function loadScript(src){ return new Promise(function(res, rej){ var s = documen
 function sbCanWrite(){ return sb.status === "ready" && (sb.role === "admin" || sb.role === "editor"); }
 function sbInit(){
   if (!/^https?:$/.test(location.protocol)) return Promise.resolve(false);
-  return fetch("/api/config", {cache: "no-store"}).then(function(r){ return r.ok ? r.json() : null; }).catch(function(){ return null; }).then(function(cfg){
-    if (!cfg || !cfg.supabaseUrl || !cfg.supabaseAnonKey) return false;
+  return fetch("/api/config", {cache: "no-store"}).then(function(r){ return r.json().catch(function(){ return null; }).then(function(j){ return {status: r.status, ok: r.ok, j: j}; }); })
+    .catch(function(e){ return {status: 0, ok: false, j: null, err: e.message}; }).then(function(x){
+    var cfg = x.ok ? x.j : null;
+    /* the site has no database settings (Vercel env) or no API at all: say so instead of quietly falling back to upload-only mode */
+    if (!cfg || !cfg.supabaseUrl || !cfg.supabaseAnonKey){ sb.setup = {status: x.status, error: (x.j && x.j.error) || x.err || ""}; return false; }
     sb.cfg = cfg; sb.status = "loading"; readAuthReturn(); render();
     return (window.supabase ? Promise.resolve() : loadScript(SB_JS)).then(function(){
       /* every database call says which workspace it is for (x-org-id); row level security checks membership */
