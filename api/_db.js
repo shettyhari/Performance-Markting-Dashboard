@@ -3,14 +3,15 @@
 // sbFetch() below always reads and writes that workspace only, even when one function instance serves several requests at once:
 //   reads / updates / deletes get "org_id=eq.<org>" added, inserts get org_id set, on_conflict keys get org_id in front,
 //   and every call sends the x-org-id header the database functions read (private.current_org()).
-// Tokens per workspace (Meta, Conversions API, audiences, Google) come from Supabase Vault through orgSecret(key).
+// Tokens per workspace (Meta, Conversions API, audiences, Google) come from the database vault through orgSecret(key).
+// The database is reached through PostgREST on the API server (API_URL); calls carry a short-lived service_role JWT signed with
+// JWT_SECRET (the secret PostgREST checks). Sign-in tokens are JWTs signed with the same secret by api/auth.js.
 const crypto = require("crypto");
 const { AsyncLocalStorage } = require("async_hooks");
 const als = new AsyncLocalStorage();
 
-const SB_URL = () => process.env.SUPABASE_URL || "";
-const SB_ANON = () => process.env.SUPABASE_ANON_KEY || "";
-const SVC = () => process.env.SUPABASE_SERVICE_ROLE_KEY || "";
+const API_URL = () => String(process.env.API_URL || "").replace(/\/+$/, "");
+const JWT_SECRET = () => process.env.JWT_SECRET || "";
 const GLOBAL = new Set(["organizations", "org_api_keys", "app_config"]);   // tables without workspace scoping (looked up by id / hash only)
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const ORG_COLS = "id,public_id,name,logo,currency,tz_offset_min,crm_name,active";
@@ -34,6 +35,29 @@ const currentOrg = () => { const c = ctx(); return c && c.org ? c.org.id : null;
 const org = () => { const c = ctx(); if (!c || !c.org) throw new Error("No workspace selected."); return c.org; };
 function withOrg(o, fn) { return als.run({ org: o, secrets: {}, settings: null }, fn); }
 
+/* ---------- tokens (HS256 JWT, Node crypto only) ---------- */
+const b64u = (b) => Buffer.from(b).toString("base64").replace(/=+$/, "").replace(/\+/g, "-").replace(/\//g, "_");
+function jwtSign(claims, ttlSec) {
+  const now = Math.floor(Date.now() / 1000), body = Object.assign({ iat: now, exp: now + (ttlSec || 3600) }, claims);
+  const head = b64u(JSON.stringify({ alg: "HS256", typ: "JWT" })) + "." + b64u(JSON.stringify(body));
+  return head + "." + b64u(crypto.createHmac("sha256", JWT_SECRET()).update(head).digest());
+}
+/* the claims of a valid, unexpired token signed with JWT_SECRET, else null */
+function jwtVerify(tok) {
+  const p = String(tok || "").split("."); if (p.length !== 3 || !JWT_SECRET()) return null;
+  const sig = b64u(crypto.createHmac("sha256", JWT_SECRET()).update(p[0] + "." + p[1]).digest());
+  if (sig.length !== p[2].length || !crypto.timingSafeEqual(Buffer.from(sig), Buffer.from(p[2]))) return null;
+  let h, c; try { h = JSON.parse(Buffer.from(p[0], "base64").toString()); c = JSON.parse(Buffer.from(p[1], "base64").toString()); } catch (e) { return null; }
+  if (!h || h.alg !== "HS256" || !c || typeof c.exp !== "number" || c.exp * 1000 < Date.now()) return null;
+  return c;
+}
+let svcTok = { t: "", until: 0 };
+/* service_role token for the server's own calls, renewed every few minutes */
+function svc() {
+  if (svcTok.until < Date.now()) svcTok = { t: jwtSign({ role: "service_role" }, 600), until: Date.now() + 300000 };
+  return svcTok.t;
+}
+
 /* ---------- database ---------- */
 async function parse(r) {
   const t = await r.text(); let b = null; try { b = t ? JSON.parse(t) : null; } catch (e) {}
@@ -43,8 +67,9 @@ async function parse(r) {
 /* service-role call with no workspace scoping (global tables, cross-workspace lookups) */
 function raw(path, opt) {
   opt = Object.assign({}, opt || {});
-  opt.headers = Object.assign({ apikey: SVC(), authorization: "Bearer " + SVC(), "content-type": "application/json" }, opt.headers || {});
-  return fetch(SB_URL() + "/rest/v1/" + path, opt).then(parse);
+  if (!API_URL() || !JWT_SECRET()) return Promise.reject(new Error("API_URL and JWT_SECRET are not set on this site yet."));
+  opt.headers = Object.assign({ authorization: "Bearer " + svc(), "content-type": "application/json" }, opt.headers || {});
+  return fetch(API_URL() + "/rest/v1/" + path, opt).then(parse);
 }
 /* path rewrite for the current workspace (exported for tests) */
 function scopePath(path, method, orgId) {
@@ -83,7 +108,7 @@ async function sbAll(path, cap) {
 /* row count of a filtered select in the current workspace */
 async function sbCount(path) {
   const o = currentOrg(), p = scopePath(path, "HEAD", o);
-  const r = await fetch(SB_URL() + "/rest/v1/" + p, { method: "HEAD", headers: { apikey: SVC(), authorization: "Bearer " + SVC(), prefer: "count=exact", "x-org-id": o } });
+  const r = await fetch(API_URL() + "/rest/v1/" + p, { method: "HEAD", headers: { authorization: "Bearer " + svc(), prefer: "count=exact", "x-org-id": o } });
   return Number(String(r.headers.get("content-range") || "").split("/")[1]) || 0;
 }
 
@@ -107,14 +132,21 @@ async function orgFromKey(key, kind) {
 }
 const bearer = (req) => String(req.headers.authorization || "").replace(/^Bearer\s+/i, "").trim();
 
+/* the person behind a sign-in token (still valid: account exists, password not changed since), with their email flags; else null */
+async function signedIn(req) {
+  const c = jwtVerify(bearer(req));
+  if (!c || c.role !== "authenticated" || !UUID.test(String(c.sub || ""))) return null;
+  const r = await raw("rpc/auth_user_get", { method: "POST", body: JSON.stringify({ p_id: c.sub }) });
+  const u = r && r[0];
+  if (!u || Number(u.token_version) !== Number(c.tv || 0)) return null;
+  return { id: u.id, email: String(u.email || "").toLowerCase(), name: (u.raw_user_meta_data && u.raw_user_meta_data.full_name) || "",
+    email_confirmed_at: u.email_confirmed_at, confirmation_sent_at: u.confirmation_sent_at, invited_at: u.invited_at, token_version: u.token_version };
+}
 /* the signed-in person and their role in the workspace named by the x-org-id header */
 async function auth(req) {
-  const h = String(req.headers.authorization || "");
-  if (!/^Bearer\s+\S+/.test(h)) return { status: 401, error: "Sign in first." };
-  const u = await fetch(SB_URL() + "/auth/v1/user", { headers: { apikey: SB_ANON(), authorization: h } });
-  if (!u.ok) return { status: 401, error: "Sign in again." };
-  const user = await u.json(), email = String(user.email || "").toLowerCase();
-  if (!email || !user.id) return { status: 401, error: "Sign in again." };
+  const user = await signedIn(req);
+  if (!user) return { status: 401, error: bearer(req) ? "Sign in again." : "Sign in first." };
+  const email = user.email;
   const proven = !!user.email_confirmed_at && !!(user.confirmation_sent_at || user.invited_at);
   const want = String(req.headers["x-org-id"] || (req.query && req.query.org) || "");
   if (!UUID.test(want)) return { status: 400, error: "No workspace selected." };
@@ -125,7 +157,7 @@ async function auth(req) {
   if (!o) return { status: 403, error: "This workspace isn't active." };
   return { email, userId: user.id, role: m.role, org: o };
 }
-/* scheduler: CRON_SECRET header, or the Vault key pg_cron sends */
+/* scheduler: CRON_SECRET header (ec2/fanout.sh), or a database cron key */
 async function cronAllowed(req) {
   const secret = process.env.CRON_SECRET || "", given = String(req.headers["x-cron-secret"] || bearer(req));
   if (secret && given && same(given, secret)) return true;
@@ -171,5 +203,5 @@ const CC = { INR: "91", AED: "971", SAR: "966", USD: "1", CAD: "1", GBP: "44", E
 const phoneCC = () => { const c = ctx(), s = c && c.settings; return String((s && s.phoneCountryCode) || CC[currency()] || "91").replace(/\D+/g, ""); };
 const appUrl = (req) => (process.env.APP_URL || (req && req.headers && req.headers.host ? "https://" + req.headers.host : "")).replace(/\/+$/, "");
 
-module.exports = { send, same, sha256, raw, sbFetch, sbAll, sbCount, scopePath, scopeBody, withOrg, currentOrg, org, orgById, orgByPublicId, orgFromKey, bearer, auth,
-  cronAllowed, orgSettings, settingsUpdatedAt, orgSecret, tzMin, tzMs, orgNow, orgDay, tzLabel, cur, currency, locale, crm, orgName, appUrl, phoneCC, UUID, SB_URL, SB_ANON };
+module.exports = { send, same, sha256, raw, sbFetch, sbAll, sbCount, scopePath, scopeBody, withOrg, currentOrg, org, orgById, orgByPublicId, orgFromKey, bearer, auth, signedIn, jwtSign, jwtVerify,
+  cronAllowed, orgSettings, settingsUpdatedAt, orgSecret, tzMin, tzMs, orgNow, orgDay, tzLabel, cur, currency, locale, crm, orgName, appUrl, phoneCC, UUID, API_URL };

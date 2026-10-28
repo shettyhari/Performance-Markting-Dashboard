@@ -15,7 +15,7 @@
 set -euo pipefail
 [ "$(id -u)" = 0 ] || { echo "Run with sudo."; exit 1; }
 HERE="$(cd "$(dirname "$0")" && pwd)"; ROOT="$(cd "$HERE/.." && pwd)"
-[ -f "$ROOT/db/00-platform.sql" ] && [ -f "$ROOT/db/10-schema.sql" ] || { echo "db/ folder not found next to ec2/."; exit 1; }
+[ -f "$ROOT/db/00-platform.sql" ] && [ -f "$ROOT/db/10-schema.sql" ] && [ -f "$ROOT/db/20-auth.sql" ] || { echo "db/ folder not found next to ec2/."; exit 1; }
 : "${APP_URL:?Set APP_URL=https://your-app.vercel.app}"
 APP_URL="${APP_URL%/}"
 case "$APP_URL" in *ebg-dashboard.vercel.app*) echo "APP_URL must be this product's own site, not ebg-dashboard.vercel.app."; exit 1;; esac
@@ -56,6 +56,7 @@ systemctl enable --now postgresql >/dev/null
 sudo -u postgres psql -qtAc "select 1 from pg_database where datname = 'lp'" | grep -q 1 || sudo -u postgres createdb lp
 sudo -u postgres psql -q -v ON_ERROR_STOP=1 -d lp -f "$ROOT/db/00-platform.sql" >/dev/null
 sudo -u postgres psql -q -v ON_ERROR_STOP=1 -d lp -f "$ROOT/db/10-schema.sql" >/dev/null
+sudo -u postgres psql -q -v ON_ERROR_STOP=1 -d lp -f "$ROOT/db/20-auth.sql" >/dev/null
 sudo -u postgres psql -q -v ON_ERROR_STOP=1 -d lp -c "alter role authenticator with login password '$PG_AUTH_PASS';" >/dev/null
 PGCONF=$(sudo -u postgres psql -qtAc "show config_file")
 grep -q "^listen_addresses = 'localhost'" "$PGCONF" || echo "listen_addresses = 'localhost'" >> "$PGCONF"

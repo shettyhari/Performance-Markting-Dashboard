@@ -26,7 +26,7 @@ test("both SQL files install cleanly, twice (safe to re-run)", async () => {
   const { PGlite } = await import("@electric-sql/pglite");
   const { pgcrypto } = await import("@electric-sql/pglite/contrib/pgcrypto");
   db = new PGlite({ extensions: { pgcrypto } });
-  for (let i = 0; i < 2; i++) { await db.exec(sql("00-platform.sql")); await db.exec(sql("10-schema.sql")); }
+  for (let i = 0; i < 2; i++) { await db.exec(sql("00-platform.sql")); await db.exec(sql("10-schema.sql")); await db.exec(sql("20-auth.sql")); }
   await db.query("insert into auth.users (id, email, encrypted_password, email_confirmed_at, confirmation_sent_at) values ($1, $2, 'x', now(), now()), ($3, $4, 'x', now(), now()), ($5, $6, 'x', now(), null)",
     [U.alice, EMAIL.alice, U.bob, EMAIL.bob, U.carol, EMAIL.carol]);
 });

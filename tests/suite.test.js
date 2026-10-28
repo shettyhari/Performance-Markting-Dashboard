@@ -1,7 +1,7 @@
 // Tests for the attribution suite (api/_suite.js, _capi.js, _mcp.js, collect.js).
-// Run: node tests/suite.test.js — no network, no real data: Supabase and Meta are replaced by an in-memory fake fetch.
+// Run: node tests/suite.test.js — no network, no real data: the database API and Meta are replaced by an in-memory fake fetch.
 const assert = require("assert");
-process.env.SUPABASE_SERVICE_ROLE_KEY = "svc"; process.env.SUPABASE_URL = "https://db.test";
+process.env.API_URL = "https://db.test"; process.env.JWT_SECRET = "test-secret-" + "x".repeat(40);
 const DB = require("../api/_db");
 const ORG = { id: "00000000-0000-4000-8000-0000000000aa", public_id: "abcdef012345abcdef", name: "Test Co", crm_name: "TeleCRM", currency: "INR", tz_offset_min: 330, active: true };
 const API_KEY = "lp_api_" + "t".repeat(40);

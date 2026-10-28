@@ -1,7 +1,7 @@
 // Tests that one workspace can never read or write another's data through the server (api/_db.js and the endpoints that use it).
-// Run: node tests/tenancy.test.js — no network: Supabase and Meta are replaced by an in-memory fake that records every call.
+// Run: node tests/tenancy.test.js — no network: the database API and Meta are replaced by an in-memory fake that records every call.
 const assert = require("assert");
-process.env.SUPABASE_SERVICE_ROLE_KEY = "svc"; process.env.SUPABASE_URL = "https://db.test"; process.env.SUPABASE_ANON_KEY = "anon";
+process.env.API_URL = "https://db.test"; process.env.JWT_SECRET = "test-secret-" + "x".repeat(40);
 const DB = require("../api/_db");
 
 let passed = 0; const tests = [];
@@ -90,14 +90,27 @@ test("tracking collector: a site listed by workspace B is refused for workspace 
   assert.strictEqual(await call("ffff0000ffff0000ff", "https://www.alpha.com"), 404);
 });
 test("sign-in: membership needs the workspace header; pending invites count only for a proven email", async () => {
-  const user = { id: "u1", email: "x@a.com", email_confirmed_at: "2026-01-01", confirmation_sent_at: null, invited_at: null };
+  const UID = "cccccccc-0000-4000-8000-00000000000c";
+  const user = { id: UID, email: "x@a.com", email_confirmed_at: "2026-01-01", confirmation_sent_at: null, invited_at: null, token_version: 0, raw_user_meta_data: {} };
   global.fetch = fake(async (u, opt, json) => {
-    if (u.indexOf("/auth/v1/user") > 0) return json(user);
+    if (u.indexOf("/rest/v1/rpc/auth_user_get") > 0) { assert.ok(/^Bearer /.test(opt.headers.authorization)); return json(JSON.parse(opt.body).p_id === UID ? [user] : []); }
     if (u.indexOf("/rest/v1/org_members") > 0) return json([{ role: "admin", user_id: null, email: "x@a.com" }]);
     return null;
   });
-  const req = (org) => ({ headers: { authorization: "Bearer t", "x-org-id": org || "" }, query: {} });
+  let tok = DB.jwtSign({ sub: UID, role: "authenticated", email: "x@a.com", tv: 0 }, 3600);
+  const req = (org) => ({ headers: { authorization: "Bearer " + tok, "x-org-id": org || "" }, query: {} });
+  assert.strictEqual((await DB.auth({ headers: {}, query: {} })).status, 401, "no token");
   assert.strictEqual((await DB.auth(req())).status, 400);
+  const good = tok;
+  tok = good.slice(0, -2) + (good.slice(-2) === "AA" ? "BB" : "AA");
+  assert.strictEqual((await DB.auth(req(A.id))).status, 401, "tampered signature");
+  tok = DB.jwtSign({ sub: UID, role: "authenticated", tv: 0 }, -10);
+  assert.strictEqual((await DB.auth(req(A.id))).status, 401, "expired");
+  tok = DB.jwtSign({ sub: UID, role: "service_role", tv: 0 }, 3600);
+  assert.strictEqual((await DB.auth(req(A.id))).status, 401, "a non-user role isn't a sign-in");
+  user.token_version = 1; tok = good;
+  assert.strictEqual((await DB.auth(req(A.id))).status, 401, "password changed since: old sessions end");
+  user.token_version = 0;
   assert.strictEqual((await DB.auth(req(A.id))).status, 403, "auto-confirmed email can't claim an invite");
   user.confirmation_sent_at = "2026-01-01";
   const ok = await DB.auth(req(A.id));

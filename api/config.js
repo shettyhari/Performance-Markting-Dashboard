@@ -1,10 +1,10 @@
-// Tells the page which Supabase project to use (set SUPABASE_URL and SUPABASE_ANON_KEY in Vercel). The anon key is public by design:
-// every table is protected by row level security per workspace (see supabase/install.sql).
+// Tells the page where the database API is (API_URL in Vercel: the EC2 server set up by ec2/setup.sh). Nothing secret is sent:
+// the page signs in through /api/auth, and every table is protected by row level security per workspace (db/10-schema.sql).
 module.exports = function handler(req, res) {
-  const url = process.env.SUPABASE_URL || "", key = process.env.SUPABASE_ANON_KEY || "";
-  res.statusCode = url && key ? 200 : 503;
+  const url = String(process.env.API_URL || "").replace(/\/+$/, ""), ready = !!(url && process.env.JWT_SECRET);
+  res.statusCode = ready ? 200 : 503;
   res.setHeader("content-type", "application/json; charset=utf-8");
   res.setHeader("cache-control", "no-store");
-  res.end(JSON.stringify(url && key ? { supabaseUrl: url, supabaseAnonKey: key, appName: process.env.APP_NAME || "Lead Performance" }
-    : { error: "SUPABASE_URL and SUPABASE_ANON_KEY are not set on this site yet." }));
+  res.end(JSON.stringify(ready ? { apiUrl: url, appName: process.env.APP_NAME || "Lead Performance", mail: !!(process.env.SMTP_HOST && process.env.MAIL_FROM) }
+    : { error: "API_URL and JWT_SECRET are not set on this site yet." }));
 };

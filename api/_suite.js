@@ -8,7 +8,6 @@ const D = require("./_db");
 const DAY_RE = /^\d{4}-\d{2}-\d{2}$/;
 const MAX_DAYS = 92;
 const { send, same, sbFetch, sbAll, cronAllowed } = D;
-const SB_URL = D.SB_URL();
 /* machine access (MCP server, Chrome extension): the workspace's API key, as a Bearer header or ?key= → that workspace, or null */
 const orgFromApiKey = (req) => D.orgFromKey(D.bearer(req) || (req.query && req.query.key) || "", "api");
 const loadSettings = () => D.orgSettings();
@@ -269,6 +268,6 @@ async function trend(S, opt) {
   return { from: R.from, to: R.to, granularity: gran, brand: opt.brand || "All listed brands", rows, total: round(finish(Object.assign(total, { estRevenue: null }), S, W.size > 0)) };
 }
 
-module.exports = { SB_URL, DAY_RE, send, same, sbFetch, sbAll, cronAllowed, orgFromApiKey, loadSettings, clean, lc, sha, phone10, phHash, emHash, isNum, div,
+module.exports = { DAY_RE, send, same, sbFetch, sbAll, cronAllowed, orgFromApiKey, loadSettings, clean, lc, sha, phone10, phHash, emHash, isNum, div,
   istDay, addDays, istToMs, range, brander, wonSet, isWon, dealValue, channelOf, channelOfLead, AI_NAMES, MODELS, crmLeads, metaRows, performance, attribution, journey, journeys,
   findLeads, trend, DEFINITIONS, inList, inChunks, credits };

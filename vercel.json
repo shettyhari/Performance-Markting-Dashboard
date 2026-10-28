@@ -26,9 +26,15 @@
     },
     "api/collect.js": {
       "maxDuration": 10
+    },
+    "api/auth.js": {
+      "maxDuration": 15
     }
   },
   "rewrites": [
-    { "source": "/api/mcp", "destination": "/api/suite?op=mcp" }
+    {
+      "source": "/api/mcp",
+      "destination": "/api/suite?op=mcp"
+    }
   ]
 }
