@@ -3265,8 +3265,8 @@ var PROV = {
   alerts: {api: "alerts", label: "Alerts", key: "alertsNone"}
 };
 function provApi(pk, op, params){
-  return sb.client.auth.getSession().then(function(r){
-    var tok = r && r.data && r.data.session && r.data.session.access_token; if (!tok) throw new Error("Sign in first");
+  return Promise.resolve(lpAuth.token()).then(function(tok){
+    if (!tok) throw new Error("Sign in first");
     var q = Object.keys(params || {}).map(function(k){ return encodeURIComponent(k) + "=" + encodeURIComponent(params[k]); }).join("&");
     return fetch("/api/" + PROV[pk].api + "?op=" + op + (q ? "&" + q : ""), {headers: {authorization: "Bearer " + tok, "x-org-id": sb.org ? sb.org.id : ""}}); })
     .then(function(res){ return res.text().then(function(t){ var b; try { b = JSON.parse(t); } catch (e) { b = null; }
@@ -4814,7 +4814,7 @@ function renderEmpty(){
         : team.status === "locked" ? el("button", {cls: "btn ghost", type: "button", onclick: toggleSaved}, "Open team data") : null)));
 }
 function gated(){ return !!sb.cfg && sb.status !== "ready"; }
-/* the site isn't connected to its Supabase project yet (whoever runs it adds the Vercel environment variables) */
+/* the site isn't connected to its database server yet (whoever runs it adds the Vercel environment variables) */
 function renderSetup(){
   ["btn-load", "btn-saved", "btn-xlsx", "save-wrap"].forEach(function(id){ document.getElementById(id).hidden = true; });
   setChrome(false); renderUserBox();
@@ -4824,7 +4824,7 @@ function renderSetup(){
     el("div", {cls: "login-head"}, el("div", {cls: "eyebrow", text: "Lead Performance"}), el("h2", {text: "This site isn't connected to its database yet"})),
     el("div", {cls: "msg err", role: "alert", text: noApi ? "The site's API isn't running here (" + (S.status ? "/api/config answered " + S.status : "no answer from /api/config") + "). Deploy the whole repository on Vercel, including the api folder; opening index.html on its own only works in upload-only mode."
       : (S.error || "The site's database settings are missing (" + S.status + ").")}),
-    el("div", {cls: "small", text: "Whoever runs this site: Vercel › your project › Settings › Environment Variables › add SUPABASE_URL, SUPABASE_ANON_KEY and SUPABASE_SERVICE_ROLE_KEY from this product's own Supabase project (Project Settings › API), then Deployments › ⋯ › Redeploy. The database itself is created by running supabase/install.sql in that project. Full list in the README."}),
+    el("div", {cls: "small", text: "Whoever runs this site: set up the database server with ec2/setup.sh (it prints API_URL, JWT_SECRET and CRON_SECRET), then Vercel › your project › Settings › Environment Variables › add those three, APP_URL and the SMTP_* / MAIL_FROM email settings, then Deployments › ⋯ › Redeploy. Full list in the README."}),
     el("div", {cls: "actions"}, el("button", {cls: "btn", type: "button", onclick: function(){ location.reload(); }}, "Check again"),
       el("button", {cls: "btn ghost", type: "button", onclick: function(){ sb.offlineOk = true; render(); }}, "Use without an account (files stay in this browser)"))));
 }
@@ -4862,7 +4862,7 @@ function renderUserBox(){
   var saveName = el("button", {cls: "btn ghost", type: "submit"}, "Save");
   var f1 = el("form", {cls: "prof-row"}, el("div", {cls: "field"}, el("label", {"for": "pf-name", text: "Display name"}), nm), saveName);
   f1.addEventListener("submit", function(e){ e.preventDefault(); saveName.disabled = true;
-    sb.client.auth.updateUser({data: {full_name: clean(nm.value)}}).then(function(r){ if (r.error) throw r.error; sb.user = r.data.user; sb.profMsg = {kind: "ok", text: "Name saved."}; renderUserBox(); })
+    lpAuth.updateName(clean(nm.value)).then(function(s){ sb.user = s.user; sb.profMsg = {kind: "ok", text: "Name saved."}; renderUserBox(); })
       .catch(function(er){ sb.profMsg = {kind: "err", text: friendlyAuthError(er)}; renderUserBox(); }); });
   pop.appendChild(f1);
   /* password */
@@ -4874,7 +4874,7 @@ function renderUserBox(){
     if (p1.value.length < 8){ sb.profMsg = {kind: "err", text: "Use at least 8 characters."}; renderUserBox(); return; }
     if (p1.value !== p2.value){ sb.profMsg = {kind: "err", text: "The two passwords don't match."}; renderUserBox(); return; }
     savePw.disabled = true;
-    sb.client.auth.updateUser({password: p1.value}).then(function(r){ if (r.error) throw r.error; sb.profMsg = {kind: "ok", text: "Password changed. Use it next time you sign in."}; renderUserBox(); })
+    lpAuth.changePassword(p1.value).then(function(s){ sb.user = s.user; sb.profMsg = {kind: "ok", text: "Password changed. Other devices were signed out; use the new password next time."}; renderUserBox(); })
       .catch(function(er){ sb.profMsg = {kind: "err", text: friendlyAuthError(er)}; renderUserBox(); }); });
   pop.appendChild(f2);
   if (sb.profMsg) pop.appendChild(el("div", {cls: "msg " + sb.profMsg.kind, role: sb.profMsg.kind === "err" ? "alert" : "status", text: sb.profMsg.text}));
@@ -4908,25 +4908,38 @@ function renderLogin(){
   if (sb.status === "error"){ box.appendChild(el("h2", {text: "Can't reach the database"})); box.appendChild(el("div", {cls: "msg err", text: sb.err || "Try again in a minute."}));
     box.appendChild(el("button", {cls: "btn", type: "button", onclick: function(){ location.reload(); }}, "Try again")); return; }
   if (sb.status === "noorg"){ box.appendChild(workspaceWizard()); return; }
-  var create = sb.mode === "create";
+  var mode = LOGIN_TXT[sb.mode] ? sb.mode : "signin", T = LOGIN_TXT[mode], create = mode === "create";
   var lg = document.getElementById("brand-logo");
   box.appendChild(el("div", {cls: "login-head"}, lg && lg.getAttribute("src") ? el("img", {cls: "brand-logo login-logo", src: lg.src, alt: orgName()}) : null,
-    el("div", {cls: "eyebrow", text: "Lead Performance · ads, leads and sales in one place"}), el("h2", {text: create ? "Create your account" : "Sign in"})));
+    el("div", {cls: "eyebrow", text: "Lead Performance · ads, leads and sales in one place"}), el("h2", {text: T.title})));
   var em = el("input", {type: "email", id: "sb-email", autocomplete: "email", placeholder: "you@company.com", value: sb.lastEmail || ""});
-  var pw = el("input", {type: "password", id: "sb-pw", autocomplete: create ? "new-password" : "current-password", placeholder: create ? "8 or more characters" : "Password"});
-  var btn = el("button", {cls: "btn", type: "submit", id: "sb-go"}, create ? "Create account" : "Sign in");
+  var pw = el("input", {type: "password", id: "sb-pw", autocomplete: mode === "signin" || mode === "verify" ? "current-password" : "new-password", placeholder: mode === "signin" || mode === "verify" ? "Password" : "8 or more characters"});
+  var pw2 = el("input", {type: "password", id: "sb-pw2", autocomplete: "new-password", placeholder: "Repeat the new password"});
+  var btn = el("button", {cls: "btn", type: "submit", id: "sb-go"}, T.btn);
   var form = el("form", {style: "display:grid;gap:14px"},
-    el("div", {cls: "field"}, el("label", {"for": "sb-email", text: "Email"}), em),
-    el("div", {cls: "field"}, el("label", {"for": "sb-pw", text: create ? "Choose a password" : "Password"}), pw), btn);
-  form.addEventListener("submit", function(e){ e.preventDefault(); sb.lastEmail = em.value.trim(); btn.disabled = true; sb.msg = null;
-    sbSignIn(em.value.trim(), pw.value, create).catch(function(er){ sb.msg = {kind: "err", text: friendlyAuthError(er)}; renderLogin(); }); });
+    mode === "verify" || mode === "reset" ? null : el("div", {cls: "field"}, el("label", {"for": "sb-email", text: "Email"}), em),
+    mode === "forgot" ? null : el("div", {cls: "field"}, el("label", {"for": "sb-pw", text: T.pw}), pw),
+    mode === "reset" ? el("div", {cls: "field"}, el("label", {"for": "sb-pw2", text: "Repeat it"}), pw2) : null, btn);
+  form.addEventListener("submit", function(e){ e.preventDefault(); btn.disabled = true; sb.msg = null; var p, address = em.value.trim();
+    if (mode === "forgot") p = lpAuth.forgot(address).then(function(){ sb.mode = "signin"; sb.lastEmail = address;
+      sb.msg = {kind: "ok", text: "If " + address + " has an account, a reset link is on its way. It works for 1 hour."}; renderLogin(); });
+    else if (mode === "verify") p = lpAuth.verify(sb.link, pw.value).then(function(s){ sb.link = null; sb.mode = "signin"; sb.confirmed = true; return sbSession(s).then(sbAfterAuth); });
+    else if (mode === "reset") p = pw.value !== pw2.value ? Promise.reject(new Error("The two passwords don't match.")) :
+      lpAuth.reset(sb.link, pw.value).then(function(s){ sb.link = null; sb.mode = "signin"; return sbSession(s).then(function(){ sbAfterAuth(); toast("Password changed. You're signed in."); }); });
+    else { sb.lastEmail = address; p = sbSignIn(address, pw.value, create); }
+    p.catch(function(er){ sb.msg = {kind: "err", text: friendlyAuthError(er)}; renderLogin(); }); });
   box.appendChild(form);
   if (sb.msg) box.appendChild(el("div", {cls: "msg " + sb.msg.kind, role: sb.msg.kind === "err" ? "alert" : "status", text: sb.msg.text}));
-  box.appendChild(el("div", {cls: "small"}, create ? "Already have an account? " : "New here? ",
-    el("button", {cls: "linkbtn", type: "button", onclick: function(){ sb.mode = create ? "signin" : "create"; sb.msg = null; renderLogin(); }}, create ? "Sign in" : "Create an account")));
-  box.appendChild(el("div", {cls: "small", text: "New company? Create an account, confirm your email, then set up your workspace. Joining a team? Create an account with the email your admin invited."}));
-  setTimeout(function(){ (em.value ? pw : em).focus(); }, 30);
+  var go = function(m, label){ return el("button", {cls: "linkbtn", type: "button", onclick: function(){ sb.mode = m; sb.msg = null; if (m === "signin") sb.link = null; renderLogin(); }}, label); };
+  if (mode === "signin") box.appendChild(el("div", {cls: "small"}, "New here? ", go("create", "Create an account"), " · ", go("forgot", "Forgot password?")));
+  else if (create) box.appendChild(el("div", {cls: "small"}, "Already have an account? ", go("signin", "Sign in")));
+  else box.appendChild(el("div", {cls: "small"}, go("signin", "Back to sign in")));
+  if (mode === "signin" || create) box.appendChild(el("div", {cls: "small", text: "New company? Create an account, confirm your email, then set up your workspace. Joining a team? Create an account with the email your admin invited."}));
+  setTimeout(function(){ (mode === "verify" || mode === "reset" || em.value ? pw : em).focus(); }, 30);
 }
+var LOGIN_TXT = {signin: {title: "Sign in", btn: "Sign in", pw: "Password"}, create: {title: "Create your account", btn: "Create account", pw: "Choose a password"},
+  forgot: {title: "Reset your password", btn: "Send reset link"}, verify: {title: "Confirm your email", btn: "Confirm and sign in", pw: "The password you chose when signing up"},
+  reset: {title: "Choose a new password", btn: "Save and sign in", pw: "New password"}};
 /* ---------- a new company: create its workspace (the creator becomes its admin) ---------- */
 var CURRENCIES = ["INR", "USD", "EUR", "GBP", "AED", "SAR", "SGD", "AUD", "CAD"];
 var TIMEZONES = [[330, "India (IST, UTC+5:30)"], [240, "UAE / Oman (UTC+4)"], [180, "Saudi Arabia / Qatar / Kuwait (UTC+3)"], [345, "Nepal (UTC+5:45)"], [360, "Bangladesh (UTC+6)"],
@@ -4987,9 +5000,10 @@ function workHoursEditor(){
 function friendlyAuthError(e){
   var m = String((e && e.message) || e || "");
   if (/invalid login credentials/i.test(m)) return "Wrong email or password.";
-  if (/email not confirmed/i.test(m)) return "Please confirm your email first: open the link we sent you, then sign in.";
+  if (/email not confirmed/i.test(m)) return "Please confirm your email first: open the link we sent you. Can't find it? Create the account again with the same email for a new link.";
   if (/already registered|already been registered/i.test(m)) return "An account with this email already exists. Sign in instead.";
   if (/password should be at least|weak/i.test(m)) return "Choose a longer password (at least 8 characters).";
+  if (/too many wrong passwords/i.test(m)) return m;
   if (/rate limit|too many/i.test(m)) return "Too many attempts. Wait a minute and try again.";
   if (/invalid.*email|valid email/i.test(m)) return "Enter a valid email address.";
   return m || "Something went wrong. Try again.";
@@ -5796,7 +5810,8 @@ document.getElementById("btn-save").addEventListener("click", openSaveForTeam);
 
 /* ================= Supabase database (Vercel site) =================
    Sign in with email + password, then work in one workspace (organization) at a time: every request carries its id in the x-org-id header
-   and the database's row level security only lets a member of that workspace through (supabase/install.sql).
+   and the database's row level security only lets a member of that workspace through (db/10-schema.sql). Sign-in is our own (api/auth.js, lpAuth below);
+   supabase-js is used only as the query builder for the database API (PostgREST on the server at API_URL).
    Uploads are added with upserts, so re-uploading the same days or leads updates rows instead of duplicating them. */
 var SB_JS = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js";
 var sb = {cfg: null, client: null, email: "", role: null, status: "off", err: "", uploads: [], members: [], days: null, busy: "", mode: "signin", confirmUp: null, settingsAt: null, org: null, orgs: []};
@@ -5819,23 +5834,51 @@ function sbSwitchOrg(id){ var o = sb.orgs.filter(function(x){ return x.id === id
 function sbLoadOrgs(){ return sb.client.rpc("accept_invites").then(function(){ return sb.client.rpc("my_orgs"); }).then(function(r){ if (r.error) throw r.error; sb.orgs = r.data || []; return sb.orgs; }); }
 function loadScript(src){ return new Promise(function(res, rej){ var s = document.createElement("script"); s.src = src; s.async = true; s.onload = res; s.onerror = function(){ rej(new Error("Could not load " + src)); }; document.head.appendChild(s); }); }
 function sbCanWrite(){ return sb.status === "ready" && (sb.role === "admin" || sb.role === "editor"); }
+/* own login (api/auth.js). The session ({token, user}) is kept in this browser; the token is a signed JWT that the database API checks. */
+var lpAuth = {
+  key: "lp-session", s: null,
+  exp: function(t){ try { return JSON.parse(atob(String(t).split(".")[1].replace(/-/g, "+").replace(/_/g, "/"))).exp * 1000; } catch (e) { return 0; } },
+  load: function(){ var j = null; try { j = JSON.parse(localStorage.getItem(lpAuth.key) || "null"); } catch (e) {} return j && j.token && lpAuth.exp(j.token) > Date.now() ? j : null; },
+  set: function(s){ lpAuth.s = s || null; try { if (s) localStorage.setItem(lpAuth.key, JSON.stringify(s)); else localStorage.removeItem(lpAuth.key); } catch (e) {} return lpAuth.s; },
+  token: function(){ var s = lpAuth.s; if (s && lpAuth.exp(s.token) <= Date.now()){ lpAuth.set(null); return ""; } return s ? s.token : ""; },
+  call: function(op, body){ var tok = lpAuth.token(), h = {"content-type": "application/json"}; if (tok) h.authorization = "Bearer " + tok;
+    return fetch("/api/auth?op=" + op, {method: "POST", headers: h, body: JSON.stringify(body || {})}).then(function(r){
+      return r.text().then(function(t){ var b = null; try { b = JSON.parse(t); } catch (e) {}
+        if (!r.ok || !b){ var er = new Error((b && b.error) || ("Sign-in service answered " + r.status)); er.status = r.status; throw er; } return b; }); }); },
+  /* the saved session, checked with the server (a password change elsewhere ends it); kept as is when the server can't be reached */
+  getSession: function(){ var s = lpAuth.load(); lpAuth.s = s; if (!s) return Promise.resolve(null);
+    return lpAuth.call("me").then(function(r){ s.user = r.user; return lpAuth.set(s); }, function(e){ return e.status === 401 ? lpAuth.set(null) : s; }); },
+  signIn: function(email, pw){ return lpAuth.call("login", {email: email, password: pw}).then(lpAuth.set); },
+  signUp: function(email, pw){ return lpAuth.call("signup", {email: email, password: pw}); },
+  verify: function(link, pw){ return lpAuth.call("verify", {token: link, password: pw}).then(lpAuth.set); },
+  forgot: function(email){ return lpAuth.call("forgot", {email: email}); },
+  reset: function(link, pw){ return lpAuth.call("reset", {token: link, password: pw}).then(lpAuth.set); },
+  updateName: function(name){ return lpAuth.call("profile", {name: name}).then(function(r){ return lpAuth.set({token: lpAuth.s.token, user: r.user}); }); },
+  changePassword: function(pw){ return lpAuth.call("password", {password: pw}).then(lpAuth.set); },
+  signOut: function(){ lpAuth.set(null); return Promise.resolve(); }
+};
+/* the session ended (expired, or a password change on another device): back to the sign-in page */
+function sbSessionEnded(){ if (!sb.email) return; lpAuth.set(null); sb.msg = {kind: "err", text: "Your session ended. Sign in again."}; sbSession(null).then(sbAfterAuth); }
 function sbInit(){
   if (!/^https?:$/.test(location.protocol)) return Promise.resolve(false);
   return fetch("/api/config", {cache: "no-store"}).then(function(r){ return r.json().catch(function(){ return null; }).then(function(j){ return {status: r.status, ok: r.ok, j: j}; }); })
     .catch(function(e){ return {status: 0, ok: false, j: null, err: e.message}; }).then(function(x){
     var cfg = x.ok ? x.j : null;
     /* the site has no database settings (Vercel env) or no API at all: say so instead of quietly falling back to upload-only mode */
-    if (!cfg || !cfg.supabaseUrl || !cfg.supabaseAnonKey){ sb.setup = {status: x.status, error: (x.j && x.j.error) || x.err || ""}; return false; }
+    if (!cfg || !cfg.apiUrl){ sb.setup = {status: x.status, error: (x.j && x.j.error) || x.err || ""}; return false; }
     sb.cfg = cfg; sb.status = "loading"; readAuthReturn(); render();
     return (window.supabase ? Promise.resolve() : loadScript(SB_JS)).then(function(){
-      /* every database call says which workspace it is for (x-org-id); row level security checks membership */
-      var orgFetch = function(u, o){ o = o || {}; var h = new Headers(o.headers || {}); if (sb.org && sb.org.id) h.set("x-org-id", sb.org.id); o.headers = h; return fetch(u, o); };
-      sb.client = window.supabase.createClient(cfg.supabaseUrl, cfg.supabaseAnonKey, {auth: {persistSession: true, autoRefreshToken: true, detectSessionInUrl: true}, global: {fetch: orgFetch}});
-      sb.client.auth.onAuthStateChange(function(ev, session){
-        if (ev === "SIGNED_OUT"){ sbSession(null).then(sbAfterAuth); }
-        else if (ev === "SIGNED_IN" && session && session.user && (session.user.email || "").toLowerCase() !== sb.email){ sbSession(session).then(sbAfterAuth); }
-      });
-      return sb.client.auth.getSession().then(function(r){ return sbSession(r.data && r.data.session); }).then(function(){ return true; });
+      /* every database call carries the sign-in token and says which workspace it is for (x-org-id); row level security checks membership */
+      var orgFetch = function(u, o){ o = o || {}; var h = new Headers(o.headers || {}), tok = lpAuth.token();
+        h.delete("apikey"); if (tok) h.set("authorization", "Bearer " + tok); else h.delete("authorization");
+        if (sb.org && sb.org.id) h.set("x-org-id", sb.org.id); o.headers = h;
+        return fetch(u, o).then(function(res){ if (res.status === 401 && tok) setTimeout(sbSessionEnded, 0); return res; }); };
+      sb.client = window.supabase.createClient(cfg.apiUrl, "own-login", {auth: {persistSession: false, autoRefreshToken: false, detectSessionInUrl: false}, global: {fetch: orgFetch}});
+      /* signed in or out in another tab */
+      window.addEventListener("storage", function(e){ if (e.key !== lpAuth.key) return; var s = lpAuth.load(), em = s && s.user ? String(s.user.email || "").toLowerCase() : "";
+        if (em === sb.email) { lpAuth.s = s; return; } lpAuth.s = s; sbSession(s).then(sbAfterAuth); });
+      /* arriving from an email link: that link decides who signs in */
+      return (sb.link ? Promise.resolve(lpAuth.set(null)) : lpAuth.getSession()).then(sbSession).then(function(){ return true; });
     }).catch(function(e){ sb.status = "error"; sb.err = e.message; return true; });
   });
 }
@@ -5857,34 +5900,23 @@ function sbAfterAuth(){
   renderHeaderSafe(); if (!document.getElementById("saved").hidden) renderSavedPanel(); if (!state.R) render();
   if (sb.status === "ready" && (state.source === "none")) dbOpen().catch(function(e){ toast("Could not open the database: " + e.message); });
 }
-function siteUrl(){ return location.origin + location.pathname; }
 function sbSignIn(email, pw, create){
   sb.err = ""; sb.msg = null;
-  var p = create ? sb.client.auth.signUp({email: email, password: pw, options: {emailRedirectTo: siteUrl()}}) : sb.client.auth.signInWithPassword({email: email, password: pw});
-  return p.then(function(r){
-    if (r.error) throw r.error;
-    if (create && !r.data.session){
-      if (r.data.user && Array.isArray(r.data.user.identities) && !r.data.user.identities.length) throw new Error("already registered");
-      /* no session yet: try to sign in; with "Confirm email" on (required for team access) this asks for the link first */
-      return sb.client.auth.signInWithPassword({email: email, password: pw}).then(function(r2){
-        if (!r2.error && r2.data.session) return sbSession(r2.data.session).then(sbAfterAuth);
-        sb.mode = "signin"; sb.msg = {kind: "ok", text: "Account created. Sign in with your email and password" + (r2.error && /confirm/i.test(r2.error.message || "") ? " after opening the confirmation link sent to " + email + "." : ".")};
-        if (gated()) renderLogin(); else renderSavedPanel();
-      }); }
-    return sbSession(r.data.session).then(sbAfterAuth);
-  });
+  /* a new account gets a confirmation link by email; it signs in once the link is opened (with the same password) */
+  if (create) return lpAuth.signUp(email, pw).then(function(){
+    sb.mode = "signin"; sb.msg = {kind: "ok", text: "Almost done: we sent a link to " + email + ". Open it and enter the password you just chose. No email after a few minutes? Check spam, or create the account again."};
+    if (gated()) renderLogin(); else renderSavedPanel(); });
+  return lpAuth.signIn(email, pw).then(function(s){ return sbSession(s).then(sbAfterAuth); });
 }
-/* coming back from the email link: show a clear message instead of an error page */
+/* arriving from an email link (/?verify=… or /?reset=…): keep the link, clean the address bar, show the matching form */
 function readAuthReturn(){
-  var h = new URLSearchParams((location.hash || "").replace(/^#/, "")), q = new URLSearchParams(location.search || "");
-  var err = h.get("error_description") || q.get("error_description"), type = h.get("type") || q.get("type");
-  var back = !!(err || h.get("access_token") || q.get("code") || type);
-  if (err){ var expired = /expired|invalid/i.test(err);
-    sb.msg = {kind: "err", text: expired ? "That link has expired or was already used. If you already confirmed your email, just sign in below." : "The link didn't work: " + err.replace(/\+/g, " ")}; }
-  else if (type === "signup" || type === "email" || h.get("access_token") || q.get("code")){ sb.confirmed = true; sb.msg = {kind: "ok", text: "Your email is confirmed. Sign in below."}; }
-  if (back) setTimeout(function(){ try { history.replaceState(null, "", location.pathname); } catch (e) {} }, 1500);
+  var q = new URLSearchParams(location.search || ""), v = q.get("verify"), r = q.get("reset");
+  if (!v && !r) return;
+  sb.link = v || r; sb.mode = v ? "verify" : "reset";
+  sb.msg = {kind: "ok", text: v ? "Enter the password you chose when you signed up to finish." : "Choose a new password for your account (8 or more characters)."};
+  try { history.replaceState(null, "", location.pathname); } catch (e) {}
 }
-function sbSignOut(){ return sb.client.auth.signOut().then(function(){ try { localStorage.removeItem("lp-org"); } catch (e) {} return sbSession(null); }).then(function(){
+function sbSignOut(){ return lpAuth.signOut().then(function(){ try { localStorage.removeItem("lp-org"); } catch (e) {} return sbSession(null); }).then(function(){
   state.source = "none"; state.raw = null; state.R = null; state.metaFiles = []; state.pending = {meta: null, crm: null}; sb.msg = null; sb.mode = "signin";
   ["upload", "saved", "export"].forEach(function(id){ document.getElementById(id).hidden = true; }); render(); }); }
 /* page through a query 1000 rows at a time (the API's limit per request) */

@@ -10,8 +10,8 @@
   /* ---------- server calls ---------- */
   function api(op, params, body){
     if (!sb.client) return Promise.reject(new Error("Connect the workspace database first (Saved data › Workspace database)."));
-    return sb.client.auth.getSession().then(function(r){
-      var tok = r && r.data && r.data.session && r.data.session.access_token; if (!tok) throw new Error("Sign in first");
+    return Promise.resolve(lpAuth.token()).then(function(tok){
+      if (!tok) throw new Error("Sign in first");
       var q = Object.keys(params || {}).filter(function(k){ return params[k] !== "" && params[k] !== null && params[k] !== undefined; })
         .map(function(k){ return encodeURIComponent(k) + "=" + encodeURIComponent(params[k]); }).join("&");
       return fetch("/api/suite?op=" + op + (q ? "&" + q : ""), {method: body ? "POST" : "GET", headers: {authorization: "Bearer " + tok, "content-type": "application/json", "x-org-id": sb.org ? sb.org.id : ""}, body: body ? JSON.stringify(body) : undefined}); })

@@ -97,4 +97,19 @@ revoke all on function public.auth_user_get(uuid, text), public.auth_user_create
 grant execute on function public.auth_user_get(uuid, text), public.auth_user_create(text, text, text), public.auth_user_update(uuid, text, text, boolean, boolean),
   public.auth_token_add(uuid, text, text, integer, text), public.auth_token_peek(text, text), public.auth_token_use(text, text) to service_role;
 
+-- PostgREST runs this before every request (db-pre-request in ec2/postgrest.conf). PostgREST itself only checks a token's signature and
+-- expiry; this also ends sessions from before a password change or reset (token version) and of deleted accounts.
+create or replace function private.check_session()
+returns void language plpgsql stable security definer set search_path = '' as $$
+declare c jsonb := coalesce(nullif(current_setting('request.jwt.claims', true), '')::jsonb, '{}');
+begin
+  if c->>'role' is distinct from 'authenticated' then return; end if;
+  if not exists (select 1 from auth.users u where u.id::text = c->>'sub' and u.token_version = coalesce((c->>'tv')::int, 0)) then
+    raise sqlstate 'PT401' using message = 'Sign in again.';
+  end if;
+end $$;
+revoke all on function private.check_session() from public;
+grant usage on schema private to anon;
+grant execute on function private.check_session() to anon, authenticated, service_role;
+
 select 'auth functions ready';

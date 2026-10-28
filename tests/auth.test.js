@@ -106,6 +106,19 @@ test("profile name and password change (other sessions end, a fresh token comes 
   assert.strictEqual((await call("me", {}, tokA)).status, 401);
   assert.strictEqual((await call("profile", { name: "x" })).status, 401, "needs a sign-in");
 });
+test("the database API also refuses a session from before a password change (PostgREST pre-request check)", async () => {
+  const check = (claims) => db.transaction(async (tx) => {
+    await tx.query("select set_config('request.jwt.claims', $1, true)", [JSON.stringify(claims)]);
+    await tx.query("set local role " + (claims.role || "anon"));
+    await tx.query("select private.check_session()");
+  }).then(() => "ok", (e) => e.code || e.message);
+  const u = (await db.query("select id::text as id, token_version as tv from auth.users where email = 'ann@alpha.example'")).rows[0];
+  assert.strictEqual(await check({ role: "authenticated", sub: u.id, tv: u.tv }), "ok");
+  assert.strictEqual(await check({ role: "authenticated", sub: u.id, tv: u.tv - 1 }), "PT401", "old token version");
+  assert.strictEqual(await check({ role: "authenticated", sub: "00000000-0000-4000-8000-000000000000", tv: 0 }), "PT401", "no such account");
+  assert.strictEqual(await check({}), "ok", "anonymous requests pass through (RLS still applies)");
+  assert.strictEqual(await check({ role: "service_role" }), "ok");
+});
 test("10 wrong passwords lock the account for 15 minutes, even for the right password", async () => {
   for (let i = 0; i < 10; i++) await call("login", { email: "vic@beta.example", password: "guess guess " + i });
   assert.strictEqual((await call("login", { email: "vic@beta.example", password: "victim pass 1" })).status, 429);
