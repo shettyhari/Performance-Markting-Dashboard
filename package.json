@@ -9,10 +9,11 @@
     "node": ">=18"
   },
   "scripts": {
-    "test": "node tests/monitor.test.js && node tests/suite.test.js && node tests/tenancy.test.js",
+    "test": "node tests/monitor.test.js && node tests/suite.test.js && node tests/tenancy.test.js && node tests/db.test.js",
     "test:ui": "node tests/ui.smoke.js"
   },
   "devDependencies": {
+    "@electric-sql/pglite": "0.5.8",
     "jsdom": "24.1.3"
   }
 }
