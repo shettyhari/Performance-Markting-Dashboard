@@ -135,7 +135,9 @@ systemctl enable --now cron >/dev/null
 
 echo "== check"
 sleep 3
-curl -fsS -m 10 "http://127.0.0.1:3000/" -o /dev/null && echo "PostgREST answers on localhost." || { echo "PostgREST isn't answering: journalctl -u postgrest -n 50"; exit 1; }
+# any HTTP answer counts (the root path is 404 on purpose: the API listing is off)
+CODE=$(curl -s -m 10 -o /dev/null -w "%{http_code}" "http://127.0.0.1:3000/" || true)
+[ "$CODE" != "000" ] && echo "PostgREST answers on localhost." || { echo "PostgREST isn't answering: journalctl -u postgrest -n 50"; exit 1; }
 curl -fsS -m 30 "https://$API_DOMAIN/health" && echo " (HTTPS works)" || echo "HTTPS not ready yet (Caddy may still be getting the certificate): journalctl -u caddy -n 50"
 
 cat <<EOF
