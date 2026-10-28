@@ -54,9 +54,9 @@ sed -i "/^API_DOMAIN=/d" /etc/lp.env && echo "API_DOMAIN=$API_DOMAIN" >> /etc/lp
 echo "== database (Postgres, localhost only)"
 systemctl enable --now postgresql >/dev/null
 sudo -u postgres psql -qtAc "select 1 from pg_database where datname = 'lp'" | grep -q 1 || sudo -u postgres createdb lp
-sudo -u postgres psql -q -v ON_ERROR_STOP=1 -d lp -f "$ROOT/db/00-platform.sql" >/dev/null
-sudo -u postgres psql -q -v ON_ERROR_STOP=1 -d lp -f "$ROOT/db/10-schema.sql" >/dev/null
-sudo -u postgres psql -q -v ON_ERROR_STOP=1 -d lp -f "$ROOT/db/20-auth.sql" >/dev/null
+sudo -u postgres psql -q -v ON_ERROR_STOP=1 -d lp < "$ROOT/db/00-platform.sql" >/dev/null
+sudo -u postgres psql -q -v ON_ERROR_STOP=1 -d lp < "$ROOT/db/10-schema.sql" >/dev/null
+sudo -u postgres psql -q -v ON_ERROR_STOP=1 -d lp < "$ROOT/db/20-auth.sql" >/dev/null
 sudo -u postgres psql -q -v ON_ERROR_STOP=1 -d lp -c "alter role authenticator with login password '$PG_AUTH_PASS';" >/dev/null
 PGCONF=$(sudo -u postgres psql -qtAc "show config_file")
 grep -q "^listen_addresses = 'localhost'" "$PGCONF" || echo "listen_addresses = 'localhost'" >> "$PGCONF"
