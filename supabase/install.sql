@@ -10,7 +10,7 @@
 
 create extension if not exists pgcrypto with schema extensions;
 create extension if not exists pg_cron;
-create extension if not exists pg_net;
+create extension if not exists pg_net with schema extensions;   -- its functions live in schema "net"
 create schema if not exists private;
 grant usage on schema private to authenticated, service_role;
 
@@ -43,7 +43,7 @@ create index if not exists org_members_user on public.org_members (user_id);
 create index if not exists org_members_email on public.org_members (email);
 
 -- the workspace the browser / server is working in (header x-org-id), or null
-create or replace function private.current_org() returns uuid
+create or replace function private.current_org() returns uuid set search_path = ''
 language sql stable as $$
   select case when h ~* '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$' then h::uuid end
   from (select coalesce(current_setting('request.headers', true)::json ->> 'x-org-id', '') as h) x
@@ -63,9 +63,9 @@ language sql stable security definer set search_path = '' as $$
 $$;
 revoke all on function private.org_role(uuid) from public;
 grant execute on function private.org_role(uuid) to authenticated;
-create or replace function private.my_role() returns text language sql stable as $$ select private.org_role(private.current_org()) $$;
+create or replace function private.my_role() returns text language sql stable set search_path = '' as $$ select private.org_role(private.current_org()) $$;
 grant execute on function private.my_role() to authenticated;
-create or replace function private.who() returns text language sql stable as $$ select nullif(lower(coalesce(auth.jwt() ->> 'email', '')), '') $$;
+create or replace function private.who() returns text language sql stable set search_path = '' as $$ select nullif(lower(coalesce(auth.jwt() ->> 'email', '')), '') $$;
 
 create table if not exists public.org_settings (
   org_id     uuid primary key default private.current_org() references public.organizations (id) on delete cascade,
@@ -341,7 +341,7 @@ drop policy if exists org_read on public.organizations;
 drop policy if exists org_update on public.organizations;
 create policy org_read on public.organizations for select to authenticated using ((select private.org_role(id)) is not null);
 create policy org_update on public.organizations for update to authenticated using ((select private.org_role(id)) = 'admin') with check ((select private.org_role(id)) = 'admin');
-revoke insert, delete on public.organizations from authenticated;
+revoke all on public.organizations from authenticated;   -- Supabase grants everything by default; give back only what's needed
 grant select, update (name, logo, currency, tz_offset_min, crm_name) on public.organizations to authenticated;
 
 -- members: everyone in the workspace sees the list; admins invite, change roles and remove
@@ -365,7 +365,7 @@ drop policy if exists org_read on public.org_api_keys;
 drop policy if exists org_revoke on public.org_api_keys;
 create policy org_read on public.org_api_keys for select to authenticated using (org_id = (select private.current_org()) and (select private.my_role()) = 'admin');
 create policy org_revoke on public.org_api_keys for update to authenticated using (org_id = (select private.current_org()) and (select private.my_role()) = 'admin') with check (org_id = (select private.current_org()));
-revoke insert, delete on public.org_api_keys from authenticated;
+revoke all on public.org_api_keys from authenticated;    -- the hash column stays unreadable from the browser
 grant select (id, org_id, kind, name, last4, created_by, created_at, revoked_at), update (revoked_at) on public.org_api_keys to authenticated;
 grant usage on all sequences in schema public to authenticated;
 
@@ -436,7 +436,7 @@ create or replace function public.set_org_secret(p_key text, p_value text) retur
 language plpgsql security definer set search_path = '' as $$
 declare o uuid := private.current_org(); v uuid; nm text; val text := btrim(coalesce(p_value, ''));
 begin
-  if o is null or private.org_role(o) <> 'admin' then raise exception 'Only workspace admins can change tokens.'; end if;
+  if o is null or coalesce(private.org_role(o), '') <> 'admin' then raise exception 'Only workspace admins can change tokens.'; end if;
   if p_key not in ('meta_access_token', 'meta_capi_token', 'meta_audience_token', 'google_refresh_token', 'google_login_customer_id') then raise exception 'Unknown token %', p_key; end if;
   select vault_id into v from public.org_secrets where org_id = o and key = p_key;
   if val = '' then
@@ -468,7 +468,7 @@ create or replace function public.create_api_key(p_kind text, p_name text) retur
 language plpgsql security definer set search_path = '' as $$
 declare o uuid := private.current_org(); raw text;
 begin
-  if o is null or private.org_role(o) <> 'admin' then raise exception 'Only workspace admins can create keys.'; end if;
+  if o is null or coalesce(private.org_role(o), '') <> 'admin' then raise exception 'Only workspace admins can create keys.'; end if;
   if p_kind not in ('crm_push', 'api') then raise exception 'Unknown key type'; end if;
   raw := 'lp_' || case p_kind when 'crm_push' then 'push_' else 'api_' end || encode(extensions.gen_random_bytes(24), 'hex');
   insert into public.org_api_keys (org_id, kind, name, key_hash, last4, created_by)
@@ -527,6 +527,7 @@ language sql stable security definer set search_path = '' as $$
   select distinct on (lower(l.extra ->> 'Assignee emailid')) lower(l.extra ->> 'Assignee emailid'), l.owner, l.manager
     from public.crm_leads l
    where l.org_id = private.current_org() and lower(l.extra ->> 'Assignee emailid') = any (emails) and l.owner <> '' and position('@' in l.owner) = 0
+     and (coalesce((select auth.role()), '') = 'service_role' or private.org_role(private.current_org()) is not null)   -- members (or the server) only
    order by lower(l.extra ->> 'Assignee emailid'), l.updated_at desc
 $$;
 revoke all on function public.owner_name_map(text[]) from public, anon;
@@ -624,7 +625,7 @@ create or replace view public.data_days with (security_invoker = true) as
     select created_on::date from public.crm_leads where created_on is not null
   ) x;
 
-create or replace function private.extra_get(x jsonb, want text[]) returns text
+create or replace function private.extra_get(x jsonb, want text[]) returns text set search_path = ''
 language sql immutable as $$
   select nullif(trim(e.value), '') from jsonb_each_text(coalesce(x, '{}'::jsonb)) e
   where regexp_replace(lower(e.key), '[^a-z]', '', 'g') = any (want) and nullif(trim(e.value), '') is not null
