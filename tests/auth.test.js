@@ -99,7 +99,8 @@ test("signing up again with a confirmed email sends nothing and changes nothing"
 });
 test("forgot / reset: new password works, the old one and every old session stop", async () => {
   mails = []; await ageLinks();
-  assert.strictEqual((await call("forgot", { email: "nobody@alpha.example" })).status, 200); assert.strictEqual(mails.length, 0);
+  const none = await call("forgot", { email: "nobody@alpha.example" });
+  assert.strictEqual(none.status, 404); assert.ok(/no account with this email/.test(none.body.error)); assert.strictEqual(mails.length, 0, "no email for an unknown address");
   assert.strictEqual((await call("forgot", { email: "ann@alpha.example" })).status, 200); assert.strictEqual(mails.length, 1);
   const r = await call("reset", { token: linkIn(mails[0], "reset"), password: "brand new pass 2" });
   assert.strictEqual(r.status, 200); assert.ok(await me(r.body.token));
@@ -111,6 +112,8 @@ test("forgot / reset: new password works, the old one and every old session stop
 test("profile name and password change (other sessions end, a fresh token comes back)", async () => {
   let r = await call("profile", { name: "Ann Lee" }, tokA);
   assert.strictEqual(r.body.user.user_metadata.full_name, "Ann Lee");
+  const same = await call("password", { password: "brand new pass 2" }, tokA);
+  assert.strictEqual(same.status, 400); assert.ok(/current password\. Try a different password/.test(same.body.error)); assert.ok(await me(tokA), "nothing changed: the session still works");
   r = await call("password", { password: "changed pass 4" }, tokA);
   assert.strictEqual(r.status, 200); assert.strictEqual(await me(tokA), null); assert.ok(await me(r.body.token));
   assert.strictEqual((await call("me", {}, tokA)).status, 401);

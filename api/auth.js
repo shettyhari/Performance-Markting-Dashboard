@@ -5,11 +5,11 @@
 //   verify  { token, password }        → confirms the email and signs in. The link only works with the password chosen at the
 //                                        sign-up that sent it, so a sign-up someone else made with your email can't take your account.
 //   login   { email, password }        → signs in (10 wrong passwords in a row lock the account for 15 minutes)
-//   forgot  { email }                  → sends a reset link (/?reset=…); same answer whether or not the email has an account
+//   forgot  { email }                  → sends a reset link (/app?reset=…); says so when the email has no account
 //   reset   { token, password }        → new password, signs in, ends every other session
 //   me                                 → the signed-in person (Authorization: Bearer <token>)
 //   profile { name }                   → saves the profile name
-//   password { password }              → new password; ends every other session and returns a fresh token
+//   password { password }              → new password (not the current one); ends every other session and returns a fresh token
 // Sessions are HS256 JWTs signed with JWT_SECRET (the secret PostgREST checks): role authenticated, sub, email, tv (token version).
 const crypto = require("crypto");
 const D = require("./_db");
@@ -92,9 +92,12 @@ const ops = {
     return [200, session(u)];
   },
   async forgot(req, b) {
-    const u = await userBy({ p_email: cleanEmail(b.email) });
-    if (u && M.configured()) await sendLink(req, u, "reset");
+    const email = cleanEmail(b.email);
+    if (!EMAIL_RE.test(email)) return [400, { error: "Enter a valid email address." }];
     if (!M.configured()) return [503, { error: "Email isn't set up on this site yet, so reset links can't be sent." }];
+    const u = await userBy({ p_email: email });
+    if (!u) return [404, { error: "There's no account with this email. Check the spelling, or create an account.", noAccount: true }];
+    await sendLink(req, u, "reset");
     return [200, { ok: true }];
   },
   async reset(req, b) {
@@ -117,6 +120,8 @@ const ops = {
   async password(req, b) {
     const u = await D.signedIn(req); if (!u) return [401, { error: "Sign in again." }];
     const bad = passwordProblem(b.password); if (bad) return [400, { error: bad }];
+    const cur = await userBy({ p_id: u.id });
+    if (cur && await checkPassword(String(b.password), cur.encrypted_password)) return [400, { error: "That's your current password. Try a different password.", samePassword: true }];
     const tv = await rpc("auth_user_update", { p_id: u.id, p_hash: await hashPassword(b.password) });
     return [200, session(Object.assign({}, await userBy({ p_id: u.id }), { token_version: tv }))];
   },

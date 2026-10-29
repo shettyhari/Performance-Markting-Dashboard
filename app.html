@@ -826,6 +826,11 @@ td.r,th.r,td.num{font-variant-numeric:tabular-nums}
 :root[data-theme="dark"] .q-logos .lt{display:none} :root[data-theme="dark"] .q-logos .dk{display:block}
 @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]) .q-logos .lt{display:none} :root:not([data-theme="light"]) .q-logos .dk{display:block} }
 .q-logos:not(:has(.dk)) .lt{display:block}
+.pw-wrap{position:relative;display:block}
+.pw-wrap input{width:100%;padding-right:44px}
+.pw-eye{position:absolute;right:4px;top:50%;transform:translateY(-50%);width:36px;height:36px;display:grid;place-items:center;border:0;border-radius:8px;background:transparent;color:var(--muted);cursor:pointer}
+.pw-eye:hover{color:var(--ink);background:var(--row-hover)}
+.pw-eye svg{width:18px;height:18px}
 .q-head{display:grid;gap:6px;justify-items:start;margin-bottom:6px}
 .q-tag{font-size:13px;color:var(--muted)}
 @media (max-width:640px){ .gbar .brand-logo{height:34px} }
@@ -4991,7 +4996,7 @@ function renderUserBox(){
   var p1 = el("input", {type: "password", id: "pf-pw", autocomplete: "new-password", placeholder: "New password (8+ characters)"});
   var p2 = el("input", {type: "password", id: "pf-pw2", autocomplete: "new-password", placeholder: "Repeat new password"});
   var savePw = el("button", {cls: "btn ghost", type: "submit"}, "Change password");
-  var f2 = el("form", {style: "display:grid;gap:8px"}, el("label", {cls: "small", "for": "pf-pw", text: "Change password"}), p1, p2, savePw);
+  var f2 = el("form", {style: "display:grid;gap:8px"}, el("label", {cls: "small", "for": "pf-pw", text: "Change password"}), pwEye(p1), pwEye(p2), savePw);
   f2.addEventListener("submit", function(e){ e.preventDefault();
     if (p1.value.length < 8){ sb.profMsg = {kind: "err", text: "Use at least 8 characters."}; renderUserBox(); return; }
     if (p1.value !== p2.value){ sb.profMsg = {kind: "err", text: "The two passwords don't match."}; renderUserBox(); return; }
@@ -5041,11 +5046,11 @@ function renderLogin(){
   var btn = el("button", {cls: "btn", type: "submit", id: "sb-go"}, T.btn);
   var form = el("form", {style: "display:grid;gap:14px"},
     mode === "verify" || mode === "reset" ? null : el("div", {cls: "field"}, el("label", {"for": "sb-email", text: "Email"}), em),
-    mode === "forgot" ? null : el("div", {cls: "field"}, el("label", {"for": "sb-pw", text: T.pw}), pw),
-    mode === "reset" ? el("div", {cls: "field"}, el("label", {"for": "sb-pw2", text: "Repeat it"}), pw2) : null, btn);
+    mode === "forgot" ? null : el("div", {cls: "field"}, el("label", {"for": "sb-pw", text: T.pw}), pwEye(pw)),
+    mode === "reset" ? el("div", {cls: "field"}, el("label", {"for": "sb-pw2", text: "Repeat it"}), pwEye(pw2)) : null, btn);
   form.addEventListener("submit", function(e){ e.preventDefault(); btn.disabled = true; sb.msg = null; var p, address = em.value.trim();
     if (mode === "forgot") p = lpAuth.forgot(address).then(function(){ sb.mode = "signin"; sb.lastEmail = address;
-      sb.msg = {kind: "ok", text: "If " + address + " has an account, a reset link is on its way. It works for 1 hour."}; renderLogin(); });
+      sb.msg = {kind: "ok", text: "A reset link is on its way to " + address + ". It works for 1 hour."}; renderLogin(); });
     else if (mode === "verify") p = lpAuth.verify(sb.link, pw.value).then(function(s){ sb.link = null; sb.mode = "signin"; sb.confirmed = true; return sbSession(s, true).then(sbAfterAuth); });
     else if (mode === "reset") p = pw.value !== pw2.value ? Promise.reject(new Error("The two passwords don't match.")) :
       lpAuth.reset(sb.link, pw.value).then(function(s){ sb.link = null; sb.mode = "signin"; return sbSession(s, true).then(function(){ sbAfterAuth(); toast("Password changed. You're signed in."); }); });
@@ -5974,6 +5979,18 @@ function brandMark(size){
   if (/^Q/i.test(n)){ w.appendChild(el("b", {text: n.charAt(0), "aria-hidden": "true"})); w.appendChild(el("span", {text: n.slice(1), "aria-hidden": "true"})); }
   else w.appendChild(el("span", {text: n}));
   return w; }
+/* a password box with an eye button that shows / hides what was typed */
+function pwEye(input){
+  var eye = function(open){ var s = document.createElementNS("http://www.w3.org/2000/svg", "svg"); s.setAttribute("viewBox", "0 0 24 24"); s.setAttribute("fill", "none"); s.setAttribute("stroke", "currentColor");
+    s.setAttribute("stroke-width", "2"); s.setAttribute("stroke-linecap", "round"); s.setAttribute("stroke-linejoin", "round"); s.setAttribute("aria-hidden", "true");
+    (open ? ["M1 12s4-8 11-8 11 8 11 8-4 8-11 8S1 12 1 12z", "M12 9a3 3 0 100 6 3 3 0 000-6z"] : ["M17.9 17.9A10.1 10.1 0 0112 20c-7 0-11-8-11-8a18.4 18.4 0 015.1-5.9", "M9.9 4.2A9.1 9.1 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.2 3.2", "M14.1 14.1a3 3 0 01-4.2-4.2", "M1 1l22 22"])
+      .forEach(function(d){ var p = document.createElementNS("http://www.w3.org/2000/svg", "path"); p.setAttribute("d", d); s.appendChild(p); }); return s; };
+  var btn = el("button", {cls: "pw-eye", type: "button", "aria-label": "Show password", "aria-pressed": "false", title: "Show password"}, eye(true));
+  btn.addEventListener("click", function(){ var show = input.type === "password"; input.type = show ? "text" : "password";
+    btn.setAttribute("aria-pressed", show ? "true" : "false"); btn.setAttribute("aria-label", show ? "Hide password" : "Show password"); btn.title = show ? "Hide password" : "Show password";
+    btn.textContent = ""; btn.appendChild(eye(!show)); input.focus(); });
+  return el("span", {cls: "pw-wrap"}, input, btn);
+}
 function brandHead(){ return el("div", {cls: "q-head"}, brandMark("lg"), el("span", {cls: "q-tag", text: PRODUCT.tagline})); }
 function orgName(){ return (sb.org && sb.org.name) || PRODUCT.name; }
 function crmName(){ return (sb.org && sb.org.crm_name) || "CRM"; }
@@ -6477,7 +6494,7 @@ function renderDbSection(x){
     pw.addEventListener("keydown", function(e){ if (e.key === "Enter") go(); });
     box.appendChild(el("div", {cls: "save-row"},
       el("div", {cls: "field"}, el("label", {"for": "sb-email", text: "Email"}), em),
-      el("div", {cls: "field"}, el("label", {"for": "sb-pw", text: sb.mode === "create" ? "Choose a password (8+ characters)" : "Password"}), pw),
+      el("div", {cls: "field"}, el("label", {"for": "sb-pw", text: sb.mode === "create" ? "Choose a password (8+ characters)" : "Password"}), pwEye(pw)),
       el("button", {cls: "btn", type: "button", id: "sb-go", onclick: go}, sb.mode === "create" ? "Create account" : "Sign in")));
     box.appendChild(el("div", {cls: "small"}, sb.mode === "create" ? "Already have an account? " : "First time here? ",
       el("button", {cls: "linkbtn", type: "button", onclick: function(){ sb.mode = sb.mode === "create" ? "signin" : "create"; sb.err = ""; renderSavedPanel(); }}, sb.mode === "create" ? "Sign in" : "Create an account"),

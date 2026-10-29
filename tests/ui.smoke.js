@@ -39,7 +39,8 @@ function apiFake(calls) {
     if (u.indexOf("/api/config") >= 0) return reply(200, { apiUrl: "https://db.test", appName: "Qlarity", mail: true });
     const op = (u.match(/\/api\/auth\?op=(\w+)/) || [])[1], b = o.body ? JSON.parse(o.body) : {};
     if (op === "login") return b.password === "right password" ? reply(200, { token: TOKEN, user }) : reply(401, { error: "Invalid login credentials" });
-    if (op === "signup" || op === "forgot") return reply(200, { ok: true });
+    if (op === "forgot") return b.email === "owner@acme.test" ? reply(200, { ok: true }) : reply(404, { error: "There's no account with this email. Check the spelling, or create an account." });
+    if (op === "signup") return reply(200, { ok: true });
     if (op === "verify") return b.password === "right password" ? reply(200, { token: TOKEN, user }) : reply(401, { error: "That isn't the password chosen with this sign-up." });
     if (op === "me") return reply(200, { user });
     if (u.indexOf("/api/suite?op=ask") >= 0) return reply(200, { answer: ["**Spend** was N/A for this range.", "", "- First point", "- Second point", "", "| Brand | CPL |", "|---|---|", "| Alpha | N/A |"].join("\n"), tools: [{ tool: "campaign_performance", input: { from: "2026-10-01", to: "2026-10-22" } }], by: { provider: "OpenAI", model: "gpt-test" } });
@@ -83,6 +84,13 @@ const submit = (doc) => doc.querySelector("form").dispatchEvent(new doc.defaultV
 (async () => {
   await wait(300);
   ok(/Sign in/.test(text()) && /Forgot password\?/.test(text()), "signed out → the sign-in page, with “Forgot password?”");
+  { const eye = $(".pw-eye"); eye.click(); const shown = $("#sb-pw").type === "text" && eye.getAttribute("aria-label") === "Hide password"; eye.click();
+    ok(shown && $("#sb-pw").type === "password", "the eye button shows and hides the password"); }
+  w.eval("sb.mode = 'forgot'; renderLogin();"); $("#sb-email").value = "nobody@acme.test"; submit(w.document); await wait(150);
+  ok(/no account with this email/.test(text()) && w.eval("sb.mode") === "forgot", "forgot password with an unknown email says there's no account");
+  $("#sb-email").value = "owner@acme.test"; submit(w.document); await wait(150);
+  ok(/A reset link is on its way to owner@acme.test/.test(text()), "…and with a known email says the link is on its way");
+  w.eval("sb.mode = 'signin'; sb.msg = null; renderLogin();");
   { const L = [...w.document.querySelectorAll(".legal-note a")].map((x) => x.getAttribute("href")); ok(L.indexOf("/terms") >= 0 && L.indexOf("/privacy") >= 0, "sign-in links to the terms and the privacy policy"); }
   w.eval("sb.mode = 'create'; renderLogin();"); ok(/By creating an account you agree to the Terms of Service and Privacy Policy/.test(text()), "sign-up says creating an account means agreeing to them"); w.eval("sb.mode = 'signin'; renderLogin();");
   $("#sb-email").value = "owner@acme.test"; $("#sb-pw").value = "wrong password"; submit(w.document); await wait(100);
