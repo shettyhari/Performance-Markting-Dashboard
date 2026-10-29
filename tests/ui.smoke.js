@@ -111,6 +111,11 @@ const submit = (doc) => doc.querySelector("form").dispatchEvent(new doc.defaultV
   ok(/Save working hours/.test(text()) && /Add India's 2026 public holidays/.test(text()), "working hours editor and holiday preset on Settings › Working hours");
   w.eval("state.tab = 'settings'; state.setTab = 'growth'; render();"); await wait(30);
   ok(/data-org=\\?"pub123/.test(text()) || /data-org="pub123"/.test(text()), "tracking snippet carries the workspace id");
+  // right after an upload (data not reloaded from the database yet), saved brands still go to the workspace
+  w.eval("state.source = 'upload'; state.tab = 'settings'; state.setTab = 'brands'; state.setDraft = null; render(); state.setDraft.brands = ['Natuf']; applySettings();");
+  await wait(1200);
+  const pushed = calls.filter((c) => c.op === "upsert" && c.table === "org_settings").pop();
+  ok(pushed && JSON.stringify(pushed.rows.settings.brands) === '["Natuf"]', "brands saved after an upload are shared with the workspace");
   ok(!errors.length, "no script errors" + (errors.length ? ": " + errors.slice(0, 3).join(" | ") : ""));
   /* the email link: /?verify=… asks for the sign-up's password and signs in; the address bar is cleaned */
   const d3 = new JSDOM(html, { url: "https://app.example.test/?verify=link123", runScripts: "dangerously", pretendToBeVisual: true, beforeParse(x) {

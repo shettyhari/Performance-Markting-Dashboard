@@ -6251,7 +6251,9 @@ function dbOpen(quiet){
 }
 function renderDbStatus(){ var e = document.getElementById("db-status"); if (e) e.textContent = sb.busy || ""; var h = document.getElementById("db-busy"); if (h){ h.textContent = sb.busy || ""; h.hidden = !sb.busy; } }
 /* editors' settings changes are shared with the team while looking at database data */
-function dbSharesSettings(){ return state.source === "db" && sbCanWrite(); }
+/* signed in to a workspace with write access: settings belong to the workspace, whatever the report data came from (a fresh upload included);
+   otherwise they would stay in this browser and the workspace's copy would replace them on the next load */
+function dbSharesSettings(){ return !!sb.cfg && sbCanWrite(); }
 function dbPushSettings(){
   dbSettingsChanged._pending = false;
   return sb.client.from("org_settings").upsert({org_id: sb.org.id, settings: state.settings, updated_by: sb.email, updated_at: new Date().toISOString()}, {onConflict: "org_id"})
