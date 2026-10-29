@@ -21,9 +21,11 @@ const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&l
 
 /* one plain message with a single button-style link */
 async function sendLink(to, subject, intro, label, url, outro) {
+  const site = String(process.env.APP_URL || "").replace(/\/+$/, ""), name = process.env.APP_NAME || "Qlarity";
   if (!configured()) throw new Error("Email isn't set up on this site yet (SMTP_HOST and MAIL_FROM).");
   const text = intro + "\n\n" + url + "\n\n" + (outro || "");
   const html = '<div style="font:15px/1.5 -apple-system,Segoe UI,Roboto,sans-serif;color:#1f2933;max-width:520px">' +
+    (site ? '<p><img src="' + esc(site + "/brand/qlarity-logo.png") + '" alt="' + esc(name) + '" height="32" style="height:32px;width:auto;border:0"></p>' : "") +
     "<p>" + esc(intro) + "</p>" +
     '<p><a href="' + esc(url) + '" style="display:inline-block;background:#2563eb;color:#fff;text-decoration:none;padding:10px 18px;border-radius:6px">' + esc(label) + "</a></p>" +
     '<p style="color:#52606d;font-size:13px">' + esc(outro || "") + "<br>Or paste this link into your browser: " + esc(url) + "</p></div>";

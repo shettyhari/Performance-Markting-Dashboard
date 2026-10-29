@@ -4,6 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Qlarity</title>
+<link rel="icon" type="image/png" sizes="32x32" href="brand/qlarity-icon-32.png">
+<link rel="icon" type="image/png" sizes="512x512" href="brand/qlarity-icon-512.png">
+<link rel="apple-touch-icon" href="brand/qlarity-icon-180.png">
+<meta name="theme-color" content="#2f6bff">
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap">
@@ -815,8 +819,13 @@ td.r,th.r,td.num{font-variant-numeric:tabular-nums}
 .q-word{display:inline-flex;align-items:baseline;font:700 18px/1 var(--font-display);letter-spacing:-.03em;color:var(--ink)}
 .q-word b{font-weight:800;background:linear-gradient(135deg,var(--ai-1,#6d5dfc),var(--ai-2,#2f80ff));-webkit-background-clip:text;background-clip:text;color:transparent;padding-right:.02em}
 .q-word.lg{font-size:30px}
-.q-logo{display:block;height:30px;width:auto}
-.q-logo.lg{height:44px}
+.q-logos{display:inline-flex;align-items:center;line-height:0}
+.q-logo{display:block;height:26px;width:auto}
+.q-logos.lg .q-logo{height:44px}
+.q-logo.dk{display:none}
+:root[data-theme="dark"] .q-logos .lt{display:none} :root[data-theme="dark"] .q-logos .dk{display:block}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]) .q-logos .lt{display:none} :root:not([data-theme="light"]) .q-logos .dk{display:block} }
+.q-logos:not(:has(.dk)) .lt{display:block}
 .q-head{display:grid;gap:6px;justify-items:start;margin-bottom:6px}
 .q-tag{font-size:13px;color:var(--muted)}
 @media (max-width:640px){ .gbar .brand-logo{height:34px} }
@@ -5950,9 +5959,12 @@ document.getElementById("btn-save").addEventListener("click", openSaveForTeam);
 var SB_JS = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js";
 var sb = {cfg: null, client: null, email: "", role: null, status: "off", err: "", uploads: [], members: [], days: null, busy: "", mode: "signin", confirmUp: null, settingsAt: null, org: null, orgs: []};
 /* the product's brand: one place. APP_NAME in Vercel can rename it; set logo to an image path (e.g. "brand/logo.svg") to show it instead of the wordmark */
-var PRODUCT = {name: "Qlarity", tagline: "See what your ad spend really delivers", logo: ""};
+var PRODUCT = {name: "Qlarity", tagline: "See what your ad spend really delivers", logo: "brand/qlarity-logo.png", logoDark: "brand/qlarity-logo-dark.png"};
 function brandMark(size){
-  if (PRODUCT.logo) return el("img", {cls: "q-logo" + (size ? " " + size : ""), src: PRODUCT.logo, alt: PRODUCT.name});
+  /* the logo, with its light-lettering version for dark mode; the wordmark below stays as the fallback */
+  if (PRODUCT.logo) return el("span", {cls: "q-logos" + (size ? " " + size : ""), role: "img", "aria-label": PRODUCT.name},
+    el("img", {cls: "q-logo lt", src: PRODUCT.logo, alt: "", width: "620", height: "200", decoding: "async"}),
+    PRODUCT.logoDark ? el("img", {cls: "q-logo dk", src: PRODUCT.logoDark, alt: "", width: "620", height: "200", decoding: "async"}) : null);
   var n = PRODUCT.name, w = el("span", {cls: "q-word" + (size ? " " + size : ""), "aria-label": n});
   if (/^Q/i.test(n)){ w.appendChild(el("b", {text: n.charAt(0), "aria-hidden": "true"})); w.appendChild(el("span", {text: n.slice(1), "aria-hidden": "true"})); }
   else w.appendChild(el("span", {text: n}));
