@@ -1172,7 +1172,8 @@ function metaCampBrands(aoa, S){
   var out = {}; if (!aoa || !aoa.length) return out;
   var mh = findMetaHeader(aoa, S.cols.meta); if (mh < 0) return out;
   var H = aoa[mh], c = detectMetaColumns(H, S.cols.meta), bi = findCol(H, "Brand"); if (bi < 0 || c.campaign < 0) return out;
-  for (var i = mh + 1; i < aoa.length; i++){ var r = aoa[i] || [], cp = clean(r[c.campaign]), b = clean(r[bi]); if (cp && b) out[campKey(cp)] = b; }
+  /* "Unmapped" / "No campaign" saved with a row means no brand was known then: let the brand rules decide now */
+  for (var i = mh + 1; i < aoa.length; i++){ var r = aoa[i] || [], cp = clean(r[c.campaign]), b = clean(r[bi]); if (cp && b && b !== "Unmapped" && b !== "No campaign") out[campKey(cp)] = b; }
   return out;
 }
 /* duplicate-person keys: phone (last 10 digits), email, Facebook lead id */
