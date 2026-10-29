@@ -5,6 +5,6 @@ module.exports = function handler(req, res) {
   res.statusCode = ready ? 200 : 503;
   res.setHeader("content-type", "application/json; charset=utf-8");
   res.setHeader("cache-control", "no-store");
-  res.end(JSON.stringify(ready ? { apiUrl: url, appName: process.env.APP_NAME || "Lead Performance", mail: !!(process.env.SMTP_HOST && process.env.MAIL_FROM) }
+  res.end(JSON.stringify(ready ? { apiUrl: url, appName: process.env.APP_NAME || "Qlarity", mail: !!(process.env.SMTP_HOST && process.env.MAIL_FROM) }
     : { error: "API_URL and JWT_SECRET are not set on this site yet." }));
 };

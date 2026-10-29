@@ -1,4 +1,4 @@
-/* Lead Performance website tracking. Add to every page of your website, before </body> (copy the exact line from Settings › Attribution & sync):
+/* Qlarity website tracking. Add to every page of your website, before </body> (copy the exact line from Settings › Attribution & sync):
      <script src="https://<your dashboard>/lp-track.js" data-org="<workspace id>" data-brand="<brand>" async></script>
    What it does:
    - gives each browser an anonymous visitor id (first-party cookie + localStorage on your own site)

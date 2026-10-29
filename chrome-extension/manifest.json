@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Lead Performance: CRM numbers in Ads Manager",
+  "name": "Qlarity: CRM numbers in Ads Manager",
   "version": "1.0.0",
-  "description": "Shows CRM leads, qualified leads, CPQL and sales from your Lead Performance workspace next to each campaign in Meta Ads Manager and Google Ads.",
+  "description": "Shows CRM leads, qualified leads, CPQL and sales from your Qlarity workspace next to each campaign in Meta Ads Manager and Google Ads.",
   "permissions": ["storage"],
   "host_permissions": [],
   "optional_host_permissions": ["https://*/*"],
@@ -13,5 +13,5 @@
     "run_at": "document_idle"
   }],
   "options_page": "options.html",
-  "action": { "default_title": "Lead Performance", "default_popup": "options.html" }
+  "action": { "default_title": "Qlarity", "default_popup": "options.html" }
 }

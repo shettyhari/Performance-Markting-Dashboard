@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Lead Performance — set up (or update) the API server on one EC2 instance (Ubuntu 24.04, x86_64 or arm64).
+# Qlarity — set up (or update) the API server on one EC2 instance (Ubuntu 24.04, x86_64 or arm64).
 #
 #   1. Copy the repo's db/ and ec2/ folders to the server:   scp -r db ec2 ubuntu@<elastic-ip>:~/lp/
 #   2. Run:   sudo APP_URL=https://your-app.vercel.app [API_DOMAIN=api.yourdomain.com] [ADMIN_IP=1.2.3.4] bash ~/lp/ec2/setup.sh
@@ -79,7 +79,7 @@ sed -e "s|__PG_AUTH_PASS__|$PG_AUTH_PASS|" -e "s|__JWT_SECRET__|$JWT_SECRET|" "$
 chown postgrest /etc/postgrest.conf && chmod 600 /etc/postgrest.conf
 cat > /etc/systemd/system/postgrest.service <<'EOF'
 [Unit]
-Description=PostgREST (Lead Performance API)
+Description=PostgREST (Qlarity API)
 After=postgresql.service
 Requires=postgresql.service
 [Service]
@@ -121,7 +121,7 @@ chmod 755 /etc/cron.daily/lp-backup
 echo "== schedules (once per active workspace, UTC)"
 install -m 755 "$HERE/fanout.sh" /usr/local/bin/lp-fanout
 cat > /etc/cron.d/lp-fanout <<'EOF'
-# Lead Performance schedules: each line calls the site once per active workspace (ec2/fanout.sh). Times are UTC.
+# Qlarity schedules: each line calls the site once per active workspace (ec2/fanout.sh). Times are UTC.
 */30 * * * *   root  /usr/local/bin/lp-fanout /api/meta-cron
 15,45 * * * *  root  /usr/local/bin/lp-fanout /api/google-cron
 */5 * * * *    root  /usr/local/bin/lp-fanout "/api/alerts-cron?mode=activity"

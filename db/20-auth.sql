@@ -1,4 +1,4 @@
--- Lead Performance — own login: the functions api/auth.js calls (through PostgREST, as service_role only).
+-- Qlarity — own login: the functions api/auth.js calls (through PostgREST, as service_role only).
 -- auth.users / auth.email_tokens stay outside the API's public schema; these functions are the only way in.
 -- Passwords are hashed by the server (scrypt) before they get here; email-link tokens arrive as sha256 hashes.
 -- Safe to run again.

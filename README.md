@@ -1,4 +1,4 @@
-# Lead Performance
+# Qlarity
 
 A web app where any company signs up, creates a **workspace** and sees whether its ad spend turns into real customers: **Meta Ads (and Google Ads) next to the leads in its CRM**, by brand, campaign, ad set and ad, with qualified leads, sales, call speed, lead leaks, attribution across channels (including ChatGPT and other AI search), Telegram alerts and an AI analyst.
 
@@ -53,7 +53,7 @@ Anyone can belong to several workspaces (agencies, groups); switch from the prof
 | `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `MAIL_FROM` | sign-up confirmation and password-reset emails, through any SMTP server (Amazon SES, Gmail, Zoho, your host's mail). Without them nobody can sign up. |
 | `TELEGRAM_BOT_TOKEN` | optional: one bot for every workspace's alerts (@BotFather) |
 | `GOOGLE_ADS_CLIENT_ID`, `GOOGLE_ADS_CLIENT_SECRET` | optional: one Google OAuth client; each workspace adds its own refresh token |
-| `APP_NAME` | optional: product name on the sign-in page and in emails (default "Lead Performance") |
+| `APP_NAME` | optional: product name on the sign-in page and in emails (default "Qlarity") |
 
 3. Deploy. Sign up, open the confirmation email, create the first workspace.
 

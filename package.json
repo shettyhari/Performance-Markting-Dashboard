@@ -1,7 +1,7 @@
 {
-  "name": "lead-performance",
+  "name": "qlarity",
   "private": true,
-  "description": "Lead Performance: multi-company lead and ad performance dashboard (Meta / Google Ads vs CRM) on Vercel + one database server (Postgres + PostgREST)",
+  "description": "Qlarity: multi-company lead and ad performance dashboard (Meta / Google Ads vs CRM) on Vercel + one database server (Postgres + PostgREST)",
   "dependencies": {
     "nodemailer": "10.1.0"
   },

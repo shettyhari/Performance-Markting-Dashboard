@@ -1,5 +1,5 @@
 {
-  "name": "TeleCRM → Lead Performance (every 30 minutes)",
+  "name": "TeleCRM → Qlarity (every 30 minutes)",
   "nodes": [
     {
       "parameters": {

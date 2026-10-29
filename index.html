@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Lead Performance</title>
+<title>Qlarity</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap">
@@ -811,6 +811,14 @@ td.r,th.r,td.num{font-variant-numeric:tabular-nums}
 @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]) .brand-logo{filter:invert(1) brightness(1.1)} }
 .login-head{display:grid;gap:10px;justify-items:start}
 .login-logo{height:84px;margin-bottom:6px}
+/* Qlarity wordmark (PRODUCT.logo, when set, shows instead) */
+.q-word{display:inline-flex;align-items:baseline;font:700 18px/1 var(--font-display);letter-spacing:-.03em;color:var(--ink)}
+.q-word b{font-weight:800;background:linear-gradient(135deg,var(--ai-1,#6d5dfc),var(--ai-2,#2f80ff));-webkit-background-clip:text;background-clip:text;color:transparent;padding-right:.02em}
+.q-word.lg{font-size:30px}
+.q-logo{display:block;height:30px;width:auto}
+.q-logo.lg{height:44px}
+.q-head{display:grid;gap:6px;justify-items:start;margin-bottom:6px}
+.q-tag{font-size:13px;color:var(--muted)}
 @media (max-width:640px){ .gbar .brand-logo{height:34px} }
 /* ---------- collapsible sidebar (icon rail on wide screens) ---------- */
 .sub-ico{display:none}
@@ -1012,8 +1020,8 @@ tr.total-bottom td{position:static!important;background:#dce3f0!important;color:
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap">
 <header class="gbar">
   <button class="icon-btn menu-btn" id="btn-menu" type="button" aria-label="Open navigation"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
-  <div class="g-logo"><img class="brand-logo" id="brand-logo" alt="" width="126" height="48" hidden><span class="brand-text" id="brand-text">Lead Performance</span></div>
-  <div class="g-prop"><span class="g-crumb" id="org-crumb">Lead Performance</span>
+  <div class="g-logo"><img class="brand-logo" id="brand-logo" alt="" width="126" height="48" hidden><span class="brand-text" id="brand-text">Qlarity</span></div>
+  <div class="g-prop"><span class="g-crumb" id="org-crumb"></span>
     <div class="filters"><div class="brand-wrap" id="brand-chips"></div></div></div>
   <div class="g-tools"><button class="icon-btn" id="btn-theme" type="button" aria-label="Switch theme"></button><span id="user-box" class="user-box" hidden></span></div>
 </header>
@@ -1055,8 +1063,8 @@ tr.total-bottom td{position:static!important;background:#dce3f0!important;color:
 <header class="top">
   <div class="wrap">
     <div class="title-block">
-      <div class="eyebrow" id="org-eyebrow">Lead Performance</div>
-      <h1>Lead Performance</h1>
+      <div class="eyebrow" id="org-eyebrow">Qlarity</div>
+      <h1>Qlarity</h1>
       <div class="period" id="period">Meta UI vs CRM · brand, campaign, ad set and ad level</div>
     </div>
     <div class="actions">
@@ -4921,7 +4929,7 @@ function renderSetup(){
   var v = document.getElementById("view"); v.textContent = "";
   var S = sb.setup, noApi = S.status === 404 || S.status === 0;
   v.appendChild(el("section", {cls: "login"},
-    el("div", {cls: "login-head"}, el("div", {cls: "eyebrow", text: "Lead Performance"}), el("h2", {text: "This site isn't connected to its database yet"})),
+    el("div", {cls: "login-head"}, brandHead(), el("h2", {text: "This site isn't connected to its database yet"})),
     el("div", {cls: "msg err", role: "alert", text: noApi ? "The site's API isn't running here (" + (S.status ? "/api/config answered " + S.status : "no answer from /api/config") + "). Deploy the whole repository on Vercel, including the api folder; opening index.html on its own only works in upload-only mode."
       : (S.error || "The site's database settings are missing (" + S.status + ").")}),
     el("div", {cls: "small", text: "Whoever runs this site: set up the database server with ec2/setup.sh (it prints API_URL, JWT_SECRET and CRON_SECRET), then Vercel › your project › Settings › Environment Variables › add those three, APP_URL and the SMTP_* / MAIL_FROM email settings, then Deployments › ⋯ › Redeploy. Full list in the README."}),
@@ -5014,7 +5022,7 @@ function renderLogin(){
   var mode = LOGIN_TXT[sb.mode] ? sb.mode : "signin", T = LOGIN_TXT[mode], create = mode === "create";
   var lg = document.getElementById("brand-logo");
   box.appendChild(el("div", {cls: "login-head"}, lg && lg.getAttribute("src") ? el("img", {cls: "brand-logo login-logo", src: lg.src, alt: orgName()}) : null,
-    el("div", {cls: "eyebrow", text: "Lead Performance · ads, leads and sales in one place"}), el("h2", {text: T.title})));
+    brandHead(), el("h2", {text: T.title})));
   var em = el("input", {type: "email", id: "sb-email", autocomplete: "email", placeholder: "you@company.com", value: sb.lastEmail || ""});
   var pw = el("input", {type: "password", id: "sb-pw", autocomplete: mode === "signin" || mode === "verify" ? "current-password" : "new-password", placeholder: mode === "signin" || mode === "verify" ? "Password" : "8 or more characters"});
   var pw2 = el("input", {type: "password", id: "sb-pw2", autocomplete: "new-password", placeholder: "Repeat the new password"});
@@ -5065,7 +5073,7 @@ function orgFields(o, ids){
 var ROLE_NAME = {admin: "Admin", editor: "Editor", viewer: "Viewer"};
 function workspaceChooser(){
   var box = el("div", {style: "display:grid;gap:14px"}), cur = sb.org;
-  box.appendChild(el("div", {cls: "login-head"}, el("div", {cls: "eyebrow", text: "Lead Performance"}), el("h2", {text: "Choose a workspace"})));
+  box.appendChild(el("div", {cls: "login-head"}, brandHead(), el("h2", {text: "Choose a workspace"})));
   box.appendChild(el("div", {cls: "small", text: sb.email + " is a member of " + sb.orgs.length + " workspaces. Each has its own data, settings and team."}));
   box.appendChild(el("div", {cls: "ws-list", role: "list", style: "display:grid;gap:8px"}, sb.orgs.map(function(o){
     return el("button", {cls: "btn ghost ws-pick", type: "button", role: "listitem", "data-org": o.id, style: "display:flex;justify-content:space-between;align-items:center;gap:12px;width:100%;text-align:left", onclick: function(){ sbPickOrg(o); }},
@@ -5086,7 +5094,7 @@ function sbPickOrg(o){
 }
 function workspaceWizard(){
   var box = el("div", {style: "display:grid;gap:14px"}), had = sb.orgs.length > 0;
-  box.appendChild(el("div", {cls: "login-head"}, el("div", {cls: "eyebrow", text: "Lead Performance"}), el("h2", {text: had ? "New workspace" : "Set up your workspace"})));
+  box.appendChild(el("div", {cls: "login-head"}, brandHead(), el("h2", {text: had ? "New workspace" : "Set up your workspace"})));
   box.appendChild(el("div", {cls: "small", text: "A workspace holds one company's ad accounts, CRM leads, settings and team. You'll be its admin. Joining an existing team instead? Ask its admin to invite " + sb.email + ", then sign in again."}));
   var F = orgFields({}, "wz");
   var brands = el("textarea", {id: "wz-brands", rows: 3, placeholder: "One brand per line (optional — you can add them later in Settings)"});
@@ -5541,7 +5549,7 @@ function exportSpecs(brand, want){
     var bt = sumRows(br); bt.brand = "TOTAL"; bt.noCamp = br.reduce(function(s, b){ return s + b.noCamp; }, 0);
     var ex = (R.excluded || []).filter(function(x){ return x.excluded && ok(x.brand); });
     var f = state.files || {};
-    specs.push({name: "Summary", summary: true, title: orgName() + " Lead Performance Report",
+    specs.push({name: "Summary", summary: true, title: orgName() + " Performance Report",
       info: [["Period", rangeText(false)], ["Meta export dates", fDay(R.period.metaStart) + " – " + fDay(R.period.metaEnd)], ["Brands", scopeTxt],
         ["Meta file(s)", f.meta ? (f.meta.list || [f.meta.name]).join(", ") + " · " + fInt(f.meta.rows) + " rows" : "—"], ["CRM file", f.crm ? f.crm.name + " · " + fInt(f.crm.rows) + " rows" : "—"],
         ["Excluded campaigns", ex.length ? ex.length + " (" + ex.map(function(x){ return x.campaign; }).join("; ") + ")" : "None"],
@@ -5668,7 +5676,7 @@ function xlTitle(ws, title, sub, note){
   if (note){ ws.getCell(3, 1).value = note; ws.getCell(3, 1).font = {italic: true, size: 9, color: {argb: XL.sub}}; }
 }
 function buildWorkbookExcelJS(ExcelJS, specs, sub){
-  var wb = new ExcelJS.Workbook(); wb.creator = "Lead Performance"; wb.created = new Date();
+  var wb = new ExcelJS.Workbook(); wb.creator = PRODUCT.name; wb.created = new Date();
   var page = {orientation: "landscape", fitToPage: true, fitToWidth: 1, fitToHeight: 0, paperSize: 9, margins: {left: 0.4, right: 0.4, top: 0.5, bottom: 0.5, header: 0.2, footer: 0.2}};
   specs.forEach(function(sp){
     var widths = [], ws;
@@ -5941,16 +5949,25 @@ document.getElementById("btn-save").addEventListener("click", openSaveForTeam);
    Uploads are added with upserts, so re-uploading the same days or leads updates rows instead of duplicating them. */
 var SB_JS = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js";
 var sb = {cfg: null, client: null, email: "", role: null, status: "off", err: "", uploads: [], members: [], days: null, busy: "", mode: "signin", confirmUp: null, settingsAt: null, org: null, orgs: []};
-function orgName(){ return (sb.org && sb.org.name) || "Lead Performance"; }
+/* the product's brand: one place. APP_NAME in Vercel can rename it; set logo to an image path (e.g. "brand/logo.svg") to show it instead of the wordmark */
+var PRODUCT = {name: "Qlarity", tagline: "See what your ad spend really delivers", logo: ""};
+function brandMark(size){
+  if (PRODUCT.logo) return el("img", {cls: "q-logo" + (size ? " " + size : ""), src: PRODUCT.logo, alt: PRODUCT.name});
+  var n = PRODUCT.name, w = el("span", {cls: "q-word" + (size ? " " + size : ""), "aria-label": n});
+  if (/^Q/i.test(n)){ w.appendChild(el("b", {text: n.charAt(0), "aria-hidden": "true"})); w.appendChild(el("span", {text: n.slice(1), "aria-hidden": "true"})); }
+  else w.appendChild(el("span", {text: n}));
+  return w; }
+function brandHead(){ return el("div", {cls: "q-head"}, brandMark("lg"), el("span", {cls: "q-tag", text: PRODUCT.tagline})); }
+function orgName(){ return (sb.org && sb.org.name) || PRODUCT.name; }
 function crmName(){ return (sb.org && sb.org.crm_name) || "CRM"; }
 /* header, sidebar, title and login page show the workspace */
 function applyBrand(){ var n = orgName(), o = sb.org, set = function(id, t){ var e = document.getElementById(id); if (e) e.textContent = t; };
-  document.title = o ? n + " · Lead Performance" : "Lead Performance";
+  document.title = o ? n + " · " + PRODUCT.name : PRODUCT.name;
   var lg = document.getElementById("brand-logo"), bt = document.getElementById("brand-text");
   if (lg){ if (o && o.logo){ lg.src = o.logo; lg.alt = n; lg.hidden = false; } else { lg.removeAttribute("src"); lg.hidden = true; } }
-  if (bt){ bt.textContent = n; bt.hidden = !!(o && o.logo); }
-  set("org-crumb", o ? n + " · Lead Performance" : "Lead Performance"); set("org-eyebrow", o ? n : "Lead Performance");
-  var w = n.split(/\s+/); set("org-word", o ? w[0] : "Lead"); set("org-sub", o ? w.slice(1).join(" ") : "Performance"); }
+  if (bt){ bt.textContent = ""; if (o) bt.textContent = n; else bt.appendChild(brandMark()); bt.hidden = !!(o && o.logo); }
+  set("org-crumb", o ? n + " · " + PRODUCT.name : ""); set("org-eyebrow", o ? n : PRODUCT.name);
+  var w = n.split(/\s+/); set("org-word", o ? w[0] : PRODUCT.name); set("org-sub", o ? w.slice(1).join(" ") : ""); }
 function sbUseOrg(o){ sb.org = o || null; sb.role = o ? o.role : null; sb.status = o ? "ready" : "noorg"; if (o){ try { localStorage.setItem("lp-org", o.id); } catch (e) {} } applyBrand(); }
 /* switch workspace: nothing of the old one stays on screen */
 function sbSwitchOrg(id){ var o = sb.orgs.filter(function(x){ return x.id === id; })[0]; if (!o || (sb.org && sb.org.id === id)) return;
@@ -5994,7 +6011,7 @@ function sbInit(){
     var cfg = x.ok ? x.j : null;
     /* the site has no database settings (Vercel env) or no API at all: say so instead of quietly falling back to upload-only mode */
     if (!cfg || !cfg.apiUrl){ sb.setup = {status: x.status, error: (x.j && x.j.error) || x.err || ""}; return false; }
-    sb.cfg = cfg; sb.status = "loading"; readAuthReturn(); render();
+    sb.cfg = cfg; if (cfg.appName) PRODUCT.name = String(cfg.appName).slice(0, 40); sb.status = "loading"; readAuthReturn(); applyBrand(); render();
     return (window.supabase ? Promise.resolve() : loadScript(SB_JS)).then(function(){
       /* every database call carries the sign-in token and says which workspace it is for (x-org-id); row level security checks membership */
       var orgFetch = function(u, o){ o = o || {}; var h = new Headers(o.headers || {}), tok = lpAuth.token();

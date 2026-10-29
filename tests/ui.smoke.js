@@ -36,7 +36,7 @@ function apiFake(calls) {
   return (u, o) => {
     u = String(u); o = o || {}; calls.push({ op: "fetch", u, body: o.body, headers: o.headers });
     const reply = (st, b) => Promise.resolve({ ok: st < 400, status: st, json: () => Promise.resolve(b), text: () => Promise.resolve(JSON.stringify(b)) });
-    if (u.indexOf("/api/config") >= 0) return reply(200, { apiUrl: "https://db.test", appName: "Lead Performance", mail: true });
+    if (u.indexOf("/api/config") >= 0) return reply(200, { apiUrl: "https://db.test", appName: "Qlarity", mail: true });
     const op = (u.match(/\/api\/auth\?op=(\w+)/) || [])[1], b = o.body ? JSON.parse(o.body) : {};
     if (op === "login") return b.password === "right password" ? reply(200, { token: TOKEN, user }) : reply(401, { error: "Invalid login credentials" });
     if (op === "signup" || op === "forgot") return reply(200, { ok: true });
@@ -88,7 +88,7 @@ const submit = (doc) => doc.querySelector("form").dispatchEvent(new doc.defaultV
   $("#sb-pw").value = "right password"; submit(w.document); await wait(300);
   ok(/Set up your workspace/.test(text()), "signed in without a workspace → the workspace wizard");
   ok(w.localStorage.getItem("lp-session") && JSON.parse(w.localStorage.getItem("lp-session")).token === TOKEN, "the session is kept in this browser");
-  ok(/Lead Performance/.test(w.document.body.textContent) && !/Lead Performance · Lead Performance/.test(w.document.title), "neutral product name before a workspace exists");
+  ok(/Qlarity/.test(w.document.body.textContent) && !/Qlarity · Qlarity/.test(w.document.title), "neutral product name before a workspace exists");
   w.document.getElementById("wz-name").value = "Acme Homes";
   w.document.getElementById("wz-crm").value = "Zoho CRM";
   w.document.getElementById("wz-tz").value = "240";
@@ -97,7 +97,7 @@ const submit = (doc) => doc.querySelector("form").dispatchEvent(new doc.defaultV
   await wait(400);
   const co = calls.filter((c) => c.fn === "create_organization")[0];
   ok(co && co.args.p_name === "Acme Homes" && co.args.p_tz_offset_min === 240 && co.args.p_brands.length === 2, "wizard calls create_organization with the form values");
-  ok(w.document.title === "Acme Homes · Lead Performance", "title shows the workspace (" + w.document.title + ")");
+  ok(w.document.title === "Acme Homes · Qlarity", "title shows the workspace (" + w.document.title + ")");
   ok(($("#org-crumb") || {}).textContent.indexOf("Acme Homes") === 0, "header shows the workspace");
   ok(/Workspace/.test(text()), "lands on Settings › Workspace");
   ok(/Kept encrypted/.test(text()) && /Set · ends …abcd|ends …abcd/.test(w.document.body.innerHTML), "tokens card shows a stored token only by its last 4");

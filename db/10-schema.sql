@@ -1,4 +1,4 @@
--- Lead Performance — the multi-company schema. Run after db/00-platform.sql (ec2/setup.sh runs both). Safe to run again.
+-- Qlarity — the multi-company schema. Run after db/00-platform.sql (ec2/setup.sh runs both). Safe to run again.
 --
 -- How companies are kept apart
 --   Every data row has org_id. The browser sends the workspace it is working in as the header x-org-id; private.current_org() reads it.

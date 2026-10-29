@@ -1,4 +1,4 @@
-// Fetches campaign numbers from your Lead Performance workspace (/api/suite?op=ext) with the workspace API key saved in the options, and caches them for 10 minutes.
+// Fetches campaign numbers from your Qlarity workspace (/api/suite?op=ext) with the workspace API key saved in the options, and caches them for 10 minutes.
 // The key stays in this browser's extension storage; it is never sent anywhere except the dashboard URL you entered.
 let cache = { at: 0, key: "", data: null };
 async function numbers(days) {

@@ -197,7 +197,7 @@ const currency = () => { const c = ctx(); return (c && c.org && c.org.currency) 
 const cur = () => SYM[currency()] || currency() + " ";
 const locale = () => (currency() === "INR" ? "en-IN" : "en-US");
 const crm = () => { const c = ctx(); return (c && c.org && c.org.crm_name) || "CRM"; };
-const orgName = () => { const c = ctx(); return (c && c.org && c.org.name) || "Lead Performance"; };
+const orgName = () => { const c = ctx(); return (c && c.org && c.org.name) || (process.env.APP_NAME || "Qlarity"); };
 const CC = { INR: "91", AED: "971", SAR: "966", USD: "1", CAD: "1", GBP: "44", EUR: "", AUD: "61", SGD: "65" };
 /* phone country code for hashing numbers saved without one (Settings › Attribution & sync › phone country code, else from the currency) */
 const phoneCC = () => { const c = ctx(), s = c && c.settings; return String((s && s.phoneCountryCode) || CC[currency()] || "91").replace(/\D+/g, ""); };

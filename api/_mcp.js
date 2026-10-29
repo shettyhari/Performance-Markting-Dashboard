@@ -14,8 +14,8 @@ async function one(S, m) {
   if (m.method === "initialize") {
     const want = m.params && m.params.protocolVersion;
     return rpcResult(m.id, { protocolVersion: PROTOCOLS.indexOf(want) >= 0 ? want : PROTOCOLS[0], capabilities: { tools: { listChanged: false } },
-      serverInfo: { name: "lead-performance", version: "1.0.0" },
-      instructions: D.orgName() + " lead performance data (Meta Ads + " + D.crm() + "). " + U.DEFINITIONS + " Dates are " + D.tzLabel() + ", currency " + D.currency() + ". Report null values as N/A." });
+      serverInfo: { name: "qlarity", version: "1.0.0" },
+      instructions: D.orgName() + " data in Qlarity (Meta Ads + " + D.crm() + "). " + U.DEFINITIONS + " Dates are " + D.tzLabel() + ", currency " + D.currency() + ". Report null values as N/A." });
   }
   if (isNote) return null;   // notifications/initialized etc.
   if (m.method === "ping") return rpcResult(m.id, {});

@@ -32,7 +32,7 @@ async function runTool(S, name, a) {
 }
 function system(S, ctx) {
   return [
-    "You are the marketing analyst inside " + D.orgName() + "'s lead performance dashboard (brands: " + ((S.brands || []).join(", ") || "none set yet") + "; CRM: " + D.crm() + ").",
+    "You are the marketing analyst inside " + D.orgName() + "'s Qlarity dashboard, which compares ad spend with the leads, qualified leads and sales in the CRM (brands: " + ((S.brands || []).join(", ") || "none set yet") + "; CRM: " + D.crm() + ").",
     "Today is " + U.istDay(0) + " (" + D.tzLabel() + "). Currency is " + D.currency() + " (" + D.cur().trim() + "). Answer like a senior performance marketer: business impact first, plain language, short.",
     "Every number you state must come from a tool result in this conversation. Never estimate, extrapolate or invent numbers, targets, people or events.",
     "When a value is null or missing, say N/A and why (for example: no sales statuses ticked yet, no deal value set, no spend for that channel). Never treat N/A as 0.",

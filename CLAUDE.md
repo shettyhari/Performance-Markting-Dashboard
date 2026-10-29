@@ -1,11 +1,11 @@
-# Lead Performance — notes for Claude
+# Qlarity — notes for Claude
 
 Read this first. It carries the decisions and rules agreed while building this project, so work can continue in a new session.
 
 ## What it is
 - A multi-company web app (SaaS): any company signs up, creates a **workspace** (organization) and compares **Meta Ads (and optionally Google Ads) with the leads in its CRM** per brand: spend, Meta leads, CRM leads, QL, sales, CPL, CPQL, cost per sale, TAT, lead leaks, attribution, reports, alerts, AI analyst.
 - People who decide budgets use it, so **accuracy is critical**: never invent numbers, targets, values, actors or events. N/A when data is missing or a denominator is 0 — never 0.
-- Workspace name, logo, currency, time zone, CRM name are set per workspace (no company is hard-coded anywhere). Default product name "Lead Performance".
+- Workspace name, logo, currency, time zone, CRM name are set per workspace (no company is hard-coded anywhere). Product brand **Qlarity** (tagline "See what your ad spend really delivers"): one place, `PRODUCT` in index.html (`brandMark()` / `brandHead()`; `PRODUCT.logo` shows a logo instead of the wordmark); server default "Qlarity", overridable with `APP_NAME`. Internal names (`lp-` storage keys, repo folder) stay.
 
 ## Architecture
 - `index.html` — the dashboard: one file, **ES5 JavaScript** (`var`, `function`, no build step, no arrow functions or modules). Engine between `ENGINE START` / `ENGINE END` (`processData`). Helpers: `el`, `table`, `render`, `state`, `FMT`, `provApi`, `alertsApi`, `alertsAllowed()`, `myPrefs` / `saveMyPrefs`, `orgName()`, `crmName()`, `tzLabel()`, `whText()`.

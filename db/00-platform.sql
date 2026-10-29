@@ -1,4 +1,4 @@
--- Lead Performance on your own Postgres (EC2) — platform pieces the schema expects. Run first, then db/10-schema.sql.
+-- Qlarity on your own Postgres (EC2) — platform pieces the schema expects. Run first, then db/10-schema.sql.
 -- ec2/setup.sh runs both. Safe to run again.
 --
 -- What this replaces from Supabase, with the same names so the schema and the app don't change:

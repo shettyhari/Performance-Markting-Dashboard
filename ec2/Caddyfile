@@ -1,4 +1,4 @@
-# Lead Performance API (filled in by ec2/setup.sh → /etc/caddy/Caddyfile). Caddy gets and renews the HTTPS certificate itself.
+# Qlarity API (filled in by ec2/setup.sh → /etc/caddy/Caddyfile). Caddy gets and renews the HTTPS certificate itself.
 __API_DOMAIN__ {
 	encode gzip
 
@@ -25,7 +25,7 @@ __API_DOMAIN__ {
 		respond "ok" 200
 	}
 	handle {
-		respond "Lead Performance API" 404
+		respond "Qlarity API" 404
 	}
 
 	header {

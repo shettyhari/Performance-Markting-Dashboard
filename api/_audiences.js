@@ -42,7 +42,7 @@ async function run(S, opt) {
       try {
         if (!A) {
           const name = D.orgName() + " · " + brand + " · " + LISTS[list] + " (" + D.crm() + ")";
-          const b = await graph(account + "/customaudiences", { name, subtype: "CUSTOM", customer_file_source: "USER_PROVIDED_ONLY", description: "Synced daily from Lead Performance (hashed phone / email)." });
+          const b = await graph(account + "/customaudiences", { name, subtype: "CUSTOM", customer_file_source: "USER_PROVIDED_ONLY", description: "Synced daily from Qlarity (hashed phone / email)." });
           A = { k, brand, list, account_id: account, audience_id: String(b.id), name, members: 0 };
           await U.sbFetch("audience_lists", { method: "POST", headers: { prefer: "return=minimal" }, body: JSON.stringify([A]) });
         }

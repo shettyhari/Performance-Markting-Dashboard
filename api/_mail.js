@@ -1,5 +1,5 @@
 // Outgoing email (sign-up confirmation, password reset) over any SMTP server: Amazon SES, Gmail, Zoho, your host's mail…
-// Vercel env: SMTP_HOST, SMTP_PORT (465 = TLS, else STARTTLS), SMTP_USER, SMTP_PASS, MAIL_FROM ("Lead Performance <no-reply@yourdomain.com>").
+// Vercel env: SMTP_HOST, SMTP_PORT (465 = TLS, else STARTTLS), SMTP_USER, SMTP_PASS, MAIL_FROM ("Qlarity <no-reply@yourdomain.com>").
 let transport = null, sender = null;
 
 const configured = () => !!(process.env.SMTP_HOST && process.env.MAIL_FROM);

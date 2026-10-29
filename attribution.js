@@ -1,4 +1,4 @@
-/* Lead Performance — attribution suite pages (loaded after index.html's main script; ES5 like the rest).
+/* Qlarity — attribution suite pages (loaded after index.html's main script; ES5 like the rest).
    Pages: Attribution (models, channels, AI search, conversion paths), Lead journeys, Report builder, Sync & tracking.
    Ask AI: a floating assistant on every page (AIW below), using the page's dates and brand as context.
    Settings sections: Attribution & sync (deal values, Conversions API, website tracking, channel costs, audiences, AI digest, MCP / Chrome extension),
