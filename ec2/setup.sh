@@ -3,7 +3,9 @@
 #
 #   1. Copy the repo's db/ and ec2/ folders to the server:   scp -r db ec2 ubuntu@<elastic-ip>:~/lp/
 #   2. Run:   sudo APP_URL=https://your-app.vercel.app [API_DOMAIN=api.yourdomain.com] [ADMIN_IP=1.2.3.4] bash ~/lp/ec2/setup.sh
-#        APP_URL     the Vercel site (schedules call it; required)
+#        APP_URL     the site's main address (schedules and email links use it; required)
+#        EXTRA_ORIGINS  optional, more addresses the site is served from, space-separated (e.g. a custom domain, or the old
+#                       address while moving); kept in /etc/lp.env, so a later run without it keeps them. EXTRA_ORIGINS=none clears them
 #        API_DOMAIN  a domain pointing at this server's Elastic IP; leave out to use <ip>.sslip.io (free HTTPS, no domain needed)
 #        ADMIN_IP    your IP for SSH; leave out to keep SSH open to all (the EC2 security group should still limit it)
 #        BACKUP_S3_URI  optional, e.g. s3://my-bucket/lead-performance (needs an instance role with s3:PutObject)
@@ -41,6 +43,11 @@ PG_AUTH_PASS=$(head -c 32 /dev/urandom | base64 | tr -d '\n/+=' | cut -c1-40)
 EOF
 fi
 sed -i "/^APP_URL=/d" /etc/lp.env && echo "APP_URL=$APP_URL" >> /etc/lp.env
+if [ -n "${EXTRA_ORIGINS:-}" ]; then
+  [ "$EXTRA_ORIGINS" = none ] && EXTRA_ORIGINS=""
+  for o in $EXTRA_ORIGINS; do case "$o" in https://*) ;; *) echo "EXTRA_ORIGINS: $o must start with https://"; exit 1;; esac; done
+  sed -i "/^EXTRA_ORIGINS=/d" /etc/lp.env && echo "EXTRA_ORIGINS=\"$EXTRA_ORIGINS\"" >> /etc/lp.env
+fi
 # shellcheck disable=SC1091
 . /etc/lp.env
 if [ -z "${API_DOMAIN:-}" ]; then
@@ -96,7 +103,9 @@ systemctl daemon-reload && systemctl enable --now postgrest >/dev/null && system
 
 echo "== Caddy (HTTPS for $API_DOMAIN)"
 umask 022
-sed -e "s|__API_DOMAIN__|$API_DOMAIN|" -e "s|__APP_URL__|$APP_URL|" "$HERE/Caddyfile" > /etc/caddy/Caddyfile
+ORIGINS="$APP_URL"; for o in ${EXTRA_ORIGINS:-}; do o="${o%/}"; [ "$o" = "$APP_URL" ] || ORIGINS="$ORIGINS $o"; done
+sed -e "s|__API_DOMAIN__|$API_DOMAIN|" -e "s|__APP_ORIGINS__|$ORIGINS|" "$HERE/Caddyfile" > /etc/caddy/Caddyfile
+caddy validate --config /etc/caddy/Caddyfile --adapter caddyfile >/dev/null 2>&1 || { echo "The Caddy configuration is invalid: caddy validate --config /etc/caddy/Caddyfile"; exit 1; }
 systemctl enable --now caddy >/dev/null && systemctl reload caddy || systemctl restart caddy
 
 echo "== firewall (22, 80, 443 only; Postgres and PostgREST stay private)"

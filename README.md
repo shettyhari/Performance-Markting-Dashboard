@@ -43,7 +43,7 @@ Anyone can belong to several workspaces (agencies, groups); switch from the prof
    ssh ubuntu@<elastic-ip> "sudo APP_URL=https://your-site.vercel.app bash ~/lp/ec2/setup.sh"
    ```
 
-   Add `API_DOMAIN=api.yourdomain.com` if you set up a domain (otherwise it uses `<ip>.sslip.io`), `ADMIN_IP=<your ip>` to limit SSH, `BACKUP_S3_URI=s3://bucket/path` for off-server backups. It installs everything, creates the database from `db/*.sql`, turns on nightly backups (14 days) and the schedules, and prints `API_URL`, `JWT_SECRET` and `CRON_SECRET` once (they stay in `/etc/lp.env` on the server, root only). Run it again after pulling database changes: it keeps the data and secrets.
+   Add `API_DOMAIN=api.yourdomain.com` if you set up a domain (otherwise it uses `<ip>.sslip.io`), `ADMIN_IP=<your ip>` to limit SSH, `BACKUP_S3_URI=s3://bucket/path` for off-server backups. `EXTRA_ORIGINS="https://other-address"` lets the site also run from more addresses (a custom domain, or the old address while moving); `APP_URL` is the main one, used by email links and schedules. It installs everything, creates the database from `db/*.sql`, turns on nightly backups (14 days) and the schedules, and prints `API_URL`, `JWT_SECRET` and `CRON_SECRET` once (they stay in `/etc/lp.env` on the server, root only). Run it again after pulling database changes: it keeps the data and secrets.
 2. **Vercel** (this repo), environment variables:
 
 | Variable | What |

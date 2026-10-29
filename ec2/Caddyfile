@@ -4,14 +4,16 @@ __API_DOMAIN__ {
 
 	# the app's query builder calls /rest/v1/...; PostgREST answers on localhost:3000
 	handle_path /rest/v1/* {
+		# browsers may call from the site's address(es) only: APP_URL plus EXTRA_ORIGINS (ec2/setup.sh); the allowed one is echoed back
+		@site header Origin __APP_ORIGINS__
 		@preflight method OPTIONS
-		header {
-			Access-Control-Allow-Origin "__APP_URL__"
+		header Vary "Origin"
+		header @site {
+			Access-Control-Allow-Origin "{http.request.header.Origin}"
 			Access-Control-Allow-Methods "GET, POST, PATCH, DELETE, OPTIONS"
 			Access-Control-Allow-Headers "authorization, apikey, content-type, prefer, range, range-unit, x-org-id, x-client-info, accept-profile, content-profile"
 			Access-Control-Expose-Headers "content-range, content-profile"
 			Access-Control-Max-Age "600"
-			Vary "Origin"
 			defer
 		}
 		respond @preflight 204
