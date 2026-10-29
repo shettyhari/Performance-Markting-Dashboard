@@ -1,9 +1,9 @@
 // AI marketing analyst (Phase 5): plain-language questions answered from the dashboard's own numbers, through tools that run
 // the same calculations as the dashboard (api/_suite.js). Also writes the daily AI digest sent to Telegram.
-// Vercel env: ANTHROPIC_API_KEY. The model never sees phone numbers or emails (tools return business numbers only).
+// Provider, model and key are per workspace (Settings › AI, owners only): Anthropic Claude, OpenAI, Google Gemini or any OpenAI-compatible
+// service. The model never sees phone numbers or emails (tools return business numbers only).
 const U = require("./_suite");
 const D = require("./_db");
-const MODEL = "claude-opus-5-5";
 
 const TOOLS = [
   { name: "brand_performance", description: "Spend, Meta leads, CRM leads, QL, sales, CPL, CPQL, cost per sale, est. revenue / ROAS, CTR/CPC/CPM per brand plus the total of listed brands, for a date range (max 92 days). Use for any 'how are we doing' question.",
@@ -41,39 +41,148 @@ function system(S) {
     "End with at most three concrete next actions when the question is about performance."
   ].join("\n");
 }
-/* one question (with optional earlier turns as plain text) → answer text + the tools used */
-async function ask(S, question, history) {
-  if (!process.env.ANTHROPIC_API_KEY) throw new Error("ANTHROPIC_API_KEY is not set in Vercel.");
-  const SDK = require("@anthropic-ai/sdk"), Anthropic = SDK.default || SDK;   // loaded here so the MCP server works without it
-  const client = new Anthropic();
-  const messages = (Array.isArray(history) ? history : []).filter((m) => m && (m.role === "user" || m.role === "assistant") && typeof m.content === "string" && m.content.trim())
-    .slice(-10).map((m) => ({ role: m.role, content: m.content.slice(0, 4000) }));
-  messages.push({ role: "user", content: String(question).slice(0, 4000) });
-  const used = [];
-  for (let turn = 0; turn < 8; turn++) {
-    const res = await client.beta.messages.create({
-      model: MODEL, max_tokens: 16000, betas: ["server-side-fallback-2026-07-01"], fallbacks: "default",
-      output_config: { effort: "medium" }, system: system(S), tools: TOOLS, messages });
-    if (res.stop_reason === "refusal") return { answer: "I can't answer that one. Try asking about spend, leads, QL, sales or campaigns.", tools: used };
-    messages.push({ role: "assistant", content: res.content });   // full content, unchanged (thinking blocks included)
-    const calls = res.content.filter((b) => b.type === "tool_use");
-    if (res.stop_reason !== "tool_use" || !calls.length) {
-      const text = res.content.filter((b) => b.type === "text").map((b) => b.text).join("\n").trim();
-      return { answer: text || "No answer was produced.", tools: used, truncated: res.stop_reason === "max_tokens" };
-    }
-    const results = await Promise.all(calls.map(async (c) => {
-      used.push({ tool: c.name, input: c.input });
-      try { return { type: "tool_result", tool_use_id: c.id, content: JSON.stringify(await runTool(S, c.name, c.input)).slice(0, 60000) }; }
-      catch (e) { return { type: "tool_result", tool_use_id: c.id, is_error: true, content: String(e.message || e) }; }
-    }));
-    messages.push({ role: "user", content: results });
+/* ---------- providers: each workspace's owner picks one in Settings › AI (org_ai_config); its key is in the vault (ai_<provider>_key) ---------- */
+const PROVIDERS = {
+  anthropic: { label: "Anthropic Claude", base: "https://api.anthropic.com/v1" },
+  openai: { label: "OpenAI", base: "https://api.openai.com/v1" },
+  gemini: { label: "Google Gemini", base: "https://generativelanguage.googleapis.com/v1beta" },
+  compatible: { label: "OpenAI-compatible", base: "" },
+};
+const OFF = "Ask AI isn't set up yet. Your workspace owner can switch it on in Settings › AI.";
+const TIMEOUT = 45000;
+
+/* the https address an OpenAI-compatible service gets (same rule as set_ai_config in the database) */
+function safeBase(u) {
+  const m = /^https:\/\/([^\s/?#:]+)(:\d+)?(\/[^\s?#]*)?$/.exec(String(u || "").trim()); if (!m) return "";
+  const h = m[1].toLowerCase();
+  if (h === "localhost" || /\.(local|internal)$/.test(h) || /^(10|127|0)\./.test(h) || /^192\.168\./.test(h) || /^169\.254\./.test(h) || /^172\.(1[6-9]|2\d|3[01])\./.test(h) || h.indexOf("[") === 0) return "";
+  return String(u).trim().replace(/\/+$/, "");
+}
+/* the workspace's AI settings and key; provider overrides the saved one (listing models before switching) */
+async function settings(provider) {
+  const r = await D.sbFetch("org_ai_config?select=enabled,provider,model,base_url");
+  const c = (r && r[0]) || { enabled: false, provider: "anthropic", model: "", base_url: "" };
+  const p = provider || c.provider;
+  if (!PROVIDERS[p]) throw new Error("Unknown AI provider.");
+  const base = p === "compatible" ? safeBase(c.base_url) : PROVIDERS[p].base;
+  return { enabled: !!c.enabled, provider: p, label: PROVIDERS[p].label, model: p === c.provider ? String(c.model || "") : "", base, key: await D.orgSecret("ai_" + p + "_key") };
+}
+/* one HTTP call to the provider; the key never appears in an error */
+async function call(cfg, path, body, method) {
+  if (!cfg.key) throw new Error("No " + cfg.label + " key saved yet (Settings › AI).");
+  if (!cfg.base) throw new Error("Set the service's https address in Settings › AI.");
+  const h = { "content-type": "application/json" };
+  if (cfg.provider === "anthropic") { h["x-api-key"] = cfg.key; h["anthropic-version"] = "2023-06-01"; }
+  else if (cfg.provider === "gemini") h["x-goog-api-key"] = cfg.key;
+  else h.authorization = "Bearer " + cfg.key;
+  let r;
+  try { r = await fetch(cfg.base + path, { method: method || "POST", headers: h, body: body ? JSON.stringify(body) : undefined, signal: AbortSignal.timeout(TIMEOUT) }); }
+  catch (e) { throw new Error(cfg.label + " didn't answer in time or couldn't be reached."); }
+  const t = await r.text(); let j = null; try { j = JSON.parse(t); } catch (e) {}
+  if (!r.ok) {
+    const msg = String((j && ((j.error && (j.error.message || j.error)) || j.message)) || t || "").replace(cfg.key, "…").slice(0, 300);
+    if (r.status === 401 || r.status === 403) throw new Error(cfg.label + " refused the key (" + r.status + "). Check it in Settings › AI.");
+    if (r.status === 404) throw new Error(cfg.label + " doesn't know the model “" + cfg.model + "” (404). Pick another in Settings › AI.");
+    if (r.status === 429) throw new Error(cfg.label + " says the limit or credit is used up (429). " + msg);
+    throw new Error(cfg.label + " answered " + r.status + ": " + msg);
   }
-  return { answer: "That needed more steps than allowed. Try a narrower question (one brand or a shorter date range).", tools: used };
+  return j || {};
+}
+/* Gemini takes a subset of JSON schema: no additionalProperties */
+function geminiSchema(x) {
+  if (Array.isArray(x)) return x.map(geminiSchema);
+  if (!x || typeof x !== "object") return x;
+  const o = {}; Object.keys(x).forEach((k) => { if (k !== "additionalProperties") o[k] = geminiSchema(x[k]); }); return o;
+}
+
+/* one conversation turn per provider: returns {text, calls: [{id, name, input}], stop, push(results)} with the provider's own message format kept */
+const ADAPTERS = {
+  anthropic: {
+    start: (sys, msgs) => ({ system: sys, messages: msgs.map((m) => ({ role: m.role, content: m.content })) }),
+    async turn(cfg, st, tools) {
+      const res = await call(cfg, "/messages", { model: cfg.model, max_tokens: 4096, system: st.system, messages: st.messages,
+        tools: tools ? TOOLS : undefined });
+      const content = res.content || []; st.messages.push({ role: "assistant", content });
+      return { text: content.filter((b) => b.type === "text").map((b) => b.text).join("\n"), stop: res.stop_reason,
+        calls: content.filter((b) => b.type === "tool_use").map((b) => ({ id: b.id, name: b.name, input: b.input || {} })) };
+    },
+    results(st, out) { st.messages.push({ role: "user", content: out.map((o) => ({ type: "tool_result", tool_use_id: o.id, content: o.content, is_error: o.error || undefined })) }); },
+  },
+  openai: {
+    start: (sys, msgs) => ({ messages: [{ role: "system", content: sys }].concat(msgs.map((m) => ({ role: m.role, content: m.content }))) }),
+    async turn(cfg, st, tools) {
+      const res = await call(cfg, "/chat/completions", { model: cfg.model, messages: st.messages,
+        tools: tools ? TOOLS.map((t) => ({ type: "function", function: { name: t.name, description: t.description, parameters: t.input_schema } })) : undefined });
+      const ch = (res.choices || [])[0] || {}, m = ch.message || { role: "assistant", content: "" };
+      st.messages.push(m);
+      const calls = (m.tool_calls || []).map((c) => { let a = {}; try { a = JSON.parse((c.function && c.function.arguments) || "{}"); } catch (e) {} return { id: c.id, name: c.function && c.function.name, input: a }; });
+      return { text: typeof m.content === "string" ? m.content : "", calls, stop: ch.finish_reason === "length" ? "max_tokens" : ch.finish_reason === "content_filter" ? "refusal" : ch.finish_reason };
+    },
+    results(st, out) { out.forEach((o) => st.messages.push({ role: "tool", tool_call_id: o.id, content: o.content })); },
+  },
+  gemini: {
+    start: (sys, msgs) => ({ system: sys, contents: msgs.map((m) => ({ role: m.role === "assistant" ? "model" : "user", parts: [{ text: m.content }] })) }),
+    async turn(cfg, st, tools) {
+      const model = String(cfg.model || "").replace(/^models\//, "");
+      const res = await call(cfg, "/models/" + encodeURIComponent(model) + ":generateContent", { systemInstruction: { parts: [{ text: st.system }] }, contents: st.contents,
+        tools: tools ? [{ functionDeclarations: TOOLS.map((t) => ({ name: t.name, description: t.description, parameters: geminiSchema(t.input_schema) })) }] : undefined });
+      const cand = (res.candidates || [])[0] || {}, content = cand.content || { role: "model", parts: [] };
+      st.contents.push({ role: "model", parts: content.parts || [] });
+      const parts = content.parts || [];
+      return { text: parts.filter((p) => typeof p.text === "string" && !p.thought).map((p) => p.text).join("\n"),
+        calls: parts.filter((p) => p.functionCall).map((p, i) => ({ id: p.functionCall.id || "call_" + i, name: p.functionCall.name, input: p.functionCall.args || {} })),
+        stop: cand.finishReason === "MAX_TOKENS" ? "max_tokens" : /SAFETY|PROHIBITED|BLOCKLIST/.test(cand.finishReason || "") || (res.promptFeedback && res.promptFeedback.blockReason) ? "refusal" : cand.finishReason };
+    },
+    results(st, out) { st.contents.push({ role: "user", parts: out.map((o) => ({ functionResponse: { name: o.name, response: { result: o.content } } })) }); },
+  },
+};
+ADAPTERS.compatible = ADAPTERS.openai;
+
+/* one question (with optional earlier turns as plain text) → answer text + the tools used + which model answered */
+async function ask(S, question, history) {
+  const cfg = await settings();
+  if (!cfg.enabled) { const e = new Error(OFF); e.code = "AI_OFF"; throw e; }
+  if (!cfg.model) throw new Error("No model chosen yet. Your workspace owner picks one in Settings › AI.");
+  const A = ADAPTERS[cfg.provider];
+  const prior = (Array.isArray(history) ? history : []).filter((m) => m && (m.role === "user" || m.role === "assistant") && typeof m.content === "string" && m.content.trim())
+    .slice(-10).map((m) => ({ role: m.role, content: m.content.slice(0, 4000) }));
+  prior.push({ role: "user", content: String(question).slice(0, 4000) });
+  const st = A.start(system(S), prior), used = [], by = { provider: cfg.label, model: cfg.model };
+  for (let turn = 0; turn < 6; turn++) {
+    const r = await A.turn(cfg, st, true);
+    if (r.stop === "refusal") return { answer: "I can't answer that one. Try asking about spend, leads, QL, sales or campaigns.", tools: used, by };
+    if (!r.calls.length) return { answer: (r.text || "").trim() || "No answer was produced.", tools: used, truncated: r.stop === "max_tokens", by };
+    const out = await Promise.all(r.calls.map(async (c) => {
+      used.push({ tool: c.name, input: c.input });
+      try { return { id: c.id, name: c.name, content: JSON.stringify(await runTool(S, c.name, c.input)).slice(0, 60000) }; }
+      catch (e) { return { id: c.id, name: c.name, error: true, content: String(e.message || e) }; }
+    }));
+    A.results(st, out);
+  }
+  return { answer: "That needed more steps than allowed. Try a narrower question (one brand or a shorter date range).", tools: used, by };
+}
+/* Settings › AI: the models a saved key can use (owners only) */
+async function models(provider) {
+  const cfg = await settings(provider);
+  if (cfg.provider === "gemini") {
+    const r = await call(cfg, "/models?pageSize=200", null, "GET");
+    return (r.models || []).filter((m) => (m.supportedGenerationMethods || []).indexOf("generateContent") >= 0).map((m) => String(m.name || "").replace(/^models\//, "")).filter(Boolean).sort();
+  }
+  const r = await call(cfg, "/models" + (cfg.provider === "anthropic" ? "?limit=100" : ""), null, "GET");
+  return (r.data || []).map((m) => m.id).filter(Boolean).sort();
+}
+/* Settings › AI › Test: a tiny request with the saved provider, model and key */
+async function test() {
+  const cfg = await settings();
+  if (!cfg.model) throw new Error("Choose a model first.");
+  const A = ADAPTERS[cfg.provider], st = A.start("Reply with the single word OK.", [{ role: "user", content: "Test" }]);
+  const t0 = Date.now(), r = await A.turn(cfg, st, false);
+  return { ok: true, provider: cfg.label, model: cfg.model, reply: String(r.text || "").trim().slice(0, 80), ms: Date.now() - t0 };
 }
 async function digest(S) {
   const y = U.istDay(-1);
-  return ask(S, "Write the morning digest for " + y + " (yesterday, complete day) for the chairman. Compare with the 7 days before (" + U.addDays(y, -7) + " to " + U.addDays(y, -1) + "). " +
-    "Cover: total spend, Meta leads, CRM leads, QL, sales if configured, CPL and CPQL with change; the best and worst brand by CPQL (only brands with 5+ QL in either period); campaigns that spent ₹1,500+ with 0 QL; and the top 3 actions. " +
+  return ask(S, "Write the morning digest for " + y + " (yesterday, complete day) for the leadership team. Compare with the 7 days before (" + U.addDays(y, -7) + " to " + U.addDays(y, -1) + "). " +
+    "Cover: total spend, Meta leads, CRM leads, QL, sales if configured, CPL and CPQL with change; the best and worst brand by CPQL (only brands with 5+ QL in either period); campaigns that spent 1,500+ (workspace currency) with 0 QL; and the top 3 actions. " +
     "Plain text, no markdown tables, under 1,800 characters.", []);
 }
-module.exports = { ask, digest, TOOLS, runTool };
+module.exports = { ask, digest, models, test, settings, safeBase, PROVIDERS, TOOLS, runTool };

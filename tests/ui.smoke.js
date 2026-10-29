@@ -53,7 +53,7 @@ const fakeSupabase = {
         calls.push({ op: "rpc", fn, args });
         if (fn === "accept_invites") return result(0);
         if (fn === "my_orgs") return result(orgs.slice());
-        if (fn === "create_organization") { orgs.push({ id: "11111111-1111-4111-8111-111111111111", public_id: "pub123", name: args.p_name, logo: null, currency: args.p_currency, tz_offset_min: args.p_tz_offset_min, crm_name: args.p_crm_name, role: "admin" }); return result(orgs[0].id); }
+        if (fn === "create_organization") { orgs.push({ id: "11111111-1111-4111-8111-111111111111", public_id: "pub123", name: args.p_name, logo: null, currency: args.p_currency, tz_offset_min: args.p_tz_offset_min, crm_name: args.p_crm_name, role: "admin", is_owner: true }); return result(orgs[0].id); }
         return result(null);
       }
     };
@@ -148,6 +148,24 @@ const submit = (doc) => doc.querySelector("form").dispatchEvent(new doc.defaultV
   ok(/Choose a workspace/.test(t5()) && /open now/.test(t5()) && [...d5.window.document.querySelectorAll("button")].some((b) => b.textContent === "Cancel"), "Switch workspace shows the list with Cancel and the open one marked");
   [...d5.window.document.querySelectorAll(".ws-pick")].filter((b) => /Acme Homes/.test(b.textContent))[0].click(); await wait(300);
   ok(d5.window.eval("sb.org.name") === "Acme Homes" && d5.window.eval("sb.role") === "admin" && d5.window.eval("sb.status") === "ready", "switching opens the other workspace, with its own role");
+  /* Ask AI and Settings › AI: owners only for the settings; everyone sees on / off */
+  const W5 = d5.window, nav5 = () => [...W5.document.querySelectorAll(".set-nav button")].map((b) => b.textContent);
+  W5.eval("state.tab = 'settings'; state.setTab = 'ai'; render();"); await wait(200);
+  ok(nav5().indexOf("AI") >= 0 && /Ask AI is on for this workspace/.test(t5()) && W5.document.querySelectorAll('input[aria-label$=" key"]').length === 4, "an owner sees Settings › AI with the provider, model and four key fields");
+  W5.document.getElementById("ai-on").click(); await wait(30);
+  W5.document.getElementById("ai-prov").value = "compatible"; W5.document.getElementById("ai-prov").dispatchEvent(new W5.Event("change")); await wait(30);
+  W5.document.getElementById("ai-model").value = "some-model"; W5.document.getElementById("ai-model").dispatchEvent(new W5.Event("input"));
+  W5.document.getElementById("ai-base").value = "https://openrouter.ai/api/v1"; W5.document.getElementById("ai-base").dispatchEvent(new W5.Event("input"));
+  [...W5.document.querySelectorAll("button")].filter((b) => b.textContent === "Save AI settings")[0].click(); await wait(200);
+  const sc = calls.filter((c) => c.fn === "set_ai_config").pop();
+  ok(sc && sc.args.p_enabled === true && sc.args.p_provider === "compatible" && sc.args.p_model === "some-model" && sc.args.p_base_url === "https://openrouter.ai/api/v1", "Save AI settings sends provider, model and address to set_ai_config");
+  W5.eval("state.tab = 'ask'; render();"); await wait(200);
+  ok(/isn't set up yet/.test(t5()) && [...W5.document.querySelectorAll("button")].filter((b) => b.textContent === "Ask")[0].disabled, "Ask AI off: a clear message and Ask is disabled");
+  W5.eval("sbSwitchOrg('22222222-2222-4222-8222-222222222222')"); await wait(300);
+  W5.eval("state.tab = 'settings'; state.setTab = 'ai'; render();"); await wait(100);
+  ok(nav5().indexOf("AI") < 0 && !/Ask AI is on for this workspace/.test(t5()), "a viewer (not owner) has no AI section, even when asking for it");
+  W5.eval("state.tab = 'ask'; render();"); await wait(200);
+  ok(/workspace owner can switch it on/.test(t5()), "…and Ask AI tells them the owner sets it up");
   /* a site without its database settings says so, instead of quietly showing upload-only mode */
   const d2 = new JSDOM(html, { url: "https://app.example.test/", runScripts: "dangerously", pretendToBeVisual: true, beforeParse(x) {
     x.XLSX = {}; x.scrollTo = () => {}; x.matchMedia = () => ({ matches: false, addListener() {}, addEventListener() {} });

@@ -3,6 +3,7 @@
 //   GET  ?op=perf|attribution|trend&from=&to=&brand=[&model=&by=&granularity=]   · ?op=journey&id=   · ?op=find&q=
 //   GET  ?op=capi-status[&days=7] · ?op=audiences-status · ?op=tracking-status[&days=7]
 //   POST ?op=capi-run · ?op=audiences-run   (admins / editors)       POST ?op=ask {question, history}
+//   POST ?op=ai-models {provider} · ?op=ai-test   (workspace owners: Settings › AI)
 // Scheduler (pg_cron Vault key or CRON_SECRET), once per workspace:  POST ?op=cron&mode=capi|audiences|digest&org=<id>
 // Machine access (a workspace API key):  /api/mcp (MCP server)  ·  GET ?op=ext&from=&to= (Chrome extension)
 const D = require("./_db");
@@ -23,7 +24,7 @@ async function cron(req, res, mode) {
       if (!(S.ai || {}).digest) return D.send(res, 200, { skipped: "AI digest is off (Settings › Attribution & sync)." });
       const T = require("./_tg"), A = require("./_alertlib");
       if (!T.configured()) return D.send(res, 200, { skipped: "Telegram is not set up on this site." });
-      const d = await require("./_ai").digest(S);
+      let d; try { d = await require("./_ai").digest(S); } catch (e) { if (e.code === "AI_OFF") return D.send(res, 200, { skipped: "Ask AI is off (Settings › AI)." }); throw e; }
       const sentTo = await A.deliver(D.sbFetch, "ai-digest", "🧠 <b>" + T.esc(D.orgName()) + " AI DIGEST · " + T.esc(U.istDay(-1)) + "</b>\n\n" + T.esc(d.answer) + "\n\n<i>Written by AI from the dashboard's numbers. Check the dashboard before acting on it.</i>");
       return D.send(res, 200, { sent: !!sentTo, chars: d.answer.length });
     }
@@ -80,6 +81,10 @@ module.exports = async function handler(req, res) {
         case "audiences-run": if (req.method !== "POST") break; if (!canRun) return D.send(res, 403, { error: "Admins and editors only." }); return D.send(res, 200, await require("./_audiences").run(S, { force: true }));
         case "ask": { if (req.method !== "POST") break; const b = body(req); if (!String(b.question || "").trim()) return D.send(res, 400, { error: "Ask a question." });
           return D.send(res, 200, await require("./_ai").ask(S, b.question, b.history)); }
+        case "ai-models": { if (req.method !== "POST") break; if (!me.owner) return D.send(res, 403, { error: "Only the workspace owner manages AI settings." });
+          return D.send(res, 200, { models: await require("./_ai").models(String(body(req).provider || "")) }); }
+        case "ai-test": { if (req.method !== "POST") break; if (!me.owner) return D.send(res, 403, { error: "Only the workspace owner manages AI settings." });
+          return D.send(res, 200, await require("./_ai").test()); }
       }
       return D.send(res, 400, { error: "Unknown op or method: " + op });
     });

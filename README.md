@@ -52,7 +52,6 @@ Anyone can belong to several workspaces (agencies, groups); switch from the prof
 | `APP_URL` | the site address (email links, Telegram's webhook, links in reports); same as on the server |
 | `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `MAIL_FROM` | sign-up confirmation and password-reset emails, through any SMTP server (Amazon SES, Gmail, Zoho, your host's mail). Without them nobody can sign up. |
 | `TELEGRAM_BOT_TOKEN` | optional: one bot for every workspace's alerts (@BotFather) |
-| `ANTHROPIC_API_KEY` | optional: Ask AI and the AI digest (Claude) |
 | `GOOGLE_ADS_CLIENT_ID`, `GOOGLE_ADS_CLIENT_SECRET` | optional: one Google OAuth client; each workspace adds its own refresh token |
 | `APP_NAME` | optional: product name on the sign-in page and in emails (default "Lead Performance") |
 

@@ -4003,6 +4003,7 @@ function viewSettings(){
   if (!SET_TABS.some(function(t){ return t[0] === tab; })) tab = sb.cfg ? "connections" : "brands";
   if (tab === "connections" && !sb.cfg) tab = "brands";
   if (tab === "alerts" && !alertsAllowed()) tab = sb.cfg ? "connections" : "brands";
+  if (tab === "ai" && !sbIsOwner()) tab = sb.cfg ? "connections" : "brands";
   var go = function(t){ state.setTab = t; try { localStorage.setItem("lp-set-tab", t); } catch (e) {} render(); window.scrollTo(0, 0); };
   /* inputs keep their unsaved value while you switch sections */
   var val = function(id, cur){ return id in D.inputs ? D.inputs[id] : cur; };
@@ -4018,7 +4019,7 @@ function viewSettings(){
 
   var head = el("div", {cls: "set-head"},
     el("p", {cls: "small", text: (sb.cfg && sb.status === "ready" && sbCanWrite() ? "Changes are shared with your whole team when you save." : "Changes are saved in this browser.") + (editable ? "" : " Load data to see their effect on the report.")}));
-  var nav = el("div", {cls: "set-nav", role: "tablist", "aria-label": "Settings sections"}, SET_TABS.filter(function(t){ return (t[0] !== "connections" || sb.cfg) && (t[0] !== "alerts" || alertsAllowed()); }).map(function(t){
+  var nav = el("div", {cls: "set-nav", role: "tablist", "aria-label": "Settings sections"}, SET_TABS.filter(function(t){ return (t[0] !== "connections" || sb.cfg) && (t[0] !== "alerts" || alertsAllowed()) && (t[0] !== "ai" || sbIsOwner()); }).map(function(t){
     return el("button", {type: "button", role: "tab", "aria-selected": t[0] === tab ? "true" : "false", onclick: function(){ go(t[0]); }}, t[1]); }));
   var info = SET_TABS.filter(function(t){ return t[0] === tab; })[0];
   var body = el("div", {cls: "set-body"}, el("p", {cls: "set-lead", text: info[2]}));
@@ -4836,7 +4837,7 @@ function setChrome(on){
 }
 function displayName(){ var m = sb.user && sb.user.user_metadata || {}; return clean(m.full_name || m.name || "") || sb.email.split("@")[0]; }
 function initials(){ var n = displayName().replace(/[^A-Za-z0-9 ]+/g, " ").trim().split(/\s+/); return ((n[0] || "?")[0] + (n.length > 1 ? n[n.length - 1][0] : (n[0] || "")[1] || "")).toUpperCase(); }
-var ROLE_TXT = {admin: "Admin · manages the workspace, its tokens, keys and members", editor: "Editor · uploads data and changes shared settings", viewer: "Viewer · sees the dashboard"};
+var ROLE_TXT = {owner: "Owner · an admin who also manages AI settings and owners", admin: "Admin · manages the workspace, its tokens, keys and members", editor: "Editor · uploads data and changes shared settings", viewer: "Viewer · sees the dashboard"};
 function renderUserBox(){
   var b = document.getElementById("user-box"); b.textContent = "";
   if (!sb.cfg || !sb.email){ b.hidden = true; sb.profileOpen = false; return; }
@@ -4851,14 +4852,14 @@ function renderUserBox(){
   var last = sb.user && sb.user.last_sign_in_at ? new Date(sb.user.last_sign_in_at).toLocaleString("en-IN", {dateStyle: "medium", timeStyle: "short"}) : "";
   pop.appendChild(el("div", {cls: "prof-head"}, el("span", {cls: "avatar lg", "aria-hidden": "true", text: initials()}),
     el("div", null, el("div", {cls: "prof-title", text: displayName()}), el("div", {cls: "small", text: sb.email}),
-      sb.role ? el("span", {cls: "pill good", style: "margin-top:6px", text: sb.role.charAt(0).toUpperCase() + sb.role.slice(1)}) : null)));
+      sb.role ? el("span", {cls: "pill good", style: "margin-top:6px", text: sb.role.charAt(0).toUpperCase() + sb.role.slice(1) + (sbIsOwner() ? " · Owner" : "")}) : null)));
   if (sb.org){ var ws = el("select", {id: "pf-org", "aria-label": "Workspace"}, sb.orgs.map(function(o){ return el("option", {value: o.id, selected: o.id === sb.org.id ? true : null, text: o.name + " (" + o.role + ")"}); }));
     ws.addEventListener("change", function(){ sb.profileOpen = false; sbSwitchOrg(ws.value); });
     pop.appendChild(el("div", {cls: "field"}, el("label", {"for": "pf-org", text: "Workspace"}), ws,
       el("div", {style: "display:flex;gap:14px;flex-wrap:wrap"},
         sb.orgs.length > 1 ? el("button", {cls: "linkbtn", type: "button", id: "pf-switch", onclick: function(){ sb.profileOpen = false; sb.status = "choose"; render(); }}, "Switch workspace") : null,
         el("button", {cls: "linkbtn", type: "button", onclick: function(){ sb.profileOpen = false; sb.creatingOrg = true; sb.status = "noorg"; render(); }}, "+ New workspace")))); }
-  if (sb.role) pop.appendChild(el("div", {cls: "small", text: ROLE_TXT[sb.role] || ""}));
+  if (sb.role) pop.appendChild(el("div", {cls: "small", text: ROLE_TXT[sbIsOwner() ? "owner" : sb.role] || ""}));
   if (since || last) pop.appendChild(el("div", {cls: "small", text: (since ? "Member since " + since : "") + (since && last ? " · " : "") + (last ? "Last sign-in " + last : "")}));
   /* display name */
   var nm = el("input", {type: "text", id: "pf-name", maxlength: "60", value: (sb.user && sb.user.user_metadata && sb.user.user_metadata.full_name) || "", placeholder: "Your name"});
@@ -4972,7 +4973,7 @@ function workspaceChooser(){
     return el("button", {cls: "btn ghost ws-pick", type: "button", role: "listitem", "data-org": o.id, style: "display:flex;justify-content:space-between;align-items:center;gap:12px;width:100%;text-align:left", onclick: function(){ sbPickOrg(o); }},
       el("span", {style: "display:flex;align-items:center;gap:10px;min-width:0"}, o.logo ? el("img", {src: o.logo, alt: "", style: "width:28px;height:28px;object-fit:contain;border-radius:6px;flex:none"}) : null,
         el("strong", {text: o.name, style: "overflow:hidden;text-overflow:ellipsis;white-space:nowrap"})),
-      el("span", {cls: "small", style: "flex:none", text: (ROLE_NAME[o.role] || o.role) + (cur && cur.id === o.id ? " · open now" : "")})); })));
+      el("span", {cls: "small", style: "flex:none", text: (ROLE_NAME[o.role] || o.role) + (o.is_owner ? " · Owner" : "") + (cur && cur.id === o.id ? " · open now" : "")})); })));
   box.appendChild(el("div", {style: "display:flex;gap:12px;flex-wrap:wrap;align-items:center"},
     cur ? el("button", {cls: "btn ghost", type: "button", onclick: function(){ sbUseOrg(cur); render(); }}, "Cancel") : null,
     el("button", {cls: "linkbtn", type: "button", onclick: function(){ sb.creatingOrg = true; sb.status = "noorg"; render(); }}, "+ New workspace"),
@@ -5861,6 +5862,8 @@ function sbSwitchOrg(id){ var o = sb.orgs.filter(function(x){ return x.id === id
 function sbLoadOrgs(){ return sb.client.rpc("accept_invites").then(function(){ return sb.client.rpc("my_orgs"); }).then(function(r){ if (r.error) throw r.error; sb.orgs = r.data || []; return sb.orgs; }); }
 function loadScript(src){ return new Promise(function(res, rej){ var s = document.createElement("script"); s.src = src; s.async = true; s.onload = res; s.onerror = function(){ rej(new Error("Could not load " + src)); }; document.head.appendChild(s); }); }
 function sbCanWrite(){ return sb.status === "ready" && (sb.role === "admin" || sb.role === "editor"); }
+/* workspace owner: an admin who also manages AI settings and owners */
+function sbIsOwner(){ return sb.status === "ready" && !!sb.org && sb.org.role === "admin" && sb.org.is_owner === true; }
 /* own login (api/auth.js). The session ({token, user}) is kept in this browser; the token is a signed JWT that the database API checks. */
 var lpAuth = {
   key: "lp-session", s: null,
@@ -6302,7 +6305,7 @@ function dbRefreshLists(){
   if (sb.status !== "ready") return Promise.resolve();
   return Promise.all([
     sb.client.from("uploads").select("*").order("uploaded_at", {ascending: false}).limit(15).then(function(r){ sb.uploads = r.error ? [] : r.data; }),
-    sb.client.from("org_members").select("email,role,user_id,invited_by,created_at").order("email").then(function(r){ sb.members = r.error ? [] : r.data; })]);
+    sb.client.from("org_members").select("email,role,is_owner,user_id,invited_by,created_at").order("email").then(function(r){ sb.members = r.error ? [] : r.data; })]);
 }
 function dbAddButton(){
   var f = state.files || {};
@@ -6402,15 +6405,23 @@ function renderDbSection(x){
       sb.client.from("org_members").upsert({org_id: sb.org.id, email: e, role: mRole.value, invited_by: sb.email}, {onConflict: "org_id,email"}).then(function(r){ if (r.error) throw r.error; toast("Invited " + e + " as " + mRole.value + ". They create an account with this email at " + location.host + " and confirm it."); return dbRefreshLists(); })
         .then(renderSavedPanel).catch(function(er){ toast("Could not add: " + er.message); }); };
     box.appendChild(el("h3", {style: "font-size:14px", text: "Members of " + orgName()}));
-    box.appendChild(el("div", {cls: "small", text: "Viewer: sees data. Editor: also adds uploads and changes shared settings. Admin: also manages members, tokens and API keys. Invited people create an account with the same email (and confirm it); the workspace then appears for them."}));
+    box.appendChild(el("div", {cls: "small", text: "Viewer: sees data. Editor: also adds uploads and changes shared settings. Admin: also manages members, tokens and API keys. Owner: an admin who also manages AI settings and who is owner. Invited people create an account with the same email (and confirm it); the workspace then appears for them."}));
     box.appendChild(el("div", {cls: "save-row"}, el("div", {cls: "field"}, el("label", {"for": "mb-email", text: "Email"}), mEmail),
       el("div", {cls: "field", style: "flex:0 0 140px"}, el("label", {"for": "mb-role", text: "Role"}), mRole), el("button", {cls: "btn", type: "button", onclick: add}, "Invite")));
     var mt = el("tbody");
+    var meOwner = sbIsOwner();
+    var setOwner = function(m, on){ sb.client.rpc("set_member_owner", {p_email: m.email, p_owner: on}).then(function(r){ if (r.error) throw r.error;
+      toast(on ? m.email + " is now an owner" : m.email + " is no longer an owner"); return dbRefreshLists(); }).then(function(){ return m.email === sb.email ? sbLoadOrgs().then(function(list){ sbUseOrg(list.filter(function(x){ return x.id === sb.org.id; })[0] || sb.org); render(); }) : null; })
+      .then(renderSavedPanel).catch(function(e){ toast("Not changed: " + (e.message || e)); }); };
     sb.members.forEach(function(m){
-      var sel = el("select", {"aria-label": "Role for " + m.email, disabled: m.email === sb.email ? true : null}, ["viewer", "editor", "admin"].map(function(r){ return el("option", {value: r, selected: r === m.role ? true : null, text: r}); }));
+      var locked = m.email === sb.email || (m.is_owner && !meOwner);   /* only an owner changes or removes an owner */
+      var sel = el("select", {"aria-label": "Role for " + m.email, disabled: locked ? true : null}, ["viewer", "editor", "admin"].map(function(r){ return el("option", {value: r, selected: r === m.role ? true : null, text: r}); }));
       sel.addEventListener("change", function(){ sb.client.from("org_members").update({role: sel.value}).eq("org_id", sb.org.id).eq("email", m.email).then(function(r){ toast(r.error ? "Could not change: " + r.error.message : m.email + " is now " + sel.value); dbRefreshLists(); }); });
-      mt.appendChild(el("tr", null, el("td", {text: m.email}), el("td", null, sel), el("td", {cls: "small", text: (m.user_id ? "Joined" : "Invited") + (m.invited_by ? " · by " + m.invited_by : "")}),
-        el("td", null, m.email === sb.email ? el("span", {cls: "small", text: "You"}) : el("button", {cls: "linkbtn", type: "button", onclick: function(){
+      var own = el("span", {style: "display:flex;gap:8px;align-items:center;flex-wrap:wrap"}, sel, m.is_owner ? el("span", {cls: "pill good", text: "Owner"}) : null,
+        meOwner && m.role === "admin" && !m.is_owner ? el("button", {cls: "linkbtn", type: "button", onclick: function(){ setOwner(m, true); }}, "Make owner") : null,
+        meOwner && m.is_owner ? el("button", {cls: "linkbtn", type: "button", onclick: function(){ if (confirm((m.email === sb.email ? "Stop being an owner" : "Remove " + m.email + " as owner") + "? Owners manage AI settings and owners.")) setOwner(m, false); }}, m.email === sb.email ? "Step down" : "Remove owner") : null);
+      mt.appendChild(el("tr", null, el("td", {text: m.email}), el("td", null, own), el("td", {cls: "small", text: (m.user_id ? "Joined" : "Invited") + (m.invited_by ? " · by " + m.invited_by : "")}),
+        el("td", null, m.email === sb.email ? el("span", {cls: "small", text: "You"}) : locked ? el("span", {cls: "small", text: "Owner"}) : el("button", {cls: "linkbtn", type: "button", onclick: function(){
           sb.client.from("org_members").delete().eq("org_id", sb.org.id).eq("email", m.email).then(function(r){ toast(r.error ? "Could not remove: " + r.error.message : "Removed " + m.email); return dbRefreshLists(); }).then(renderSavedPanel); }}, "Remove"))));
     });
     box.appendChild(el("div", {cls: "tbl-wrap", style: "max-height:320px"}, el("table", null,

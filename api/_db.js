@@ -150,12 +150,12 @@ async function auth(req) {
   const proven = !!user.email_confirmed_at && !!(user.confirmation_sent_at || user.invited_at);
   const want = String(req.headers["x-org-id"] || (req.query && req.query.org) || "");
   if (!UUID.test(want)) return { status: 400, error: "No workspace selected." };
-  const rows = await raw("org_members?select=role,user_id,email&org_id=eq." + want + "&or=" + encodeURIComponent("(user_id.eq." + user.id + ",email.eq." + email + ")"));
+  const rows = await raw("org_members?select=role,is_owner,user_id,email&org_id=eq." + want + "&or=" + encodeURIComponent("(user_id.eq." + user.id + ",email.eq." + email + ")"));
   const m = (rows || []).filter((r) => r.user_id === user.id || (!r.user_id && r.email === email && proven))[0];
   if (!m) return { status: 403, error: "You're not a member of this workspace." };
   const o = await orgById(want);
   if (!o) return { status: 403, error: "This workspace isn't active." };
-  return { email, userId: user.id, role: m.role, org: o };
+  return { email, userId: user.id, role: m.role, owner: m.role === "admin" && m.is_owner === true, org: o };
 }
 /* scheduler: CRON_SECRET header (ec2/fanout.sh), or a database cron key */
 async function cronAllowed(req) {

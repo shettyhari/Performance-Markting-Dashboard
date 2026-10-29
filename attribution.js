@@ -1,6 +1,7 @@
 /* Lead Performance — attribution suite pages (loaded after index.html's main script; ES5 like the rest).
    Pages: Attribution (models, channels, AI search, conversion paths), Lead journeys, Report builder, Ask AI, Sync & tracking.
-   Settings section: Attribution & sync (deal values, Conversions API, website tracking, channel costs, audiences, AI digest, MCP / Chrome extension).
+   Settings sections: Attribution & sync (deal values, Conversions API, website tracking, channel costs, audiences, AI digest, MCP / Chrome extension),
+   Workspace, and AI (owners only: provider, model and keys for Ask AI).
    Server: /api/suite (api/_suite.js and friends). Numbers follow the dashboard's definitions; N/A, never 0, when data is missing. */
 (function(){
   var X = {cache: {}, busy: {}, err: {}, model: "last", by: "channel", chat: [], asking: false, jq: "", found: null, lead: null, cmp: null};
@@ -190,24 +191,35 @@
   /* ================= Ask AI ================= */
   var SUGGEST = ["How did we do last week vs the week before?", "Which campaigns spent the most with no qualified leads in the last 14 days?", "Which brand has the best CPQL this month?",
     "How many leads came from ChatGPT or other AI search this month?", "Which brand's cost per lead changed most over the last 30 days?"];
+  var AI_LABEL = {anthropic: "Anthropic Claude", openai: "OpenAI", gemini: "Google Gemini", compatible: "OpenAI-compatible"};
+  /* on / off and which provider · model answers (every member may see this; keys and addresses stay with the owner) */
+  function aiStatus(force){
+    var k = sb.org ? sb.org.id : ""; if (!force && X.aiFor === k) return X.ai; X.aiFor = k; X.ai = null;
+    sb.client.rpc("ai_status").then(function(r){ if (X.aiFor !== k) return; X.ai = r.error ? {err: r.error.message} : ((r.data || [])[0] || {enabled: false}); render(); });
+    return null;
+  }
   function viewAsk(){
     if (!ready()) return needDb();
+    var st = aiStatus(), off = st && !st.err && !(st.enabled && st.model);
     var ta = el("textarea", {rows: 3, placeholder: "Ask about spend, leads, QL, sales, campaigns, channels…", "aria-label": "Question", spellcheck: "true"});
     var send = function(text){ var qtext = String(text || ta.value).trim(); if (!qtext || X.asking) return;
       var hist = X.chat.map(function(m){ return {role: m.role, content: m.text}; }); X.chat.push({role: "user", text: qtext}); X.asking = true; render();
-      api("ask", {}, {question: qtext, history: hist}).then(function(d){ X.chat.push({role: "assistant", text: d.answer, tools: d.tools || []}); })
+      api("ask", {}, {question: qtext, history: hist}).then(function(d){ X.chat.push({role: "assistant", text: d.answer, tools: d.tools || [], by: d.by || null}); })
         .catch(function(e){ X.chat.push({role: "assistant", text: "Couldn't answer: " + e.message, error: true}); }).then(function(){ X.asking = false; render(); }); };
     ta.addEventListener("keydown", function(e){ if (e.key === "Enter" && (e.ctrlKey || e.metaKey)){ e.preventDefault(); send(); } });
     var box = el("section", {cls: "panel"}, head("Ask your data", "An AI analyst answers from the dashboard's own numbers (same definitions). It never sees phone numbers or emails. Always check important numbers on the dashboard before acting."));
+    if (st && st.enabled && st.model) box.appendChild(el("div", {cls: "small", text: "Answers by " + (AI_LABEL[st.provider] || st.provider) + " · " + st.model + ", chosen by your workspace owner."}));
+    if (off) box.appendChild(el("div", {cls: "banner warn"}, el("span", {text: sbIsOwner() ? "Ask AI isn't set up yet. Choose a provider, model and key in " : "Ask AI isn't set up yet. Your workspace owner can switch it on in Settings › AI."}),
+      sbIsOwner() ? el("button", {cls: "linkbtn", type: "button", onclick: function(){ state.tab = "settings"; state.setTab = "ai"; render(); }}, "Settings › AI") : null));
     var log = el("div", {style: "display:grid;gap:12px"});
     X.chat.forEach(function(m){ log.appendChild(el("div", {cls: "group", style: m.role === "user" ? "background:transparent" : ""},
-      el("div", {cls: "eyebrow", text: m.role === "user" ? "You" : "AI analyst"}), el("div", {style: "white-space:pre-wrap;line-height:1.55", text: m.text}),
+      el("div", {cls: "eyebrow", text: m.role === "user" ? "You" : "AI analyst" + (m.by ? " · " + m.by.provider + " · " + m.by.model : "")}), el("div", {style: "white-space:pre-wrap;line-height:1.55", text: m.text}),
       m.tools && m.tools.length ? el("div", {cls: "small", text: "Looked up: " + m.tools.map(function(t){ return t.tool.replace(/_/g, " ") + (t.input && t.input.from ? " " + t.input.from + "→" + t.input.to : "") + (t.input && t.input.brand ? " (" + t.input.brand + ")" : ""); }).join(" · ")}) : null)); });
     if (X.asking) log.appendChild(el("div", {cls: "empty", text: "Looking at the numbers…"}));
     box.appendChild(log);
-    if (!X.chat.length) box.appendChild(el("div", {cls: "chips", style: "flex-wrap:wrap"}, SUGGEST.map(function(s){ return el("button", {cls: "chip", type: "button", onclick: function(){ send(s); }}, s); })));
+    if (!X.chat.length && !off) box.appendChild(el("div", {cls: "chips", style: "flex-wrap:wrap"}, SUGGEST.map(function(s){ return el("button", {cls: "chip", type: "button", onclick: function(){ send(s); }}, s); })));
     box.appendChild(ta);
-    box.appendChild(el("div", {style: "display:flex;gap:8px;flex-wrap:wrap"}, el("button", {cls: "btn", type: "button", disabled: X.asking ? true : null, onclick: function(){ send(); }}, "Ask"),
+    box.appendChild(el("div", {style: "display:flex;gap:8px;flex-wrap:wrap"}, el("button", {cls: "btn", type: "button", disabled: X.asking || off ? true : null, onclick: function(){ send(); }}, "Ask"),
       X.chat.length ? el("button", {cls: "btn ghost", type: "button", onclick: function(){ X.chat = []; render(); }}, "New conversation") : null,
       el("span", {cls: "small", text: "Ctrl + Enter to send"})));
     return box;
@@ -298,7 +310,7 @@
       chk("aud-on", "Sync audiences", aud.enabled), chk("aud-ql", "Qualified leads", (aud.lists || ["ql", "won"]).indexOf("ql") >= 0), chk("aud-won", "Customers (sales)", (aud.lists || ["ql", "won"]).indexOf("won") >= 0),
       chk("aud-all", "All CRM leads (for exclusions)", (aud.lists || []).indexOf("all") >= 0), num("aud-days", "Leads from the last (days)", aud.lookbackDays || 180)));
 
-    wrap.appendChild(h.card("AI analyst", "Ask AI uses Claude (switched on by whoever runs the site). The daily digest goes to the Telegram chat connected in Settings › Alerts, every morning.",
+    wrap.appendChild(h.card("AI analyst", "Ask AI and the digest use the provider and model your workspace owner picks in Settings › AI. The daily digest goes to the Telegram chat connected in Settings › Alerts, every morning.",
       chk("ai-digest", "Send a daily AI digest to Telegram", ai.digest)));
 
     wrap.appendChild(h.card("Use the data in Claude, ChatGPT and the Chrome extension", "Create an API key in Settings › Workspace › API keys. Anyone with it can read this workspace's numbers, so keep it private and revoke it when it's no longer used.",
@@ -415,6 +427,74 @@
     return wrap;
   }
 
+  /* ================= Settings › AI (owners): provider, model, address and keys for Ask AI and the digest ================= */
+  var AI_KEYS = [["anthropic", "console.anthropic.com › Settings › API keys"], ["openai", "platform.openai.com › API keys"],
+    ["gemini", "aistudio.google.com › Get API key"], ["compatible", "Your service's dashboard (OpenRouter, DeepSeek, Groq, Mistral, a self-hosted model…)"]];
+  var AIS = {cfg: null, keys: null, d: null, models: {}, busy: "", msg: null, org: ""};
+  function aiLoad(force){
+    var k = sb.org ? sb.org.id : ""; if (!force && AIS.org === k && (AIS.cfg || AIS.busy === "load")) return; AIS.org = k; AIS.busy = "load";
+    Promise.all([sb.client.from("org_ai_config").select("enabled,provider,model,base_url").maybeSingle(), sb.client.from("org_secrets").select("key,last4,updated_by,updated_at").in("key", AI_KEYS.map(function(p){ return "ai_" + p[0] + "_key"; }))])
+      .then(function(r){ if (r[0].error) throw r[0].error; AIS.cfg = r[0].data || {enabled: false, provider: "anthropic", model: "", base_url: ""};
+        AIS.keys = {}; (r[1].data || []).forEach(function(x){ AIS.keys[x.key.replace(/^ai_|_key$/g, "")] = x; });
+        AIS.d = {enabled: !!AIS.cfg.enabled, provider: AIS.cfg.provider, model: AIS.cfg.model || "", base_url: AIS.cfg.base_url || ""}; })
+      .catch(function(e){ AIS.msg = {kind: "err", text: "Couldn't load: " + (e.message || e)}; }).then(function(){ AIS.busy = ""; render(); });
+  }
+  function aiSaveCfg(){
+    var d = AIS.d; AIS.busy = "save"; AIS.msg = null; render();
+    return sb.client.rpc("set_ai_config", {p_enabled: d.enabled, p_provider: d.provider, p_model: d.model.trim(), p_base_url: d.provider === "compatible" ? d.base_url.trim() : ""})
+      .then(function(r){ if (r.error) throw r.error; AIS.msg = {kind: "ok", text: "AI settings saved."}; aiStatus(true); return aiLoad(true); })
+      .catch(function(e){ AIS.msg = {kind: "err", text: "Not saved: " + (e.message || e)}; }).then(function(){ AIS.busy = ""; render(); });
+  }
+  function setAI(h){
+    var wrap = el("div", {style: "display:grid;gap:18px"});
+    if (!sbIsOwner()){ wrap.appendChild(el("p", {cls: "small", text: "Only the workspace owner manages AI settings."})); return wrap; }
+    aiLoad(); if (!AIS.d){ wrap.appendChild(el("p", {cls: "small", text: AIS.msg ? AIS.msg.text : "Loading…"})); return wrap; }
+    var d = AIS.d, saved = AIS.cfg, dirty = d.enabled !== !!saved.enabled || d.provider !== saved.provider || d.model !== (saved.model || "") || d.base_url !== (saved.base_url || "");
+    var prov = el("select", {id: "ai-prov"}, AI_KEYS.map(function(p){ return el("option", {value: p[0], selected: p[0] === d.provider ? true : null, text: AI_LABEL[p[0]] + (AIS.keys[p[0]] ? "" : " (no key yet)")}); }));
+    prov.addEventListener("change", function(){ d.provider = prov.value; d.model = d.provider === saved.provider ? (saved.model || "") : ""; render(); });
+    var list = AIS.models[d.provider] || [], model = el("input", {type: "text", id: "ai-model", value: d.model, list: "ai-models", placeholder: "Model name, or Load models", autocomplete: "off"});
+    model.addEventListener("input", function(){ d.model = model.value; });
+    var base = el("input", {type: "url", id: "ai-base", value: d.base_url, placeholder: "https://openrouter.ai/api/v1"});
+    base.addEventListener("input", function(){ d.base_url = base.value; });
+    var on = el("input", {type: "checkbox", id: "ai-on", checked: d.enabled ? true : null}); on.addEventListener("change", function(){ d.enabled = on.checked; render(); });
+    var loadModels = function(){ if (!AIS.keys[d.provider]){ AIS.msg = {kind: "err", text: "Save a " + AI_LABEL[d.provider] + " key below first."}; render(); return; }
+      if (d.provider === "compatible" && (saved.provider !== "compatible" || d.base_url !== (saved.base_url || ""))){ AIS.msg = {kind: "err", text: "Save the address first (Save AI settings), then load its models."}; render(); return; }
+      AIS.busy = "models"; AIS.msg = null; render();
+      api("ai-models", {}, {provider: d.provider}).then(function(r){ AIS.models[d.provider] = r.models || []; AIS.msg = {kind: "ok", text: (r.models || []).length + " models available with this key."}; })
+        .catch(function(e){ AIS.msg = {kind: "err", text: e.message}; }).then(function(){ AIS.busy = ""; render(); }); };
+    var testIt = function(){ AIS.busy = "test"; AIS.msg = null; render();
+      api("ai-test", {}, {}).then(function(r){ AIS.msg = {kind: "ok", text: "Works: " + r.provider + " · " + r.model + " answered “" + (r.reply || "…") + "” in " + (r.ms / 1000).toFixed(1) + " s."}; })
+        .catch(function(e){ AIS.msg = {kind: "err", text: e.message}; }).then(function(){ AIS.busy = ""; render(); }); };
+    var B = AIS.busy;
+    wrap.appendChild(h.card("Ask AI", "Pick which AI answers questions in Ask AI and writes the morning digest, for this workspace. Every member can use Ask AI; only owners see this page. The AI only ever gets the dashboard's numbers, never names, phone numbers or emails.",
+      el("label", {cls: "toggle", "for": "ai-on"}, on, el("span", null, el("span", {text: "Ask AI is on for this workspace"}), el("span", {cls: "small tog-hint", text: "Off: members see that it isn't set up, and the digest is skipped."}))),
+      el("div", {cls: "form compact"},
+        el("div", {cls: "field"}, el("label", {"for": "ai-prov", text: "Provider"}), prov),
+        el("div", {cls: "field"}, el("label", {"for": "ai-model", text: "Model"}), el("div", {style: "display:flex;gap:8px;flex-wrap:wrap"}, model,
+          el("button", {cls: "btn ghost", type: "button", disabled: B ? true : null, onclick: loadModels}, B === "models" ? "Loading…" : "Load models")),
+          el("datalist", {id: "ai-models"}, list.map(function(m){ return el("option", {value: m}); })),
+          el("span", {cls: "small", text: list.length ? list.length + " models loaded: start typing to pick one." : "Load models lists what your key can use, straight from the provider."})),
+        d.provider === "compatible" ? el("div", {cls: "field"}, el("label", {"for": "ai-base", text: "Service address (OpenAI-style API, https)"}), base,
+          el("span", {cls: "small", text: "For example https://openrouter.ai/api/v1, https://api.deepseek.com/v1, https://api.groq.com/openai/v1, https://api.mistral.ai/v1."})) : null),
+      el("div", {style: "display:flex;gap:8px;flex-wrap:wrap;align-items:center"},
+        el("button", {cls: "btn", type: "button", disabled: B || !dirty ? true : null, onclick: aiSaveCfg}, B === "save" ? "Saving…" : "Save AI settings"),
+        el("button", {cls: "btn ghost", type: "button", disabled: B || dirty || !saved.model ? true : null, onclick: testIt}, B === "test" ? "Testing…" : "Test connection"),
+        dirty ? el("span", {cls: "small", text: "Unsaved changes"}) : null),
+      AIS.msg ? el("div", {cls: "msg " + AIS.msg.kind, role: AIS.msg.kind === "err" ? "alert" : "status", text: AIS.msg.text}) : null));
+    var kc = h.card("API keys", "Each key is stored encrypted in this workspace's vault. Nobody can read it back, not even owners: paste a new one to replace it. Usage is billed by the provider to whoever owns the key.");
+    AI_KEYS.forEach(function(p){
+      var cur = AIS.keys[p[0]], inp = el("input", {type: "password", autocomplete: "off", placeholder: cur ? "Set · ends …" + cur.last4 : "Not set", "aria-label": AI_LABEL[p[0]] + " key"});
+      var put = function(v){ sb.client.rpc("set_org_secret", {p_key: "ai_" + p[0] + "_key", p_value: v}).then(function(r){ if (r.error) throw r.error;
+        toast(v ? AI_LABEL[p[0]] + " key saved" : AI_LABEL[p[0]] + " key removed"); inp.value = ""; delete AIS.models[p[0]]; aiLoad(true); }).catch(function(e){ toast("Not saved: " + (e.message || e)); }); };
+      kc.appendChild(el("div", {cls: "field"}, el("label", {text: AI_LABEL[p[0]] + (cur ? " · set " + String(cur.updated_at || "").slice(0, 10) + (cur.updated_by ? " by " + cur.updated_by : "") : "")}),
+        el("div", {style: "display:flex;gap:8px;flex-wrap:wrap"}, inp, el("button", {cls: "btn ghost", type: "button", onclick: function(){ if (inp.value.trim()) put(inp.value.trim()); }}, "Save"),
+          cur ? el("button", {cls: "linkbtn", type: "button", onclick: function(){ if (confirm("Remove the " + AI_LABEL[p[0]] + " key?" + (saved.provider === p[0] && saved.enabled ? " Ask AI stops working until another key is saved." : ""))) put(""); }}, "Remove") : null),
+        el("span", {cls: "small", text: "Get one: " + p[1]})));
+    });
+    wrap.appendChild(kc);
+    return wrap;
+  }
+
   /* ---------- register ---------- */
   SET_TABS.unshift(["workspace", "Workspace", "Your workspace's name, logo, currency, time zone and CRM, the tokens it uses for Meta and Google, and API keys."]);
   EXTRA_SET.workspace = setWorkspace;
@@ -426,6 +506,8 @@
   EXTRA_VIEWS.attribution = viewAttribution; EXTRA_VIEWS.journeys = viewJourneys; EXTRA_VIEWS.builder = viewBuilder; EXTRA_VIEWS.ask = viewAsk; EXTRA_VIEWS.capi = viewSync;
   SET_TABS.splice(SET_TABS.length - 1, 0, ["growth", "Attribution & sync", "Deal values, sending qualified leads and sales to Meta, website tracking, channel costs, audiences, the AI digest and API access."]);
   EXTRA_SET.growth = setGrowth;
+  SET_TABS.splice(SET_TABS.length - 1, 0, ["ai", "AI", "Owners only: which AI provider and model answer Ask AI and write the digest, and their API keys."]);
+  EXTRA_SET.ai = setAI;
   try { var saved = localStorage.getItem("lp-lead-dash-tab"); if (saved && EXTRA_VIEWS[saved]) state.tab = saved; } catch (e) {}
   try { render(); } catch (e) {}
 })();

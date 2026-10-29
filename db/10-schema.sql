@@ -31,10 +31,12 @@ create table if not exists public.org_members (
   email      text not null check (email = lower(btrim(email)) and email like '%@%'),
   user_id    uuid references auth.users (id) on delete set null,   -- null = invited, not signed in yet
   role       text not null check (role in ('admin', 'editor', 'viewer')),
+  is_owner   boolean not null default false,   -- owner = an admin who also manages the workspace's AI keys and models, and who is owner
   invited_by text,
   created_at timestamptz not null default now(),
   primary key (org_id, email)
 );
+alter table public.org_members add column if not exists is_owner boolean not null default false;
 create index if not exists org_members_user on public.org_members (user_id);
 create index if not exists org_members_email on public.org_members (email);
 
@@ -59,6 +61,19 @@ language sql stable security definer set search_path = '' as $$
 $$;
 revoke all on function private.org_role(uuid) from public;
 grant execute on function private.org_role(uuid) to authenticated;
+-- is the signed-in login an owner of the workspace (same membership proof as org_role)
+create or replace function private.is_owner(p_org uuid) returns boolean
+language sql stable security definer set search_path = '' as $$
+  select coalesce(bool_or(m.is_owner and m.role = 'admin'), false)
+    from public.org_members m
+    join auth.users u on u.id = (select auth.uid())
+   where m.org_id = p_org
+     and (m.user_id = u.id
+          or (m.user_id is null and m.email = lower(u.email) and u.email_confirmed_at is not null
+              and (u.confirmation_sent_at is not null or u.invited_at is not null)))
+$$;
+revoke all on function private.is_owner(uuid) from public;
+grant execute on function private.is_owner(uuid) to authenticated;
 create or replace function private.my_role() returns text language sql stable set search_path = '' as $$ select private.org_role(private.current_org()) $$;
 grant execute on function private.my_role() to authenticated;
 create or replace function private.who() returns text language sql stable set search_path = '' as $$ select nullif(lower(coalesce(auth.jwt() ->> 'email', '')), '') $$;
@@ -73,12 +88,27 @@ create table if not exists public.org_settings (
 -- per-workspace tokens (Meta, Conversions API, audiences, Google): the value is encrypted in vault.secrets; this row only says it exists
 create table if not exists public.org_secrets (
   org_id     uuid not null default private.current_org() references public.organizations (id) on delete cascade,
-  key        text not null check (key in ('meta_access_token', 'meta_capi_token', 'meta_audience_token', 'google_refresh_token', 'google_login_customer_id')),
+  key        text not null check (key in ('meta_access_token', 'meta_capi_token', 'meta_audience_token', 'google_refresh_token', 'google_login_customer_id', 'ai_anthropic_key', 'ai_openai_key', 'ai_gemini_key', 'ai_compatible_key')),
   vault_id   uuid not null,
   last4      text not null default '',
   updated_by text,
   updated_at timestamptz not null default now(),
   primary key (org_id, key)
+);
+
+alter table public.org_secrets drop constraint if exists org_secrets_key_check;
+alter table public.org_secrets add constraint org_secrets_key_check check (key in ('meta_access_token', 'meta_capi_token', 'meta_audience_token', 'google_refresh_token', 'google_login_customer_id', 'ai_anthropic_key', 'ai_openai_key', 'ai_gemini_key', 'ai_compatible_key'));
+
+-- Ask AI per workspace (owners only): which provider and model answer. The provider's key is in org_secrets (ai_<provider>_key).
+-- Separate from org_settings on purpose: editors can change settings, and a custom address there could send the key elsewhere.
+create table if not exists public.org_ai_config (
+  org_id     uuid primary key default private.current_org() references public.organizations (id) on delete cascade,
+  enabled    boolean not null default false,
+  provider   text not null default 'anthropic' check (provider in ('anthropic', 'openai', 'gemini', 'compatible')),
+  model      text not null default '' check (length(model) <= 200),
+  base_url   text not null default '' check (base_url = '' or base_url ~ '^https://[^\s/?#]+(/[^\s?#]*)?$'),
+  updated_by text,
+  updated_at timestamptz not null default now()
 );
 
 -- machine keys: CRM push (n8n / webhooks) and API (MCP server, Chrome extension). Only a sha256 hash is stored.
@@ -378,10 +408,43 @@ drop trigger if exists keep_an_admin on public.org_members;
 create trigger keep_an_admin before update or delete on public.org_members for each row
   when (pg_trigger_depth() = 0) execute function private.keep_an_admin();
 
+-- owners: only set through create_organization / set_member_owner (never by a direct write from the browser); an owner stays an admin;
+-- only an owner changes or removes an owner; a workspace always keeps at least one owner
+-- runs with the caller's rights (security invoker): a write straight from the browser runs as authenticated, the app's functions as their owner
+create or replace function private.guard_owner() returns trigger language plpgsql security invoker set search_path = '' as $$
+declare direct boolean := current_user in ('authenticated', 'anon');   -- inside the app's functions current_user is their owner
+begin
+  if tg_op <> 'DELETE' and new.is_owner and new.role <> 'admin' then raise exception 'An owner must stay an admin. Remove owner first.'; end if;
+  if direct then
+    if tg_op = 'INSERT' and new.is_owner then raise exception 'Owners are set from the team list by an owner.'; end if;
+    if tg_op = 'UPDATE' and new.is_owner is distinct from old.is_owner then raise exception 'Owners are set from the team list by an owner.'; end if;
+    if tg_op <> 'INSERT' and old.is_owner and not private.is_owner(old.org_id) then raise exception 'Only an owner can change or remove an owner.'; end if;
+  end if;
+  if tg_op <> 'INSERT' and old.is_owner and (tg_op = 'DELETE' or not new.is_owner)
+     and not exists (select 1 from public.org_members m where m.org_id = old.org_id and m.is_owner and m.email <> old.email) then
+    raise exception 'A workspace needs at least one owner. Make someone else owner first.';
+  end if;
+  return coalesce(new, old);
+end $$;
+drop trigger if exists guard_owner on public.org_members;
+create trigger guard_owner before insert or update or delete on public.org_members for each row execute function private.guard_owner();
+-- workspaces from before owners existed: their first admin becomes owner
+update public.org_members m set is_owner = true
+ where m.role = 'admin'
+   and not exists (select 1 from public.org_members x where x.org_id = m.org_id and x.is_owner)
+   and m.email = (select a.email from public.org_members a where a.org_id = m.org_id and a.role = 'admin' order by a.created_at, a.email limit 1);
+
+-- Ask AI settings: owners read and change them (through set_ai_config); the server reads them as service_role
+alter table public.org_ai_config enable row level security;
+drop policy if exists owner_read on public.org_ai_config;
+create policy owner_read on public.org_ai_config for select to authenticated using (org_id = (select private.current_org()) and (select private.is_owner(private.current_org())));
+revoke all on public.org_ai_config from anon, authenticated;
+grant select on public.org_ai_config to authenticated;
+
 -- =====================================================================
 -- 4. Functions the app calls
 -- =====================================================================
--- create a workspace: the caller becomes its first admin
+-- create a workspace: the caller becomes its first admin and owner
 create or replace function public.create_organization(p_name text, p_currency text default 'INR', p_tz_offset_min integer default 330,
                                                       p_crm_name text default 'CRM', p_brands text[] default '{}')
 returns uuid language plpgsql security definer set search_path = '' as $$
@@ -394,7 +457,7 @@ begin
   insert into public.organizations (name, currency, tz_offset_min, crm_name, created_by)
     values (btrim(p_name), upper(coalesce(nullif(btrim(p_currency), ''), 'INR')), coalesce(p_tz_offset_min, 330), coalesce(nullif(btrim(p_crm_name), ''), 'CRM'), uid)
     returning id into o;
-  insert into public.org_members (org_id, email, user_id, role, invited_by) values (o, em, uid, 'admin', em);
+  insert into public.org_members (org_id, email, user_id, role, is_owner, invited_by) values (o, em, uid, 'admin', true, em);
   insert into public.org_settings (org_id, settings, updated_by)
     values (o, jsonb_build_object('brands', to_jsonb(b), 'keywords', coalesce((select jsonb_agg(jsonb_build_array(x, x)) from unnest(b) x), '[]'::jsonb)), em);
   return o;
@@ -416,10 +479,11 @@ end $$;
 revoke all on function public.accept_invites() from public, anon;
 grant execute on function public.accept_invites() to authenticated;
 
-create or replace function public.my_orgs()
-returns table (id uuid, public_id text, name text, logo text, currency text, tz_offset_min integer, crm_name text, role text)
+drop function if exists public.my_orgs();
+create function public.my_orgs()
+returns table (id uuid, public_id text, name text, logo text, currency text, tz_offset_min integer, crm_name text, role text, is_owner boolean)
 language sql stable security definer set search_path = '' as $$
-  select o.id, o.public_id, o.name, o.logo, o.currency, o.tz_offset_min, o.crm_name, private.org_role(o.id)
+  select o.id, o.public_id, o.name, o.logo, o.currency, o.tz_offset_min, o.crm_name, private.org_role(o.id), private.is_owner(o.id)
     from public.organizations o
    where o.active and private.org_role(o.id) is not null
    order by o.name
@@ -433,7 +497,8 @@ language plpgsql security definer set search_path = '' as $$
 declare o uuid := private.current_org(); v uuid; nm text; val text := btrim(coalesce(p_value, ''));
 begin
   if o is null or coalesce(private.org_role(o), '') <> 'admin' then raise exception 'Only workspace admins can change tokens.'; end if;
-  if p_key not in ('meta_access_token', 'meta_capi_token', 'meta_audience_token', 'google_refresh_token', 'google_login_customer_id') then raise exception 'Unknown token %', p_key; end if;
+  if p_key like 'ai\_%' and not private.is_owner(o) then raise exception 'Only the workspace owner can change AI keys.'; end if;
+  if p_key not in ('meta_access_token', 'meta_capi_token', 'meta_audience_token', 'google_refresh_token', 'google_login_customer_id', 'ai_anthropic_key', 'ai_openai_key', 'ai_gemini_key', 'ai_compatible_key') then raise exception 'Unknown token %', p_key; end if;
   select vault_id into v from public.org_secrets where org_id = o and key = p_key;
   if val = '' then
     if v is not null then delete from vault.secrets where id = v; delete from public.org_secrets where org_id = o and key = p_key; end if;
@@ -458,6 +523,50 @@ language sql stable security definer set search_path = '' as $$
 $$;
 revoke all on function public.get_org_secret(uuid, text) from public, anon, authenticated;
 grant execute on function public.get_org_secret(uuid, text) to service_role;
+
+-- owners make another admin owner, or stop being one (the last owner can't)
+create or replace function public.set_member_owner(p_email text, p_owner boolean) returns void
+language plpgsql security definer set search_path = '' as $$
+declare o uuid := private.current_org(); r text;
+begin
+  if o is null or not private.is_owner(o) then raise exception 'Only an owner can change owners.'; end if;
+  select role into r from public.org_members where org_id = o and email = lower(btrim(p_email));
+  if r is null then raise exception 'No member with that email.'; end if;
+  if p_owner and r <> 'admin' then raise exception 'Make them admin first.'; end if;
+  update public.org_members set is_owner = coalesce(p_owner, false) where org_id = o and email = lower(btrim(p_email));
+end $$;
+revoke all on function public.set_member_owner(text, boolean) from public, anon;
+grant execute on function public.set_member_owner(text, boolean) to authenticated;
+
+-- Ask AI: owners choose the provider, model and (for OpenAI-compatible services) the https address
+create or replace function public.set_ai_config(p_enabled boolean, p_provider text, p_model text, p_base_url text default '') returns void
+language plpgsql security definer set search_path = '' as $$
+declare o uuid := private.current_org(); u text := btrim(coalesce(p_base_url, '')); h text;
+begin
+  if o is null or not private.is_owner(o) then raise exception 'Only the workspace owner can change AI settings.'; end if;
+  if p_provider not in ('anthropic', 'openai', 'gemini', 'compatible') then raise exception 'Unknown AI provider.'; end if;
+  if p_provider = 'compatible' then
+    if u !~ '^https://[^\s/?#]+(/[^\s?#]*)?$' then raise exception 'The address must start with https://'; end if;
+    h := lower(substring(u from '^https://([^/:]+)'));
+    if h = 'localhost' or h like '%.local' or h like '%.internal' or h ~ '^(10|127|0)\.' or h ~ '^192\.168\.' or h ~ '^169\.254\.' or h ~ '^172\.(1[6-9]|2[0-9]|3[01])\.' or h like '[%' then
+      raise exception 'That address points to a private network.'; end if;
+  else u := ''; end if;
+  insert into public.org_ai_config (org_id, enabled, provider, model, base_url, updated_by, updated_at)
+    values (o, coalesce(p_enabled, false), p_provider, left(btrim(coalesce(p_model, '')), 200), u, private.who(), now())
+  on conflict (org_id) do update set enabled = excluded.enabled, provider = excluded.provider, model = excluded.model, base_url = excluded.base_url,
+    updated_by = excluded.updated_by, updated_at = excluded.updated_at;
+end $$;
+revoke all on function public.set_ai_config(boolean, text, text, text) from public, anon;
+grant execute on function public.set_ai_config(boolean, text, text, text) to authenticated;
+
+-- what every member may know about Ask AI: on or off, and which provider / model answers (no keys, no address)
+create or replace function public.ai_status() returns table (enabled boolean, provider text, model text)
+language sql stable security definer set search_path = '' as $$
+  select c.enabled, c.provider, c.model from public.org_ai_config c
+   where c.org_id = private.current_org() and private.org_role(c.org_id) is not null
+$$;
+revoke all on function public.ai_status() from public, anon;
+grant execute on function public.ai_status() to authenticated;
 
 -- machine keys: shown once, stored as a hash
 create or replace function public.create_api_key(p_kind text, p_name text) returns text
