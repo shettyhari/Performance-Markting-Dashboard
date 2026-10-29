@@ -5,7 +5,9 @@ __API_DOMAIN__ {
 	# the app's query builder calls /rest/v1/...; PostgREST answers on localhost:3000
 	handle_path /rest/v1/* {
 		# browsers may call from the site's address(es) only: APP_URL plus EXTRA_ORIGINS (ec2/setup.sh); the allowed one is echoed back
-		@site header Origin __APP_ORIGINS__
+		@site {
+			__APP_ORIGINS__
+		}
 		@preflight method OPTIONS
 		header Vary "Origin"
 		header @site {

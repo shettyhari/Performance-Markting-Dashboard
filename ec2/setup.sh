@@ -104,8 +104,11 @@ systemctl daemon-reload && systemctl enable --now postgrest >/dev/null && system
 echo "== Caddy (HTTPS for $API_DOMAIN)"
 umask 022
 ORIGINS="$APP_URL"; for o in ${EXTRA_ORIGINS:-}; do o="${o%/}"; [ "$o" = "$APP_URL" ] || ORIGINS="$ORIGINS $o"; done
-sed -e "s|__API_DOMAIN__|$API_DOMAIN|" -e "s|__APP_ORIGINS__|$ORIGINS|" "$HERE/Caddyfile" > /etc/caddy/Caddyfile
-caddy validate --config /etc/caddy/Caddyfile --adapter caddyfile >/dev/null 2>&1 || { echo "The Caddy configuration is invalid: caddy validate --config /etc/caddy/Caddyfile"; exit 1; }
+# one "header Origin <address>" line per address (Caddy ORs the values of one header), checked before it replaces the running config
+awk -v o="$ORIGINS" '/__APP_ORIGINS__/ { n = split(o, a, " "); for (i = 1; i <= n; i++) print "\t\t\theader Origin " a[i]; next } { print }' "$HERE/Caddyfile" \
+  | sed -e "s|__API_DOMAIN__|$API_DOMAIN|" > /etc/caddy/Caddyfile.new
+caddy validate --config /etc/caddy/Caddyfile.new --adapter caddyfile >/dev/null 2>&1 || { echo "The Caddy configuration is invalid (kept the old one): caddy validate --config /etc/caddy/Caddyfile.new"; exit 1; }
+mv /etc/caddy/Caddyfile.new /etc/caddy/Caddyfile
 systemctl enable --now caddy >/dev/null && systemctl reload caddy || systemctl restart caddy
 
 echo "== firewall (22, 80, 443 only; Postgres and PostgREST stay private)"
