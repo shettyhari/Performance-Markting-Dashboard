@@ -43,11 +43,18 @@ const publicUser = (u) => ({ id: u.id, email: u.email, email_confirmed_at: u.ema
   user_metadata: { full_name: (u.raw_user_meta_data && u.raw_user_meta_data.full_name) || (u.name || "") } });
 const session = (u) => ({ token: D.jwtSign({ sub: u.id, role: "authenticated", email: u.email, tv: Number(u.token_version || 0) }, SESSION_DAYS * 86400), user: publicUser(u) });
 
+/* where email links point: the address this request came in on (Vercel only routes this project's own domains here, so the host is
+   ours), so a stale APP_URL can't send people to an old or removed address; APP_URL is used when the host is missing or local */
+function linkBase(req) {
+  const h = req && req.headers ? req.headers : {}, host = String(h["x-forwarded-host"] || h.host || "").split(",")[0].trim().toLowerCase();
+  if (/^[a-z0-9-]+(\.[a-z0-9-]+)+$/.test(host) && !/^(localhost|127\.|10\.|192\.168\.)/.test(host)) return "https://" + host;
+  return D.appUrl(req);
+}
 async function sendLink(req, u, kind, pwHash) {
   const tok = crypto.randomBytes(32).toString("base64url");
   const made = await rpc("auth_token_add", { p_user: u.id, p_kind: kind, p_hash: D.sha256(tok), p_minutes: kind === "verify" ? 48 * 60 : 60, p_pw: pwHash || null });
   if (made !== true) return false;   // one a minute is enough
-  const name = process.env.APP_NAME || "Qlarity", url = D.appUrl(req) + "/app?" + kind + "=" + encodeURIComponent(tok);
+  const name = process.env.APP_NAME || "Qlarity", url = linkBase(req) + "/app?" + kind + "=" + encodeURIComponent(tok);
   if (kind === "verify") await M.sendLink(u.email, "Confirm your email for " + name, "Confirm your email address to start using " + name + ".", "Confirm email", url, "The link works for 48 hours. If you didn't sign up, ignore this email.");
   else await M.sendLink(u.email, "Reset your " + name + " password", "Someone (hopefully you) asked to reset the password for " + u.email + ".", "Choose a new password", url, "The link works for 1 hour and only once. If you didn't ask, ignore this email: your password stays the same.");
   return true;

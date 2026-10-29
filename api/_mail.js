@@ -21,7 +21,8 @@ const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&l
 
 /* one plain message with a single button-style link */
 async function sendLink(to, subject, intro, label, url, outro) {
-  const site = String(process.env.APP_URL || "").replace(/\/+$/, ""), name = process.env.APP_NAME || "Qlarity";
+  let site = ""; try { site = new URL(url).origin; } catch (e) { site = String(process.env.APP_URL || "").replace(/\/+$/, ""); }   /* the logo comes from the same site as the link */
+  const name = process.env.APP_NAME || "Qlarity";
   if (!configured()) throw new Error("Email isn't set up on this site yet (SMTP_HOST and MAIL_FROM).");
   const text = intro + "\n\n" + url + "\n\n" + (outro || "");
   const html = '<div style="font:15px/1.5 -apple-system,Segoe UI,Roboto,sans-serif;color:#1f2933;max-width:520px">' +

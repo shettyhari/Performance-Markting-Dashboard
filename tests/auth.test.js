@@ -62,6 +62,16 @@ test("sign up → confirmation email; no sign-in until confirmed; the link needs
   const u = await me(tokA); assert.strictEqual(u.email, "ann@alpha.example"); assert.ok(u.email_confirmed_at && u.confirmation_sent_at, "email proven");
   assert.strictEqual((await call("verify", { token: link, password: "correct horse 1" })).status, 400, "a link works once");
 });
+test("email links use the address the person signed up on, even when APP_URL is stale", async () => {
+  mails = []; await ageLinks();
+  const out = {}, res = { statusCode: 0, setHeader() {}, end(s) { out.status = this.statusCode; } };
+  await AUTH({ method: "POST", query: { op: "signup" }, headers: { host: "new-site.example", "x-forwarded-host": "new-site.example" }, body: JSON.stringify({ email: "host@gamma.example", password: "host check pass 1" }) }, res);
+  assert.strictEqual(out.status, 200); assert.strictEqual(mails.length, 1);
+  assert.ok(/^https:\/\/new-site\.example\/app\?verify=/.test(String(mails[0].text).split("\n\n")[1]), "not the APP_URL (https://app.example)");
+  mails = []; await ageLinks();
+  await AUTH({ method: "POST", query: { op: "forgot" }, headers: { host: "localhost:3000" }, body: JSON.stringify({ email: "ann@alpha.example" }) }, res);
+  assert.ok(/^https:\/\/app\.example\/app\?reset=/.test(String(mails[0].text).split("\n\n")[1]), "a local host falls back to APP_URL");
+});
 test("sign in: right password works; wrong one doesn't; unknown email gets the same answer", async () => {
   const ok = await call("login", { email: "ANN@alpha.example", password: "correct horse 1" });
   assert.strictEqual(ok.status, 200); assert.ok(await me(ok.body.token));
