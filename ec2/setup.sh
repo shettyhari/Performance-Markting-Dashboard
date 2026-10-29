@@ -118,7 +118,19 @@ if [ -n "${ADMIN_IP:-}" ]; then ufw allow from "$ADMIN_IP" to any port 22 proto 
 ufw allow 80/tcp >/dev/null && ufw allow 443/tcp >/dev/null
 ufw --force enable >/dev/null
 
+# BACKUP_S3_URI is kept in /etc/lp.env, so a later run without it keeps the S3 copy (BACKUP_S3_URI=none stops it)
+if [ -n "${BACKUP_S3_URI:-}" ]; then
+  [ "$BACKUP_S3_URI" = none ] && BACKUP_S3_URI=""
+  case "$BACKUP_S3_URI" in ""|s3://*) ;; *) echo "BACKUP_S3_URI must look like s3://bucket/path"; exit 1;; esac
+  sed -i "/^BACKUP_S3_URI=/d" /etc/lp.env; [ -n "$BACKUP_S3_URI" ] && echo "BACKUP_S3_URI=${BACKUP_S3_URI%/}" >> /etc/lp.env
+fi
+BACKUP_S3_URI="${BACKUP_S3_URI:-$(grep '^BACKUP_S3_URI=' /etc/lp.env | cut -d= -f2-)}"
 echo "== backups (nightly, 14 days in /var/backups/lp${BACKUP_S3_URI:+, copied to $BACKUP_S3_URI})"
+if [ -n "$BACKUP_S3_URI" ] && [ ! -x /usr/local/bin/aws ]; then   # the official AWS CLI, from Amazon
+  apt-get install -y -qq unzip >/dev/null
+  case "$(uname -m)" in aarch64) AWSZIP=awscli-exe-linux-aarch64.zip;; *) AWSZIP=awscli-exe-linux-x86_64.zip;; esac
+  (cd /tmp && rm -rf aws awscliv2.zip && curl -fsSL -o awscliv2.zip "https://awscli.amazonaws.com/$AWSZIP" && unzip -q awscliv2.zip && ./aws/install >/dev/null && rm -rf aws awscliv2.zip)
+fi
 mkdir -p /var/backups/lp && chown postgres /var/backups/lp && chmod 700 /var/backups/lp
 cat > /etc/cron.daily/lp-backup <<EOF
 #!/bin/sh
@@ -126,7 +138,13 @@ set -e
 F=/var/backups/lp/lp-\$(date -u +%Y%m%d).dump
 sudo -u postgres pg_dump -Fc lp > "\$F"
 find /var/backups/lp -name 'lp-*.dump' -mtime +14 -delete
-${BACKUP_S3_URI:+command -v aws >/dev/null && aws s3 cp "\$F" "$BACKUP_S3_URI/" --only-show-errors || true}
+# off-server copy (needs the AWS CLI and an instance role allowed to s3:PutObject there); a failure is logged: journalctl -t lp-backup
+U=\$(grep '^BACKUP_S3_URI=' /etc/lp.env | cut -d= -f2-)
+if [ -n "\$U" ]; then
+  if /usr/local/bin/aws s3 cp "\$F" "\$U/\$(basename "\$F")" --only-show-errors; then   # full path: the daily schedule has a short PATH logger -t lp-backup "copied \$(basename "\$F") to \$U"
+  else logger -t lp-backup "S3 copy FAILED for \$(basename "\$F") to \$U"; fi
+fi
+logger -t lp-backup "backup \$(basename "\$F") \$(stat -c %s "\$F") bytes"
 EOF
 chmod 755 /etc/cron.daily/lp-backup
 
