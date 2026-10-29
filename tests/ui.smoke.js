@@ -128,6 +128,26 @@ const submit = (doc) => doc.querySelector("form").dispatchEvent(new doc.defaultV
   const vc = calls.filter((c) => /op=verify/.test(c.u)).pop();
   ok(vc && JSON.parse(vc.body).token === "link123", "the link's token goes to /api/auth?op=verify");
   ok(d3.window.eval("sb.status") === "ready" && d3.window.eval("sb.email") === "owner@acme.test" && !/Confirm your email/.test(t3()), "confirmed, signed in, in the workspace");
+  /* several workspaces: signing in asks which one; a reload keeps the last one; the profile menu can switch */
+  orgs.push({ id: "22222222-2222-4222-8222-222222222222", public_id: "pub456", name: "Beta Foods", logo: null, currency: "INR", tz_offset_min: 330, crm_name: "Zoho", role: "viewer" });
+  const boot = (pre) => new JSDOM(html, { url: "https://app.example.test/", runScripts: "dangerously", pretendToBeVisual: true, beforeParse(x) {
+    x.supabase = fakeSupabase; x.XLSX = {}; x.scrollTo = () => {}; x.matchMedia = () => ({ matches: false, addListener() {}, addEventListener() {} });
+    x.fetch = apiFake(calls); x.Headers = Hdr; if (pre) pre(x); x.addEventListener("error", (e) => errors.push("workspaces: " + e.message)); } });
+  const d4 = boot(), t4 = () => d4.window.document.getElementById("view").textContent;
+  await wait(300);
+  d4.window.document.getElementById("sb-email").value = "owner@acme.test"; d4.window.document.getElementById("sb-pw").value = "right password"; submit(d4.window.document); await wait(300);
+  ok(/Choose a workspace/.test(t4()) && /Acme Homes/.test(t4()) && /Beta Foods/.test(t4()) && /Viewer/.test(t4()) && d4.window.eval("sb.status") === "choose" && !d4.window.eval("sb.org"),
+    "signing in with two workspaces → “Choose a workspace”, nothing opened yet");
+  [...d4.window.document.querySelectorAll(".ws-pick")].filter((b) => /Beta Foods/.test(b.textContent))[0].click(); await wait(300);
+  ok(d4.window.eval("sb.status") === "ready" && d4.window.eval("sb.org.name") === "Beta Foods" && d4.window.eval("sb.role") === "viewer" && d4.window.localStorage.getItem("lp-org") === "22222222-2222-4222-8222-222222222222",
+    "picking one opens it with that workspace's role, and remembers it");
+  const d5 = boot((x) => { x.localStorage.setItem("lp-session", JSON.stringify({ token: TOKEN, user })); x.localStorage.setItem("lp-org", "22222222-2222-4222-8222-222222222222"); }), t5 = () => d5.window.document.getElementById("view").textContent;
+  await wait(300);
+  ok(d5.window.eval("sb.status") === "ready" && d5.window.eval("sb.org.name") === "Beta Foods" && !/Choose a workspace/.test(t5()), "a reload while signed in goes straight back to the last workspace");
+  d5.window.eval("sb.status = 'choose'; render();"); await wait(50);
+  ok(/Choose a workspace/.test(t5()) && /open now/.test(t5()) && [...d5.window.document.querySelectorAll("button")].some((b) => b.textContent === "Cancel"), "Switch workspace shows the list with Cancel and the open one marked");
+  [...d5.window.document.querySelectorAll(".ws-pick")].filter((b) => /Acme Homes/.test(b.textContent))[0].click(); await wait(300);
+  ok(d5.window.eval("sb.org.name") === "Acme Homes" && d5.window.eval("sb.role") === "admin" && d5.window.eval("sb.status") === "ready", "switching opens the other workspace, with its own role");
   /* a site without its database settings says so, instead of quietly showing upload-only mode */
   const d2 = new JSDOM(html, { url: "https://app.example.test/", runScripts: "dangerously", pretendToBeVisual: true, beforeParse(x) {
     x.XLSX = {}; x.scrollTo = () => {}; x.matchMedia = () => ({ matches: false, addListener() {}, addEventListener() {} });
