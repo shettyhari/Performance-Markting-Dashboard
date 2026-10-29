@@ -2612,6 +2612,9 @@ function viewHelp(){
     ["A feed says “Late”. What do I do?", "Open Settings › Data connections. For Meta, check the ad accounts are still selected and the token is valid. For CRM, open n8n and make sure the workflow is Active."],
     ["What is a good CPL or CPQL?", "Compare with last week on the Trends page. CPQL matters most: it is what one interested lead really costs."],
     ["A campaign shows as “Unmapped”.", "Its name doesn't match any brand. Add a rule in Settings › Brands & campaigns, e.g. “Campaign name contains Daewoo → Daewoo”."]];
+  sec.appendChild(el("div", {cls: "group set-card"}, el("h3", {text: "Privacy and terms"}),
+    el("p", {cls: "small", text: "How " + PRODUCT.name + " handles your account, your leads and your ad data, and the terms for using it."}),
+    el("div", {style: "display:flex;gap:16px;flex-wrap:wrap"}, el("a", {href: "/privacy", target: "_blank", rel: "noopener"}, "Privacy Policy"), el("a", {href: "/terms", target: "_blank", rel: "noopener"}, "Terms of Service"))));
   sec.appendChild(el("div", {cls: "group set-card"}, el("h3", {text: "Common questions"}), faq.map(function(q){ return el("details", {cls: "faq"}, el("summary", {text: q[0]}), el("p", {text: q[1]})); })));
   return sec;
 }
@@ -5055,6 +5058,8 @@ function renderLogin(){
   else if (create) box.appendChild(el("div", {cls: "small"}, "Already have an account? ", go("signin", "Sign in")));
   else box.appendChild(el("div", {cls: "small"}, go("signin", "Back to sign in")));
   if (mode === "signin" || create) box.appendChild(el("div", {cls: "small", text: "New company? Create an account, confirm your email, then set up your workspace. Joining a team? Create an account with the email your admin invited."}));
+  var legal = function(){ return [el("a", {href: "/terms", target: "_blank", rel: "noopener"}, "Terms of Service"), " and ", el("a", {href: "/privacy", target: "_blank", rel: "noopener"}, "Privacy Policy")]; };
+  box.appendChild(el("div", {cls: "small legal-note"}, create ? "By creating an account you agree to the " : "", create ? legal() : null, create ? "." : legal()));
   setTimeout(function(){ (mode === "verify" || mode === "reset" || em.value ? pw : em).focus(); }, 30);
 }
 var LOGIN_TXT = {signin: {title: "Sign in", btn: "Sign in", pw: "Password"}, create: {title: "Create your account", btn: "Create account", pw: "Choose a password"},

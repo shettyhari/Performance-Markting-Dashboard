@@ -83,6 +83,8 @@ const submit = (doc) => doc.querySelector("form").dispatchEvent(new doc.defaultV
 (async () => {
   await wait(300);
   ok(/Sign in/.test(text()) && /Forgot password\?/.test(text()), "signed out → the sign-in page, with “Forgot password?”");
+  { const L = [...w.document.querySelectorAll(".legal-note a")].map((x) => x.getAttribute("href")); ok(L.indexOf("/terms") >= 0 && L.indexOf("/privacy") >= 0, "sign-in links to the terms and the privacy policy"); }
+  w.eval("sb.mode = 'create'; renderLogin();"); ok(/By creating an account you agree to the Terms of Service and Privacy Policy/.test(text()), "sign-up says creating an account means agreeing to them"); w.eval("sb.mode = 'signin'; renderLogin();");
   $("#sb-email").value = "owner@acme.test"; $("#sb-pw").value = "wrong password"; submit(w.document); await wait(100);
   ok(/Wrong email or password/.test(text()), "a wrong password says so");
   $("#sb-pw").value = "right password"; submit(w.document); await wait(300);

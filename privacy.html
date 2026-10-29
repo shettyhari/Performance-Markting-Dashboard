@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Privacy Policy · Qlarity</title>
+<meta name="description" content="How Qlarity handles account data and the lead and ad data companies bring to it.">
+<link rel="icon" type="image/png" sizes="32x32" href="brand/qlarity-icon-32.png">
+<link rel="apple-touch-icon" href="brand/qlarity-icon-180.png">
+<link rel="stylesheet" href="legal.css">
+</head>
+<body>
+<header class="lg-top">
+  <a class="lg-brand" href="/" aria-label="Qlarity home">
+    <picture><source srcset="brand/qlarity-logo-dark.png" media="(prefers-color-scheme: dark)"><img src="brand/qlarity-logo.png" alt="Qlarity" width="620" height="200"></picture>
+  </a>
+  <nav><a href="/terms">Terms</a><a href="/">Open Qlarity</a></nav>
+</header>
+<main class="lg">
+  <p class="lg-eyebrow">Legal</p>
+  <h1>Privacy Policy</h1>
+  <p class="lg-date">Last updated: 29 October 2026</p>
+
+  <p class="lg-lead">Qlarity (<a href="/">qlarity-dashboard.vercel.app</a>) helps companies compare their ad spend with the leads, qualified leads and sales in their CRM. It is run by <span class="fill">[Your full name]</span>, an individual based in India (“we”, “us”). This policy explains what personal data Qlarity handles, why, where it is kept and the choices you have.</p>
+
+  <nav class="lg-toc" aria-label="Contents">
+    <a href="#kinds">1. The data we handle</a><a href="#roles">2. Who decides about lead data</a><a href="#use">3. How we use data</a>
+    <a href="#where">4. Where data is kept and who helps us</a><a href="#ai">5. AI features</a><a href="#security">6. How we protect data</a>
+    <a href="#retention">7. How long we keep data</a><a href="#storage">8. Cookies and browser storage</a><a href="#rights">9. Your rights</a>
+    <a href="#children">10. Children</a><a href="#changes">11. Changes</a><a href="#contact">12. Contact and grievances</a>
+  </nav>
+
+  <h2 id="kinds">1. The data we handle</h2>
+  <h3>Account data, about the people who use Qlarity</h3>
+  <ul>
+    <li>Your name (if you add one) and email address.</li>
+    <li>Your password, stored only as a one-way scrypt hash; we can't see or recover it.</li>
+    <li>Sign-in times, the workspaces you belong to and your role in each, and your personal view settings.</li>
+    <li>Emails we send you: account confirmation and password-reset links.</li>
+  </ul>
+  <h3>Customer data, which a company brings into its workspace</h3>
+  <ul>
+    <li><b>Ad data</b> from Meta Ads or Google Ads (campaigns, ad sets, ads, spend, results, impressions, clicks), uploaded as files or read with the company's own access token.</li>
+    <li><b>CRM lead data</b> (uploaded or pushed from the CRM): lead id, dates, source, campaign, status, the team member assigned, and the lead's name, phone number and email address.</li>
+    <li><b>Website visits</b>, only if the company adds Qlarity's tracking script to its own website: an anonymous visitor id, the page, the referring site, ad click ids and campaign tags. When a visitor submits a form, the phone or email they typed is sent so the lead can be matched to its visits; it is stored only as a one-way hash, never in readable form. The company can switch tracking off for visitors who decline it.</li>
+    <li><b>Workspace settings, tokens and keys</b>: brands, rules, targets, team members; Meta, Google and AI provider tokens (stored encrypted); API keys (stored only as a hash).</li>
+  </ul>
+
+  <h2 id="roles">2. Who decides about lead data</h2>
+  <p>For customer data, the <b>company that uses Qlarity decides</b> what is collected and why. Under India's Digital Personal Data Protection Act, 2023, that company is the Data Fiduciary, and we process the data on its behalf and only on its instructions. Each company is responsible for having a lawful basis, such as consent, for the lead data it brings to Qlarity and for telling its own leads and website visitors about it.</p>
+  <p>If you are a lead or a website visitor of a company that uses Qlarity, please contact that company first. We will help it answer your request.</p>
+
+  <h2 id="use">3. How we use data</h2>
+  <ul>
+    <li>To run Qlarity for the workspace: reports, attribution, alerts, the AI analyst and the features the company switches on.</li>
+    <li>To create and secure accounts, send account emails, and prevent abuse.</li>
+    <li>To give support when a company asks for it.</li>
+  </ul>
+  <p>We <b>don't sell</b> personal data, don't use it for advertising, and don't use customer data to train AI models. Each workspace's data is used for that workspace only.</p>
+
+  <h2 id="where">4. Where data is kept and who helps us</h2>
+  <p>Qlarity's database and its backups are stored in <b>India</b>, in Amazon Web Services' Mumbai region. We use these service providers:</p>
+  <table class="lg-tbl">
+    <thead><tr><th>Provider</th><th>What it does</th><th>Location</th></tr></thead>
+    <tbody>
+      <tr><td>Amazon Web Services</td><td>Database server and encrypted backups</td><td>Mumbai, India</td></tr>
+      <tr><td>Vercel</td><td>Hosts the website and runs its server code</td><td>Mumbai, India (pages are delivered from the location nearest you)</td></tr>
+      <tr><td>Google (Gmail)</td><td>Sends account emails</td><td>Google's data centres</td></tr>
+    </tbody>
+  </table>
+  <p>Only when a workspace turns them on, data also goes to:</p>
+  <ul>
+    <li><b>Meta</b> and <b>Google Ads</b>: Qlarity reads the company's ad data with its own token. If the company switches on Meta's Conversions API or audiences, the phone numbers and emails of its leads are sent to Meta as one-way hashes, as Meta requires.</li>
+    <li><b>Telegram</b>: alerts and reports go to the person the company chooses.</li>
+    <li><b>The AI provider the workspace owner chooses</b> (for example Anthropic, OpenAI, Google or another service): see section 5.</li>
+  </ul>
+
+  <h2 id="ai">5. AI features</h2>
+  <p>Ask AI and the morning digest send the question and the business numbers needed to answer it to the AI provider the workspace owner has chosen, using that owner's own key. The AI may see campaign names, lead ids, statuses and the names of the team members assigned to leads. It <b>never</b> receives a lead's name, phone number or email address. Each provider handles that data under its own terms, which the workspace owner accepts when adding the key.</p>
+
+  <h2 id="security">6. How we protect data</h2>
+  <ul>
+    <li>All traffic uses HTTPS. The database can't be reached from the internet, only through Qlarity's API.</li>
+    <li>Every row is tagged with its workspace, and the database itself refuses to show or change another workspace's rows.</li>
+    <li>The server's disk is encrypted. Tokens are stored encrypted, passwords and API keys only as one-way hashes.</li>
+    <li>A password change or reset signs out every other session. Ten wrong passwords in a row lock the account for 15 minutes.</li>
+    <li>Backups are private, and the server can add backups but can't read or delete them.</li>
+  </ul>
+  <p>We, as the operator, have administrative access to the server to run and maintain it, and we use it only for that. No system is perfectly secure. If a breach affects your data, we will tell the affected companies and, where the law requires it, the authorities, without undue delay.</p>
+
+  <h2 id="retention">7. How long we keep data</h2>
+  <ul>
+    <li>Workspace data is kept while the workspace is active. When a company asks us to delete its workspace, or its account is closed, we delete it within 30 days.</li>
+    <li>Backups are kept for 14 days on the server and 30 days in storage, so deleted data disappears from backups within 30 days after that.</li>
+    <li>One-time email links expire (48 hours for confirmation, 1 hour for password reset) and are cleared out after that; only a hash of each link is ever stored.</li>
+    <li>Short technical logs kept by our providers are removed on their usual schedules.</li>
+  </ul>
+
+  <h2 id="storage">8. Cookies and browser storage</h2>
+  <p>The Qlarity dashboard uses <b>no advertising or analytics cookies</b>. It keeps your sign-in session and a few preferences (theme, last workspace, view settings) in your browser's storage; signing out removes the session.</p>
+  <p>Qlarity's tracking script, if a company adds it to its own website, sets a first-party cookie there to recognise returning visitors. That company is responsible for describing it in its own cookie notice and for asking consent where needed.</p>
+
+  <h2 id="rights">9. Your rights</h2>
+  <p>You can ask to access, correct or erase your personal data, ask how it is used, and nominate someone to act for you, as provided by the Digital Personal Data Protection Act, 2023. You can change your name and password in Qlarity yourself. For anything else, contact us (section 12). For lead or visitor data held by a company that uses Qlarity, please contact that company; we will help it respond.</p>
+
+  <h2 id="children">10. Children</h2>
+  <p>Qlarity is a business tool for people aged 18 or over. We don't knowingly hold children's account data.</p>
+
+  <h2 id="changes">11. Changes</h2>
+  <p>When we change this policy we update the date above. For significant changes we also tell workspace owners by email before they take effect.</p>
+
+  <h2 id="contact">12. Contact and grievances</h2>
+  <p>Questions, requests and grievances about personal data: <b><span class="fill">[Your full name]</span></b>, <a class="fill" href="mailto:contact@example.com">[contact email]</a>. We reply as soon as we can and within the time the law requires.</p>
+</main>
+<footer class="lg-foot"><span>© 2026 Qlarity</span><a href="/privacy">Privacy</a><a href="/terms">Terms</a></footer>
+</body>
+</html>

@@ -1,4 +1,7 @@
 {
+  "regions": [
+    "bom1"
+  ],
   "functions": {
     "api/meta.js": {
       "maxDuration": 60
@@ -35,6 +38,14 @@
     {
       "source": "/api/mcp",
       "destination": "/api/suite?op=mcp"
+    },
+    {
+      "source": "/privacy",
+      "destination": "/privacy.html"
+    },
+    {
+      "source": "/terms",
+      "destination": "/terms.html"
     }
   ]
 }
