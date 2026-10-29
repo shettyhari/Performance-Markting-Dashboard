@@ -24,7 +24,7 @@ async function cron(req, res, mode) {
       if (!(S.ai || {}).digest) return D.send(res, 200, { skipped: "AI digest is off (Settings › Attribution & sync)." });
       const T = require("./_tg"), A = require("./_alertlib");
       if (!T.configured()) return D.send(res, 200, { skipped: "Telegram is not set up on this site." });
-      let d; try { d = await require("./_ai").digest(S); } catch (e) { if (e.code === "AI_OFF") return D.send(res, 200, { skipped: "Ask AI is off (Settings › AI)." }); throw e; }
+      let d; try { d = await require("./_ai").digest(S); } catch (e) { if (e.code === "AI_OFF") return D.send(res, 200, { skipped: "Ask Qlarity is off (Settings › AI)." }); throw e; }
       const sentTo = await A.deliver(D.sbFetch, "ai-digest", "🧠 <b>" + T.esc(D.orgName()) + " AI DIGEST · " + T.esc(U.istDay(-1)) + "</b>\n\n" + T.esc(d.answer) + "\n\n<i>Written by AI from the dashboard's numbers. Check the dashboard before acting on it.</i>");
       return D.send(res, 200, { sent: !!sentTo, chars: d.answer.length });
     }

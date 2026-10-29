@@ -1,4 +1,4 @@
-// Ask AI with each provider (api/_ai.js): the request each one gets (address, key header, tool format), the tool loop, and errors.
+// Ask Qlarity with each provider (api/_ai.js): the request each one gets (address, key header, tool format), the tool loop, and errors.
 // Run: node tests/ai.test.js — no network: the database API and the AI providers are replaced by a fake fetch.
 const assert = require("assert");
 process.env.API_URL = "https://db.test"; process.env.JWT_SECRET = "test-secret-" + "z".repeat(40);

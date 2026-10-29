@@ -99,7 +99,7 @@ create table if not exists public.org_secrets (
 alter table public.org_secrets drop constraint if exists org_secrets_key_check;
 alter table public.org_secrets add constraint org_secrets_key_check check (key in ('meta_access_token', 'meta_capi_token', 'meta_audience_token', 'google_refresh_token', 'google_login_customer_id', 'ai_anthropic_key', 'ai_openai_key', 'ai_gemini_key', 'ai_compatible_key'));
 
--- Ask AI per workspace (owners only): which provider and model answer. The provider's key is in org_secrets (ai_<provider>_key).
+-- Ask Qlarity per workspace (owners only): which provider and model answer. The provider's key is in org_secrets (ai_<provider>_key).
 -- Separate from org_settings on purpose: editors can change settings, and a custom address there could send the key elsewhere.
 create table if not exists public.org_ai_config (
   org_id     uuid primary key default private.current_org() references public.organizations (id) on delete cascade,
@@ -434,7 +434,7 @@ update public.org_members m set is_owner = true
    and not exists (select 1 from public.org_members x where x.org_id = m.org_id and x.is_owner)
    and m.email = (select a.email from public.org_members a where a.org_id = m.org_id and a.role = 'admin' order by a.created_at, a.email limit 1);
 
--- Ask AI settings: owners read and change them (through set_ai_config); the server reads them as service_role
+-- Ask Qlarity settings: owners read and change them (through set_ai_config); the server reads them as service_role
 alter table public.org_ai_config enable row level security;
 drop policy if exists owner_read on public.org_ai_config;
 create policy owner_read on public.org_ai_config for select to authenticated using (org_id = (select private.current_org()) and (select private.is_owner(private.current_org())));
@@ -538,7 +538,7 @@ end $$;
 revoke all on function public.set_member_owner(text, boolean) from public, anon;
 grant execute on function public.set_member_owner(text, boolean) to authenticated;
 
--- Ask AI: owners choose the provider, model and (for OpenAI-compatible services) the https address
+-- Ask Qlarity: owners choose the provider, model and (for OpenAI-compatible services) the https address
 create or replace function public.set_ai_config(p_enabled boolean, p_provider text, p_model text, p_base_url text default '') returns void
 language plpgsql security definer set search_path = '' as $$
 declare o uuid := private.current_org(); u text := btrim(coalesce(p_base_url, '')); h text;
@@ -559,7 +559,7 @@ end $$;
 revoke all on function public.set_ai_config(boolean, text, text, text) from public, anon;
 grant execute on function public.set_ai_config(boolean, text, text, text) to authenticated;
 
--- what every member may know about Ask AI: on or off, and which provider / model answers (no keys, no address)
+-- what every member may know about Ask Qlarity: on or off, and which provider / model answers (no keys, no address)
 create or replace function public.ai_status() returns table (enabled boolean, provider text, model text)
 language sql stable security definer set search_path = '' as $$
   select c.enabled, c.provider, c.model from public.org_ai_config c

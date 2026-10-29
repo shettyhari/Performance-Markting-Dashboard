@@ -1,8 +1,8 @@
 /* Qlarity — attribution suite pages (loaded after app.html's main script; ES5 like the rest).
    Pages: Attribution (models, channels, AI search, conversion paths), Lead journeys, Report builder, Sync & tracking.
-   Ask AI: a floating assistant on every page (AIW below), using the page's dates and brand as context.
+   Ask Qlarity: a floating assistant on every page (AIW below), using the page's dates and brand as context.
    Settings sections: Attribution & sync (deal values, Conversions API, website tracking, channel costs, audiences, AI digest, MCP / Chrome extension),
-   Workspace, and AI (owners only: provider, model and keys for Ask AI).
+   Workspace, and AI (owners only: provider, model and keys for Ask Qlarity).
    Server: /api/suite (api/_suite.js and friends). Numbers follow the dashboard's definitions; N/A, never 0, when data is missing. */
 (function(){
   var X = {cache: {}, busy: {}, err: {}, model: "last", by: "channel", chat: [], asking: false, jq: "", found: null, lead: null, cmp: null};
@@ -189,7 +189,7 @@
     var a = el("a", {href: URL.createObjectURL(new Blob(["﻿" + lines.join("\n")], {type: "text/csv"})), download: name.replace(/[^\w\- ]+/g, "") + ".csv"}); document.body.appendChild(a); a.click(); a.remove();
   }
 
-  /* ================= Ask AI: a floating assistant on every page ================= */
+  /* ================= Ask Qlarity: a floating assistant on every page ================= */
   var AI_LABEL = {anthropic: "Anthropic Claude", openai: "OpenAI", gemini: "Google Gemini", compatible: "OpenAI-compatible"};
   /* on / off and which provider · model answers (every member may see this; keys and addresses stay with the owner) */
   function aiStatus(force){
@@ -277,18 +277,18 @@
     var R = AIW.root; R.textContent = "";
     if (!on) return;
     if (!AIW.open){
-      R.appendChild(el("button", {cls: "aiw-fab", type: "button", "aria-label": "Ask AI (Ctrl+K)", title: "Ask AI · Ctrl+K", onclick: function(){ aiwToggle(true); }},
-        ico("spark"), el("span", {text: "Ask AI"}), el("kbd", {text: /Mac|iPhone|iPad/.test(navigator.platform || "") ? "⌘K" : "Ctrl K"})));
+      R.appendChild(el("button", {cls: "aiw-fab", type: "button", "aria-label": "Ask Qlarity (Ctrl+K)", title: "Ask Qlarity · Ctrl+K", onclick: function(){ aiwToggle(true); }},
+        ico("spark"), el("span", {text: "Ask Qlarity"}), el("kbd", {text: /Mac|iPhone|iPad/.test(navigator.platform || "") ? "⌘K" : "Ctrl K"})));
       return;
     }
     var ready = st && !st.err && st.enabled && st.model, owner = sbIsOwner();
     var sub = st === null ? "Connecting…" : st.err ? "Couldn't check the AI settings" : ready ? (AI_LABEL[st.provider] || st.provider) + " · " + st.model : "Not set up yet";
-    var panel = el("section", {cls: "aiw-panel" + (AIW.wide ? " wide" : ""), role: "dialog", "aria-label": "Ask AI", "aria-modal": "false"});
+    var panel = el("section", {cls: "aiw-panel" + (AIW.wide ? " wide" : ""), role: "dialog", "aria-label": "Ask Qlarity", "aria-modal": "false"});
     panel.appendChild(el("div", {cls: "aiw-head"}, el("div", {cls: "aiw-badge"}, ico("spark")),
-      el("div", {cls: "aiw-title"}, el("b", {text: "Ask AI"}), el("span", null, el("i", {cls: ready ? "" : "off"}), sub)),
+      el("div", {cls: "aiw-title"}, el("b", {text: "Ask Qlarity"}), el("span", null, el("i", {cls: ready ? "" : "off"}), sub)),
       X.chat.length ? el("button", {cls: "aiw-ib", type: "button", title: "New conversation", "aria-label": "New conversation", onclick: function(){ if (X.asking) return; X.chat = []; aiwSave(); aiwDraw(true); }}, ico("edit")) : null,
       el("button", {cls: "aiw-ib aiw-wide", type: "button", title: AIW.wide ? "Smaller" : "Larger", "aria-label": AIW.wide ? "Make the panel smaller" : "Make the panel larger", onclick: function(){ AIW.wide = !AIW.wide; aiwSave(); aiwDraw(true); }}, ico(AIW.wide ? "shrink" : "expand")),
-      el("button", {cls: "aiw-ib", type: "button", title: "Close (Esc)", "aria-label": "Close Ask AI", onclick: function(){ aiwToggle(false); }}, ico("close"))));
+      el("button", {cls: "aiw-ib", type: "button", title: "Close (Esc)", "aria-label": "Close Ask Qlarity", onclick: function(){ aiwToggle(false); }}, ico("close"))));
     if (ready) panel.appendChild(el("div", {cls: "aiw-ctx"},
       el("span", null, AIW.useCtx ? "Using " : "Not using ", el("b", {text: ctx.page}), ctx.label ? " · " + ctx.label : "", " · " + (ctx.brand || "all brands")),
       el("button", {cls: "aiw-sw", type: "button", role: "switch", "aria-checked": AIW.useCtx ? "true" : "false", title: "Use this page's dates and brand when a question doesn't name them",
@@ -296,7 +296,7 @@
     var body = el("div", {cls: "aiw-body", "aria-live": "polite"});
     if (!ready){
       body.appendChild(el("div", {cls: "aiw-setup"}, el("div", {cls: "aiw-badge"}, ico("spark")),
-        el("h3", {text: st === null ? "Connecting…" : st.err ? "Ask AI couldn't load" : "Ask AI isn't set up yet"}),
+        el("h3", {text: st === null ? "Connecting…" : st.err ? "Ask Qlarity couldn't load" : "Ask Qlarity isn't set up yet"}),
         el("p", {text: st && st.err ? st.err : owner ? "Choose a provider and model, and add its API key. It takes a minute." : "Your workspace owner can switch it on in Settings › AI."}),
         owner && st && !st.err ? el("button", {cls: "btn", type: "button", onclick: function(){ aiwToggle(false); state.tab = "settings"; state.setTab = "ai"; render(); }}, "Open Settings › AI") : null));
     } else if (!X.chat.length){
@@ -340,7 +340,7 @@
   });
   /* the assistant follows every page change, sign-in and workspace switch */
   var baseRender = render;
-  render = function(){ var r = baseRender.apply(this, arguments); try { aiwDraw(false); } catch (e) { if (window.console) console.warn("Ask AI:", e); } return r; };
+  render = function(){ var r = baseRender.apply(this, arguments); try { aiwDraw(false); } catch (e) { if (window.console) console.warn("Ask Qlarity:", e); } return r; };
 
   /* ================= Sync & tracking (Conversions API log, audiences, website tracking health) ================= */
   function viewSync(){
@@ -427,7 +427,7 @@
       chk("aud-on", "Sync audiences", aud.enabled), chk("aud-ql", "Qualified leads", (aud.lists || ["ql", "won"]).indexOf("ql") >= 0), chk("aud-won", "Customers (sales)", (aud.lists || ["ql", "won"]).indexOf("won") >= 0),
       chk("aud-all", "All CRM leads (for exclusions)", (aud.lists || []).indexOf("all") >= 0), num("aud-days", "Leads from the last (days)", aud.lookbackDays || 180)));
 
-    wrap.appendChild(h.card("AI analyst", "Ask AI and the digest use the provider and model your workspace owner picks in Settings › AI. The daily digest goes to the Telegram chat connected in Settings › Alerts, every morning.",
+    wrap.appendChild(h.card("AI analyst", "Ask Qlarity and the digest use the provider and model your workspace owner picks in Settings › AI. The daily digest goes to the Telegram chat connected in Settings › Alerts, every morning.",
       chk("ai-digest", "Send a daily AI digest to Telegram", ai.digest)));
 
     wrap.appendChild(h.card("Use the data in Claude, ChatGPT and the Chrome extension", "Create an API key in Settings › Workspace › API keys. Anyone with it can read this workspace's numbers, so keep it private and revoke it when it's no longer used.",
@@ -544,7 +544,7 @@
     return wrap;
   }
 
-  /* ================= Settings › AI (owners): provider, model, address and keys for Ask AI and the digest ================= */
+  /* ================= Settings › AI (owners): provider, model, address and keys for Ask Qlarity and the digest ================= */
   var AI_KEYS = [["anthropic", "console.anthropic.com › Settings › API keys"], ["openai", "platform.openai.com › API keys"],
     ["gemini", "aistudio.google.com › Get API key"], ["compatible", "Your service's dashboard (OpenRouter, DeepSeek, Groq, Mistral, a self-hosted model…)"]];
   var AIS = {cfg: null, keys: null, d: null, models: {}, busy: "", msg: null, org: ""};
@@ -583,8 +583,8 @@
       api("ai-test", {}, {}).then(function(r){ AIS.msg = {kind: "ok", text: "Works: " + r.provider + " · " + r.model + " answered “" + (r.reply || "…") + "” in " + (r.ms / 1000).toFixed(1) + " s."}; })
         .catch(function(e){ AIS.msg = {kind: "err", text: e.message}; }).then(function(){ AIS.busy = ""; render(); }); };
     var B = AIS.busy;
-    wrap.appendChild(h.card("Ask AI", "Pick which AI answers questions in Ask AI and writes the morning digest, for this workspace. Every member can use Ask AI; only owners see this page. The AI only ever gets the dashboard's numbers, never names, phone numbers or emails.",
-      el("label", {cls: "toggle", "for": "ai-on"}, on, el("span", null, el("span", {text: "Ask AI is on for this workspace"}), el("span", {cls: "small tog-hint", text: "Off: members see that it isn't set up, and the digest is skipped."}))),
+    wrap.appendChild(h.card("Ask Qlarity", "Pick which AI answers questions in Ask Qlarity and writes the morning digest, for this workspace. Every member can use Ask Qlarity; only owners see this page. The AI only ever gets the dashboard's numbers, never names, phone numbers or emails.",
+      el("label", {cls: "toggle", "for": "ai-on"}, on, el("span", null, el("span", {text: "Ask Qlarity is on for this workspace"}), el("span", {cls: "small tog-hint", text: "Off: members see that it isn't set up, and the digest is skipped."}))),
       el("div", {cls: "form compact"},
         el("div", {cls: "field"}, el("label", {"for": "ai-prov", text: "Provider"}), prov),
         el("div", {cls: "field"}, el("label", {"for": "ai-model", text: "Model"}), el("div", {style: "display:flex;gap:8px;flex-wrap:wrap"}, model,
@@ -605,7 +605,7 @@
         toast(v ? AI_LABEL[p[0]] + " key saved" : AI_LABEL[p[0]] + " key removed"); inp.value = ""; delete AIS.models[p[0]]; aiLoad(true); }).catch(function(e){ toast("Not saved: " + (e.message || e)); }); };
       kc.appendChild(el("div", {cls: "field"}, el("label", {text: AI_LABEL[p[0]] + (cur ? " · set " + String(cur.updated_at || "").slice(0, 10) + (cur.updated_by ? " by " + cur.updated_by : "") : "")}),
         el("div", {style: "display:flex;gap:8px;flex-wrap:wrap"}, inp, el("button", {cls: "btn ghost", type: "button", onclick: function(){ if (inp.value.trim()) put(inp.value.trim()); }}, "Save"),
-          cur ? el("button", {cls: "linkbtn", type: "button", onclick: function(){ if (confirm("Remove the " + AI_LABEL[p[0]] + " key?" + (saved.provider === p[0] && saved.enabled ? " Ask AI stops working until another key is saved." : ""))) put(""); }}, "Remove") : null),
+          cur ? el("button", {cls: "linkbtn", type: "button", onclick: function(){ if (confirm("Remove the " + AI_LABEL[p[0]] + " key?" + (saved.provider === p[0] && saved.enabled ? " Ask Qlarity stops working until another key is saved." : ""))) put(""); }}, "Remove") : null),
         el("span", {cls: "small", text: "Get one: " + p[1]})));
     });
     wrap.appendChild(kc);
@@ -622,7 +622,7 @@
   EXTRA_VIEWS.attribution = viewAttribution; EXTRA_VIEWS.journeys = viewJourneys; EXTRA_VIEWS.builder = viewBuilder; EXTRA_VIEWS.capi = viewSync;
   SET_TABS.splice(SET_TABS.length - 1, 0, ["growth", "Attribution & sync", "Deal values, sending qualified leads and sales to Meta, website tracking, channel costs, audiences, the AI digest and API access."]);
   EXTRA_SET.growth = setGrowth;
-  SET_TABS.splice(SET_TABS.length - 1, 0, ["ai", "AI", "Owners only: which AI provider and model answer Ask AI and write the digest, and their API keys."]);
+  SET_TABS.splice(SET_TABS.length - 1, 0, ["ai", "AI", "Owners only: which AI provider and model answer Ask Qlarity and write the digest, and their API keys."]);
   EXTRA_SET.ai = setAI;
   try { var saved = localStorage.getItem("lp-lead-dash-tab"); if (saved && EXTRA_VIEWS[saved]) state.tab = saved; } catch (e) {}
   try { render(); } catch (e) {}

@@ -27,7 +27,7 @@ Anyone can belong to several workspaces (agencies, groups); switch from the prof
 | Reports | Daily / MTD brand-wise and leader-wise templates, Master, creative analysis |
 | TAT & calls, CRM leads data, Lead leaks | Call speed by owner and manager, leads still to call, paid leads that never reached the CRM |
 | Attribution, Lead journeys | First / last click, linear, position-based and time-decay credit by channel or campaign; conversion paths; every touch of one lead |
-| Report builder, Ask AI | Your own groupings and numbers (CSV); plain-language questions answered from the workspace's numbers |
+| Report builder, Ask Qlarity | Your own groupings and numbers (CSV); plain-language questions answered from the workspace's numbers |
 | Sync & tracking, Alerts & Monitoring, Ad account activity | What was sent to Meta, website tracking health, audiences; alerts with open / resolved tracking; who changed what in Meta |
 
 **Definitions** (used everywhere, including Telegram, AI and MCP): Meta leads = lead / chat Results (excluded campaigns' results left out, spend kept); CRM leads by created day in the workspace time zone, repeat leads left out; QL = qualified statuses; sales = statuses ticked as sale; CPL = spend ÷ Meta leads; CPQL = spend ÷ QL; cost per sale = spend ÷ sales; est. revenue = sales × the brand's average deal value (always labelled an estimate); ratios from summed totals; totals = listed brands only; **N/A, never 0**, when data is missing or a denominator is 0.

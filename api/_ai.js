@@ -49,7 +49,7 @@ const PROVIDERS = {
   gemini: { label: "Google Gemini", base: "https://generativelanguage.googleapis.com/v1beta" },
   compatible: { label: "OpenAI-compatible", base: "" },
 };
-const OFF = "Ask AI isn't set up yet. Your workspace owner can switch it on in Settings › AI.";
+const OFF = "Ask Qlarity isn't set up yet. Your workspace owner can switch it on in Settings › AI.";
 const TIMEOUT = 45000;
 
 /* the https address an OpenAI-compatible service gets (same rule as set_ai_config in the database) */

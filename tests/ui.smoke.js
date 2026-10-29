@@ -161,10 +161,10 @@ const submit = (doc) => doc.querySelector("form").dispatchEvent(new doc.defaultV
   ok(/Choose a workspace/.test(t5()) && /open now/.test(t5()) && [...d5.window.document.querySelectorAll("button")].some((b) => b.textContent === "Cancel"), "Switch workspace shows the list with Cancel and the open one marked");
   [...d5.window.document.querySelectorAll(".ws-pick")].filter((b) => /Acme Homes/.test(b.textContent))[0].click(); await wait(300);
   ok(d5.window.eval("sb.org.name") === "Acme Homes" && d5.window.eval("sb.role") === "admin" && d5.window.eval("sb.status") === "ready", "switching opens the other workspace, with its own role");
-  /* Ask AI and Settings › AI: owners only for the settings; everyone sees on / off */
+  /* Ask Qlarity and Settings › AI: owners only for the settings; everyone sees on / off */
   const W5 = d5.window, nav5 = () => [...W5.document.querySelectorAll(".set-nav button")].map((b) => b.textContent);
   W5.eval("state.tab = 'settings'; state.setTab = 'ai'; render();"); await wait(200);
-  ok(nav5().indexOf("AI") >= 0 && /Ask AI is on for this workspace/.test(t5()) && W5.document.querySelectorAll('input[aria-label$=" key"]').length === 4, "an owner sees Settings › AI with the provider, model and four key fields");
+  ok(nav5().indexOf("AI") >= 0 && /Ask Qlarity is on for this workspace/.test(t5()) && W5.document.querySelectorAll('input[aria-label$=" key"]').length === 4, "an owner sees Settings › AI with the provider, model and four key fields");
   W5.document.getElementById("ai-on").click(); await wait(30);
   W5.document.getElementById("ai-prov").value = "compatible"; W5.document.getElementById("ai-prov").dispatchEvent(new W5.Event("change")); await wait(30);
   W5.document.getElementById("ai-model").value = "some-model"; W5.document.getElementById("ai-model").dispatchEvent(new W5.Event("input"));
@@ -172,17 +172,17 @@ const submit = (doc) => doc.querySelector("form").dispatchEvent(new doc.defaultV
   [...W5.document.querySelectorAll("button")].filter((b) => b.textContent === "Save AI settings")[0].click(); await wait(200);
   const sc = calls.filter((c) => c.fn === "set_ai_config").pop();
   ok(sc && sc.args.p_enabled === true && sc.args.p_provider === "compatible" && sc.args.p_model === "some-model" && sc.args.p_base_url === "https://openrouter.ai/api/v1", "Save AI settings sends provider, model and address to set_ai_config");
-  /* Ask AI is a floating assistant on every page */
+  /* Ask Qlarity is a floating assistant on every page */
   const D5 = W5.document, aiText = () => (D5.getElementById("aiw") || {}).textContent || "";
   const ctrlK = () => D5.dispatchEvent(new W5.KeyboardEvent("keydown", { key: "k", ctrlKey: true, bubbles: true }));
-  ok(D5.querySelector(".aiw-fab") && !D5.querySelector('.tab[data-tab="ask"]'), "Ask AI is a floating button on every page, not a tab");
+  ok(D5.querySelector(".aiw-fab") && !D5.querySelector('.tab[data-tab="ask"]'), "Ask Qlarity is a floating button on every page, not a tab");
   D5.querySelector(".aiw-fab").click(); await wait(200);
-  ok(D5.querySelector(".aiw-panel") && /isn't set up yet/.test(aiText()) && /Open Settings › AI/.test(aiText()), "Ask AI off: the panel says so and offers the owner Settings › AI");
+  ok(D5.querySelector(".aiw-panel") && /isn't set up yet/.test(aiText()) && /Open Settings › AI/.test(aiText()), "Ask Qlarity off: the panel says so and offers the owner Settings › AI");
   ctrlK(); await wait(50);
   ok(!D5.querySelector(".aiw-panel") && D5.querySelector(".aiw-fab"), "Ctrl+K closes it again");
   W5.eval("sbSwitchOrg('22222222-2222-4222-8222-222222222222')"); await wait(300);
   W5.eval("state.tab = 'settings'; state.setTab = 'ai'; render();"); await wait(100);
-  ok(nav5().indexOf("AI") < 0 && !/Ask AI is on for this workspace/.test(t5()), "a viewer (not owner) has no AI section, even when asking for it");
+  ok(nav5().indexOf("AI") < 0 && !/Ask Qlarity is on for this workspace/.test(t5()), "a viewer (not owner) has no AI section, even when asking for it");
   ctrlK(); await wait(200);
   ok(/workspace owner can switch it on/.test(aiText()) && !/Open Settings › AI/.test(aiText()), "…and the assistant tells them the owner sets it up");
   ctrlK(); await wait(50);
