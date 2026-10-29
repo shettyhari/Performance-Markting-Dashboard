@@ -54,13 +54,17 @@ Anyone can belong to several workspaces (agencies, groups); switch from the prof
 | `TELEGRAM_BOT_TOKEN` | optional: one bot for every workspace's alerts (@BotFather) |
 | `GOOGLE_ADS_CLIENT_ID`, `GOOGLE_ADS_CLIENT_SECRET` | optional: one Google OAuth client; each workspace adds its own refresh token |
 | `APP_NAME` | optional: product name on the sign-in page and in emails (default "Qlarity") |
+| `SUPER_ADMIN_EMAILS` | the Qlarity team's logins (comma separated) that may open the console at `/admin` |
+| `VERCEL_TOKEN`, `VERCEL_PROJECT_ID`, `VERCEL_TEAM_ID` | optional: a read-only Vercel token so the console shows deployments (team id only for team projects) |
 
 3. Deploy. Sign up, open the confirmation email, create the first workspace.
 
 Schedules run on the database server (`/etc/cron.d/lp-fanout`, UTC): each one calls the site **once per active workspace** (`?org=<id>`, with `x-cron-secret`), so every company gets its own 60-second budget; results in `journalctl -t lp-fanout`. Tokens per workspace are stored encrypted in the database vault (`set_org_secret`; only the server can read them back). Machine keys (CRM push, API) are stored as sha256 hashes and shown once. Passwords are stored as scrypt hashes; email links as sha256 hashes; a password change or reset ends every other session.
 
 
-**Not included:** billing / plans, a platform super-admin console, custom domains per workspace, call tracking, daylight-saving time zones (time zones are fixed offsets).
+**Console (`/admin`, the Qlarity team only).** Sign in on the dashboard with an email listed in `SUPER_ADMIN_EMAILS`, then open `/admin`: every workspace with its members, leads, ad rows and storage (per table); every login with its state; the server's disk, memory, load, services, backups (local and S3), schedules and HTTPS certificate (a snapshot every 5 minutes from `ec2/health.sh`, kept 7 days); server errors from the site's functions (kept 30 days); Vercel deployments. Actions: suspend / reactivate or delete a workspace (typed name), sign out, disable / enable a login, resend a confirmation email; each is logged. It shows counts and sizes only, never a workspace's leads or tokens.
+
+**Not included:** billing / plans, custom domains per workspace, call tracking, daylight-saving time zones (time zones are fixed offsets).
 
 ## Developing
 

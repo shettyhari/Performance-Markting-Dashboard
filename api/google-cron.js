@@ -4,7 +4,7 @@ const D = require("./_db");
 const G = require("./_gadslib");
 const { syncGoogle } = require("./_gadsync");
 
-module.exports = async function handler(req, res) {
+module.exports = D.logged("google-cron", async function handler(req, res) {
   try {
     if (!(await D.cronAllowed(req))) return D.send(res, 401, { error: "Not allowed" });
     const org = await D.orgById(req.query && req.query.org);
@@ -17,4 +17,4 @@ module.exports = async function handler(req, res) {
       return D.send(res, out.errors && out.errors.length && !out.done ? 502 : 200, out);
     });
   } catch (e) { return D.send(res, 502, { error: String((e && e.message) || e) }); }
-};
+});

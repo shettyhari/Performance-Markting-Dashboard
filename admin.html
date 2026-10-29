@@ -1,0 +1,580 @@
+<!doctype html>
+<html lang="en-IN">
+<head>
+<meta charset="utf-8">
+<script>try{var _t=localStorage.getItem("lp-theme");if(_t==="dark"||_t==="light")document.documentElement.setAttribute("data-theme",_t);}catch(e){}</script>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Qlarity Console</title>
+<link rel="icon" type="image/png" sizes="32x32" href="brand/qlarity-icon-32.png">
+<link rel="apple-touch-icon" href="brand/qlarity-icon-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@600;700;800&family=Inter:wght@400;500;600&display=swap">
+<style>
+/* Qlarity Console: the platform view for the Qlarity team (api/admin.js). Brand colours; light and dark share the lp-theme choice. */
+:root{
+  --cyan:#00c2fb;--cyan2:#00e3ff;--blue:#005df5;--deep:#052885;--navy:#021434;
+  --bg:#f4f7fc;--panel:#ffffff;--soft:#f3f8ff;--ink:#021434;--fg:#3a4660;--muted:#667089;--line:#e3eaf5;--line2:#d3dded;
+  --series:#005df5;--series-soft:rgba(0,93,245,.12);--accent-text:#005df5;--shadow:0 1px 2px rgba(2,20,52,.04),0 8px 24px rgba(2,20,52,.06);
+  --good:#0ca30c;--warn:#fab219;--serious:#ec835a;--crit:#d03b3b;--good-bg:rgba(12,163,12,.1);--warn-bg:rgba(250,178,25,.14);--crit-bg:rgba(208,59,59,.1);
+  color-scheme:light;
+}
+:root[data-theme="dark"]{--bg:#040b1d;--panel:#0b1736;--soft:#0e1d42;--ink:#eef3ff;--fg:#c3cde3;--muted:#8d99b5;--line:#1a2a50;--line2:#26396a;
+  --series:#1a9cf0;--series-soft:rgba(26,156,240,.16);--accent-text:#00c2fb;--shadow:0 1px 2px rgba(0,0,0,.3),0 10px 30px rgba(0,0,0,.25);
+  --good-bg:rgba(12,163,12,.16);--warn-bg:rgba(250,178,25,.14);--crit-bg:rgba(208,59,59,.18);color-scheme:dark}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#040b1d;--panel:#0b1736;--soft:#0e1d42;--ink:#eef3ff;--fg:#c3cde3;--muted:#8d99b5;--line:#1a2a50;--line2:#26396a;
+  --series:#1a9cf0;--series-soft:rgba(26,156,240,.16);--accent-text:#00c2fb;--shadow:0 1px 2px rgba(0,0,0,.3),0 10px 30px rgba(0,0,0,.25);
+  --good-bg:rgba(12,163,12,.16);--warn-bg:rgba(250,178,25,.14);--crit-bg:rgba(208,59,59,.18);color-scheme:dark}}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--fg);font:14px/1.5 Inter,system-ui,-apple-system,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased;min-height:100vh}
+h1,h2,h3{font-family:"Inter Tight",Inter,sans-serif;color:var(--ink);margin:0;letter-spacing:-.01em}
+button{font:inherit;cursor:pointer}
+a{color:var(--accent-text)}
+.num{font-variant-numeric:tabular-nums}
+/* top bar */
+.top{position:sticky;top:0;z-index:30;background:linear-gradient(120deg,var(--navy) 0%,var(--deep) 70%,#0a3fb3 100%);color:#fff;border-bottom:1px solid rgba(255,255,255,.08)}
+.top-in{max-width:1320px;margin:0 auto;padding:12px 24px;display:flex;align-items:center;gap:14px}
+.top img{height:30px;width:auto;display:block}
+.badge-console{font:700 11px/1 Inter;letter-spacing:.14em;text-transform:uppercase;padding:6px 9px;border-radius:999px;background:rgba(0,227,255,.14);color:var(--cyan2);border:1px solid rgba(0,227,255,.3)}
+.top .sp{flex:1}
+.top .who{font-size:13px;color:rgba(255,255,255,.75);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:260px}
+.ibtn{height:36px;min-width:36px;padding:0 12px;display:inline-flex;align-items:center;justify-content:center;gap:7px;border-radius:9px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.06);color:#fff;font-size:13px;font-weight:500;text-decoration:none}
+.ibtn:hover{background:rgba(255,255,255,.14)}
+.ibtn svg{width:17px;height:17px}
+.ibtn.spin svg{animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+/* tabs */
+.tabs{max-width:1320px;margin:0 auto;padding:0 24px;display:flex;gap:4px;overflow-x:auto;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{border:0;background:none;color:rgba(255,255,255,.66);padding:11px 14px 13px;font-weight:600;font-size:13.5px;border-bottom:2px solid transparent;white-space:nowrap}
+.tab:hover{color:#fff}
+.tab[aria-selected="true"]{color:#fff;border-bottom-color:var(--cyan2)}
+.tab .cnt{margin-left:6px;font-size:11px;padding:2px 6px;border-radius:999px;background:rgba(255,255,255,.14)}
+/* layout */
+main{max-width:1320px;margin:0 auto;padding:24px 24px 64px}
+.grid{display:grid;gap:16px}
+.kpis{grid-template-columns:repeat(6,minmax(0,1fr))}
+.two{grid-template-columns:minmax(0,1.4fr) minmax(0,1fr)}
+.three{grid-template-columns:repeat(3,minmax(0,1fr))}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);padding:18px 20px;min-width:0}
+.card h2{font-size:16px}
+.card .sub{color:var(--muted);font-size:12.5px;margin-top:2px}
+.card-h{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:14px}
+.kpi .lbl{font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.kpi .val{font:800 28px/1.15 "Inter Tight",Inter,sans-serif;color:var(--ink);margin-top:8px;font-variant-numeric:tabular-nums}
+.kpi .foot{font-size:12.5px;color:var(--muted);margin-top:4px}
+.meter{height:6px;border-radius:999px;background:var(--soft);margin-top:10px;overflow:hidden;border:1px solid var(--line)}
+.meter i{display:block;height:100%;border-radius:999px;background:var(--series)}
+.meter.warn i{background:var(--warn)} .meter.crit i{background:var(--crit)}
+.section-t{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin:28px 0 12px}
+.section-t h2{font-size:18px}
+/* status banner */
+.status{display:flex;gap:14px;align-items:flex-start;border-radius:14px;padding:16px 18px;margin-bottom:16px;border:1px solid var(--line);background:var(--panel);box-shadow:var(--shadow)}
+.status .ico{width:34px;height:34px;flex:none;border-radius:10px;display:grid;place-items:center}
+.status .ico svg{width:19px;height:19px}
+.status.ok .ico{background:var(--good-bg);color:var(--good)}
+.status.bad .ico{background:var(--crit-bg);color:var(--crit)}
+.status.warn .ico{background:var(--warn-bg);color:#b07600}
+:root[data-theme="dark"] .status.warn .ico{color:var(--warn)}
+.status h3{font-size:15.5px}
+.status p{margin:2px 0 0;color:var(--muted);font-size:13px}
+.issues{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:8px}
+.issue{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border-radius:10px;background:var(--soft);border:1px solid var(--line)}
+.issue .pill{flex:none}
+.issue b{color:var(--ink);font-weight:600}
+.issue .d{color:var(--muted);font-size:12.5px;word-break:break-word}
+/* pills */
+.pill{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:600;padding:3px 8px;border-radius:999px;white-space:nowrap;border:1px solid transparent}
+.pill svg{width:12px;height:12px}
+.pill.good{background:var(--good-bg);color:var(--good);border-color:rgba(12,163,12,.25)}
+.pill.warn{background:var(--warn-bg);color:#946300;border-color:rgba(250,178,25,.35)}
+:root[data-theme="dark"] .pill.warn{color:var(--warn)}
+.pill.crit{background:var(--crit-bg);color:var(--crit);border-color:rgba(208,59,59,.3)}
+.pill.info,.pill.mute{background:var(--soft);color:var(--muted);border-color:var(--line)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .pill.warn,:root:not([data-theme="light"]) .status.warn .ico{color:var(--warn)}}
+/* tables */
+.tools{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
+.search{flex:1;min-width:200px;height:38px;border:1px solid var(--line2);border-radius:9px;background:var(--panel);color:var(--ink);padding:0 12px;font:inherit}
+.search:focus,select:focus,.btn:focus-visible,.tab:focus-visible,.ibtn:focus-visible{outline:2px solid var(--cyan);outline-offset:1px}
+select{height:38px;border:1px solid var(--line2);border-radius:9px;background:var(--panel);color:var(--ink);padding:0 10px;font:inherit}
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--panel)}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;font-weight:600;font-size:11.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);padding:10px 12px;border-bottom:1px solid var(--line);background:var(--soft);white-space:nowrap;position:sticky;top:0}
+th.r,td.r{text-align:right}
+td{padding:11px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+tr:last-child td{border-bottom:0}
+tbody tr:hover td{background:var(--soft)}
+td .main{color:var(--ink);font-weight:600}
+td .small{color:var(--muted);font-size:12px}
+.acts{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.btn{height:30px;padding:0 10px;border-radius:8px;border:1px solid var(--line2);background:var(--panel);color:var(--ink);font-size:12.5px;font-weight:500;white-space:nowrap}
+.btn:hover{border-color:var(--accent-text);color:var(--accent-text)}
+.btn.danger{color:var(--crit)} .btn.danger:hover{border-color:var(--crit);background:var(--crit-bg)}
+.btn.primary{background:var(--blue);border-color:var(--blue);color:#fff}
+.btn.primary:hover{background:var(--deep);color:#fff}
+.btn[disabled]{opacity:.5;cursor:default}
+.expand{background:none;border:0;color:var(--accent-text);font-size:12px;padding:0;margin-top:3px}
+.breakdown{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:4px 18px;padding:4px 0 2px;font-size:12px}
+.breakdown span{display:flex;justify-content:space-between;gap:8px;color:var(--muted);border-bottom:1px dashed var(--line);padding:3px 0}
+.breakdown b{color:var(--ink);font-weight:500}
+/* bar list (storage by workspace) */
+.bars{display:grid;gap:10px}
+.bar-row{display:grid;grid-template-columns:minmax(0,150px) 1fr 74px;gap:12px;align-items:center;font-size:13px;position:relative}
+.bar-row .n{color:var(--ink);font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bar-row .t{height:14px;background:var(--soft);border-radius:4px;overflow:hidden}
+.bar-row .t i{display:block;height:100%;background:var(--series);border-radius:0 4px 4px 0;min-width:2px}
+.bar-row .v{text-align:right;color:var(--fg)}
+.bar-row:hover .t i{filter:brightness(1.12)}
+/* charts */
+.chart{position:relative}
+.chart svg{display:block;width:100%;height:150px;overflow:visible}
+.chart .gl{stroke:var(--line);stroke-width:1}
+.chart .ax{fill:var(--muted);font-size:10.5px;font-family:Inter,sans-serif}
+.chart .ln{fill:none;stroke:var(--series);stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
+.chart .ar{fill:var(--series-soft)}
+.chart .xh{stroke:var(--muted);stroke-width:1;stroke-dasharray:3 3}
+.chart .dot{fill:var(--series);stroke:var(--panel);stroke-width:2}
+.tip{position:absolute;pointer-events:none;background:var(--navy);color:#fff;font-size:12px;padding:7px 9px;border-radius:8px;white-space:nowrap;transform:translate(-50%,-110%);box-shadow:0 6px 18px rgba(0,0,0,.2);z-index:5}
+.tip b{font-weight:600}
+:root[data-theme="dark"] .tip{background:#eef3ff;color:#021434}
+.empty{color:var(--muted);font-size:13px;padding:24px;text-align:center}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:6px 16px;font-size:13px}
+.kv dt{color:var(--muted)} .kv dd{margin:0;color:var(--ink);text-align:right;word-break:break-word}
+.svc{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--line);font-size:13px}
+.svc:last-child{border-bottom:0}
+.svc span:first-child{color:var(--ink);font-weight:500}
+/* events */
+.ev{display:grid;grid-template-columns:132px 74px 1fr;gap:12px;padding:10px 14px;border-bottom:1px solid var(--line);font-size:13px;align-items:start}
+.ev:last-child{border-bottom:0}
+.ev .when{color:var(--muted);font-size:12px}
+.ev .msg{color:var(--ink);word-break:break-word}
+.ev .msg small{display:block;color:var(--muted);font-size:12px}
+/* gate, modal, toast */
+.gate{max-width:440px;margin:12vh auto;text-align:center;padding:0 16px}
+.gate .card{padding:32px 28px}
+.gate h1{font-size:22px;margin:14px 0 8px}
+.gate p{color:var(--muted);margin:0 0 20px}
+.gate .btn{height:40px;padding:0 18px;font-size:14px;display:inline-flex;align-items:center;text-decoration:none}
+.modal-bg{position:fixed;inset:0;background:rgba(2,20,52,.55);display:grid;place-items:center;z-index:60;padding:16px;backdrop-filter:blur(3px)}
+.modal{background:var(--panel);border:1px solid var(--line);border-radius:16px;max-width:460px;width:100%;padding:24px;box-shadow:0 30px 80px rgba(0,0,0,.35)}
+.modal h3{font-size:18px;margin-bottom:8px}
+.modal p{margin:0 0 14px;color:var(--fg)}
+.modal input{width:100%;height:40px;border:1px solid var(--line2);border-radius:9px;background:var(--panel);color:var(--ink);padding:0 12px;font:inherit;margin-bottom:16px}
+.modal .row{display:flex;justify-content:flex-end;gap:8px}
+.modal .btn{height:36px;padding:0 14px}
+.modal .err{color:var(--crit);font-size:13px;margin:-8px 0 12px}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--navy);color:#fff;padding:11px 16px;border-radius:10px;font-size:13.5px;z-index:70;box-shadow:0 10px 30px rgba(0,0,0,.3);max-width:calc(100% - 32px)}
+.toast.err{background:var(--crit)}
+.skel{height:110px;border-radius:14px;background:linear-gradient(90deg,var(--panel),var(--soft),var(--panel));background-size:200% 100%;animation:sk 1.2s ease-in-out infinite;border:1px solid var(--line)}
+@keyframes sk{to{background-position:-200% 0}}
+.hide-sm{}
+@media (max-width:1100px){.kpis{grid-template-columns:repeat(3,minmax(0,1fr))}.two,.three{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:640px){
+  .top-in,.tabs,main{padding-left:16px;padding-right:16px}
+  .kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .kpi .val{font-size:22px}
+  .top .who,.hide-sm{display:none}
+  .top-in{gap:8px}
+  .top img{height:26px}
+  .badge-console{font-size:10px;padding:5px 7px}
+  .ibtn{padding:0 9px}
+  .issue{flex-direction:column;gap:6px}
+  .status{padding:14px}
+  .bar-row{grid-template-columns:minmax(0,96px) 1fr 64px}
+  .ev{grid-template-columns:1fr;gap:4px}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="top-in">
+    <a href="/" aria-label="Qlarity home"><img src="brand/qlarity-logo-dark.png" alt="Qlarity" width="620" height="200"></a>
+    <span class="badge-console">Console</span>
+    <span class="sp"></span>
+    <span class="who" id="who"></span>
+    <span class="hide-sm" id="updated" style="font-size:12px;color:rgba(255,255,255,.6)"></span>
+    <button class="ibtn" id="refresh" type="button" aria-label="Refresh" title="Refresh"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg></button>
+    <button class="ibtn" id="theme" type="button" aria-label="Switch theme" title="Switch theme"></button>
+    <a class="ibtn" href="/app" title="Open the dashboard" aria-label="Open the dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg><span class="hide-sm">Dashboard</span></a>
+  </div>
+  <nav class="tabs" role="tablist" id="tabs"></nav>
+</header>
+<main id="main"><div class="grid kpis"><div class="skel"></div><div class="skel"></div><div class="skel"></div><div class="skel"></div><div class="skel"></div><div class="skel"></div></div></main>
+
+<script>
+(function () {
+  "use strict";
+  var $ = function (s, r) { return (r || document).querySelector(s); };
+  var esc = function (s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); };
+  var ICON = {
+    ok: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>',
+    warn: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>',
+    crit: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M15 9l-6 6M9 9l6 6"/></svg>',
+    info: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>',
+    sun: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>',
+    moon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></svg>'
+  };
+  var LEVEL = { error: ["crit", "Critical", ICON.crit], warn: ["warn", "Warning", ICON.warn], info: ["info", "Info", ICON.info] };
+  var pill = function (cls, label, icon) { return '<span class="pill ' + cls + '">' + (icon || "") + esc(label) + "</span>"; };
+  var levelPill = function (l) { var x = LEVEL[l] || LEVEL.info; return pill(x[0], x[1], x[2]); };
+
+  /* ---------- formatting ---------- */
+  var nf = new Intl.NumberFormat("en-IN");
+  var n = function (v) { return v == null || isNaN(v) ? "N/A" : nf.format(Number(v)); };
+  function bytes(b) {
+    if (b == null || isNaN(b)) return "N/A"; b = Number(b);
+    var u = ["B", "KB", "MB", "GB", "TB"], i = 0; while (b >= 1024 && i < u.length - 1) { b /= 1024; i++; }
+    return (i === 0 ? b : b.toFixed(b >= 100 ? 0 : b >= 10 ? 1 : 2)) + " " + u[i];
+  }
+  function ago(t) {
+    if (!t) return "never"; var s = (Date.now() - new Date(t).getTime()) / 1000;
+    if (s < 60) return "just now"; if (s < 3600) return Math.floor(s / 60) + " min ago"; if (s < 86400) return Math.floor(s / 3600) + " h ago";
+    if (s < 86400 * 45) return Math.floor(s / 86400) + " d ago"; return new Date(t).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" });
+  }
+  var when = function (t) { return t ? new Date(t).toLocaleString("en-IN", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }) : "N/A"; };
+  function dur(s) { s = Number(s) || 0; var d = Math.floor(s / 86400), h = Math.floor(s % 86400 / 3600); return d ? d + " d " + h + " h" : h + " h " + Math.floor(s % 3600 / 60) + " min"; }
+  var pct = function (a, b) { return b ? Math.round(1000 * a / b) / 10 : null; };
+
+  /* ---------- session (shared with the dashboard: lp-session) ---------- */
+  function token() {
+    try { var j = JSON.parse(localStorage.getItem("lp-session") || "null"); if (!j || !j.token) return "";
+      var exp = JSON.parse(atob(j.token.split(".")[1].replace(/-/g, "+").replace(/_/g, "/"))).exp * 1000; return exp > Date.now() ? j.token : ""; } catch (e) { return ""; }
+  }
+  function api(op, body) {
+    var t = token(), h = { "content-type": "application/json" }; if (t) h.authorization = "Bearer " + t;
+    return fetch("/api/admin?op=" + op, { method: body ? "POST" : "GET", headers: h, body: body ? JSON.stringify(body) : undefined, cache: "no-store" })
+      .then(function (r) { return r.text().then(function (x) { var b = null; try { b = JSON.parse(x); } catch (e) {}
+        if (!r.ok) { var er = new Error((b && b.error) || "The console answered " + r.status); er.status = r.status; throw er; } return b; }); });
+  }
+
+  /* ---------- theme ---------- */
+  var tb = $("#theme");
+  var themeNow = function () { var t = document.documentElement.getAttribute("data-theme"); if (t) return t; return window.matchMedia && matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"; };
+  function paintTheme() { var d = themeNow() === "dark"; tb.innerHTML = d ? ICON.sun : ICON.moon; var lb = d ? "Switch to light theme" : "Switch to dark theme"; tb.title = lb; tb.setAttribute("aria-label", lb); }
+  tb.addEventListener("click", function () { var nx = themeNow() === "dark" ? "light" : "dark"; document.documentElement.setAttribute("data-theme", nx); try { localStorage.setItem("lp-theme", nx); } catch (e) {} paintTheme(); });
+  paintTheme();
+
+  /* ---------- state ---------- */
+  var S = { tab: "overview", data: null, vercel: null, q: { orgs: "", users: "", ev: "" }, evLevel: "all", userState: "all", open: {} };
+  try { var saved = sessionStorage.getItem("lp-console-tab"); if (saved) S.tab = saved; } catch (e) {}
+  var TABS = [["overview", "Overview"], ["orgs", "Workspaces"], ["users", "Logins"], ["server", "Server & storage"], ["events", "Events"], ["vercel", "Vercel"]];
+
+  function toast(msg, err) {
+    var t = document.createElement("div"); t.className = "toast" + (err ? " err" : ""); t.setAttribute("role", "status"); t.textContent = msg;
+    document.body.appendChild(t); setTimeout(function () { t.remove(); }, 4200);
+  }
+  function gate(title, text, link) {
+    $("#tabs").innerHTML = ""; $("#who").textContent = "";
+    $("#main").innerHTML = '<div class="gate"><div class="card"><img src="brand/qlarity-icon-180.png" alt="" width="56" height="56" style="border-radius:14px">' +
+      "<h1>" + esc(title) + "</h1><p>" + esc(text) + "</p>" + (link ? '<a class="btn primary" href="' + link[0] + '">' + esc(link[1]) + "</a>" : "") + "</div></div>";
+  }
+
+  /* ---------- loading ---------- */
+  var loading = false;
+  function load(quiet) {
+    if (loading) return; loading = true; $("#refresh").classList.add("spin");
+    if (!token()) { loading = false; $("#refresh").classList.remove("spin"); return gate("Sign in first", "The console uses your Qlarity sign-in. Sign in on the dashboard, then open this page again.", ["/app", "Sign in to Qlarity"]); }
+    return api("overview").then(function (d) {
+      S.data = d; render();
+      if (d.vercel && !S.vercel) api("vercel").then(function (v) { S.vercel = v; if (S.tab === "vercel" || S.tab === "overview") render(); }, function (e) { S.vercel = { configured: true, error: e.message }; });
+    }, function (e) {
+      if (e.status === 401) gate("Sign in again", "Your session has ended.", ["/app", "Sign in to Qlarity"]);
+      else if (e.status === 403) gate("Not available", e.message, ["/app", "Open the dashboard"]);
+      else if (!S.data) gate("The console couldn't load", e.message, null);
+      else if (!quiet) toast(e.message, true);
+    }).then(function () { loading = false; $("#refresh").classList.remove("spin"); });
+  }
+  $("#refresh").addEventListener("click", function () { S.vercel = null; load(); });
+  setInterval(function () { if (!document.hidden && S.data) load(true); }, 60000);
+  setInterval(function () { if (S.data) $("#updated").textContent = "Updated " + ago(S.data.at); }, 15000);
+
+  /* ---------- actions ---------- */
+  function act(kind, id, name, confirmText, label) {
+    var go = function (typed) {
+      return api("action", { kind: kind, id: id, name: typed, label: label }).then(function () { toast("Done."); return load(true); });
+    };
+    modal(confirmText, kind === "org-delete" ? name : null, go);
+  }
+  function modal(c, mustType, go) {
+    var bg = document.createElement("div"); bg.className = "modal-bg";
+    bg.innerHTML = '<div class="modal" role="dialog" aria-modal="true" aria-labelledby="m-t"><h3 id="m-t">' + esc(c.title) + "</h3><p>" + esc(c.text) + "</p>" +
+      (mustType ? '<label for="m-in" style="display:block;font-size:12.5px;color:var(--muted);margin-bottom:6px">Type <b style="color:var(--ink)">' + esc(mustType) + "</b> to confirm</label><input id=\"m-in\" autocomplete=\"off\">" : "") +
+      '<div class="err" id="m-err" hidden></div><div class="row"><button class="btn" type="button" data-x>Cancel</button><button class="btn ' + (c.danger ? "danger" : "primary") + '" type="button" data-ok' + (mustType ? " disabled" : "") + ">" + esc(c.ok) + "</button></div></div>";
+    document.body.appendChild(bg);
+    var ok = $("[data-ok]", bg), inp = $("#m-in", bg), close = function () { bg.remove(); document.removeEventListener("keydown", key); };
+    var key = function (e) { if (e.key === "Escape") close(); };
+    document.addEventListener("keydown", key);
+    if (inp) { inp.focus(); inp.addEventListener("input", function () { ok.disabled = inp.value.trim() !== mustType; }); } else ok.focus();
+    bg.addEventListener("click", function (e) { if (e.target === bg || e.target.hasAttribute("data-x")) close(); });
+    ok.addEventListener("click", function () {
+      ok.disabled = true; ok.textContent = "Working…";
+      go(inp ? inp.value.trim() : undefined).then(close, function (e) { var er = $("#m-err", bg); er.hidden = false; er.textContent = e.message; ok.disabled = false; ok.textContent = c.ok; });
+    });
+  }
+  var CONFIRM = {
+    "org-suspend": function (o) { return { title: "Suspend " + o.name + "?", text: "Its members can't open it and its schedules stop until you reactivate it. Nothing is deleted.", ok: "Suspend", danger: true }; },
+    "org-reactivate": function (o) { return { title: "Reactivate " + o.name + "?", text: "Members can open it again and its schedules resume.", ok: "Reactivate" }; },
+    "org-delete": function (o) { return { title: "Delete " + o.name + " for good?", text: "This deletes the workspace and everything in it: " + n(o.leads) + " leads, " + n(o.meta_rows + o.google_rows) + " ad rows, settings, members, and its encrypted tokens. It can't be undone (backups keep it for up to 30 days).", ok: "Delete workspace", danger: true }; },
+    "user-signout": function (u) { return { title: "Sign out " + u.email + "?", text: "Every session of this login ends now, on every device. They can sign in again.", ok: "Sign out everywhere" }; },
+    "user-disable": function (u) { return { title: "Disable " + u.email + "?", text: "They're signed out everywhere and can't sign in until you enable the login again. Their workspaces are untouched.", ok: "Disable login", danger: true }; },
+    "user-enable": function (u) { return { title: "Enable " + u.email + "?", text: "They can sign in again. A lock from wrong passwords is cleared too.", ok: "Enable login" }; },
+    "user-resend": function (u) { return { title: "Resend the confirmation email?", text: "A new confirmation link goes to " + u.email + ". It works with the password they chose at sign-up; older links stop working.", ok: "Send email" }; }
+  };
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest("[data-act]"); if (b) {
+      var kind = b.getAttribute("data-act"), id = b.getAttribute("data-id"), d = S.data || {};
+      var row = kind.indexOf("org-") === 0 ? (d.orgs || []).filter(function (o) { return o.id === id; })[0] : (d.users || []).filter(function (u) { return u.id === id; })[0];
+      if (row) act(kind, id, row.name, CONFIRM[kind](row), row.name || row.email); return;
+    }
+    var t = e.target.closest("[data-tab]"); if (t) { S.tab = t.getAttribute("data-tab"); try { sessionStorage.setItem("lp-console-tab", S.tab); } catch (er) {} render(); window.scrollTo(0, 0); return; }
+    var x = e.target.closest("[data-open]"); if (x) { var k = x.getAttribute("data-open"); S.open[k] = !S.open[k]; render(); }
+  });
+  document.addEventListener("input", function (e) {
+    var k = e.target.getAttribute("data-q"); if (!k) return; S.q[k] = e.target.value; var pos = e.target.selectionStart; renderBody(); var el = $('[data-q="' + k + '"]'); if (el) { el.focus(); el.setSelectionRange(pos, pos); }
+  });
+  document.addEventListener("change", function (e) {
+    if (e.target.id === "ev-level") { S.evLevel = e.target.value; renderBody(); }
+    if (e.target.id === "user-state") { S.userState = e.target.value; renderBody(); }
+  });
+
+  /* ---------- derived numbers ---------- */
+  function userState(u) {
+    if (u.disabled_at) return ["crit", "Disabled", ICON.crit];
+    if (u.locked_until && new Date(u.locked_until) > new Date()) return ["warn", "Locked", ICON.warn];
+    if (!u.confirmed_at) return ["mute", "Unconfirmed", ""];
+    return ["good", "Active", ICON.ok];
+  }
+  function totals(d) {
+    var o = d.orgs || [], u = d.users || [], h = d.health && d.health.data, sum = function (k) { return o.reduce(function (a, x) { return a + Number(x[k] || 0); }, 0); };
+    var dayAgo = Date.now() - 864e5, weekAgo = Date.now() - 7 * 864e5;
+    return {
+      orgs: o.length, active: o.filter(function (x) { return x.active; }).length, leads: sum("leads"), adRows: sum("meta_rows") + sum("google_rows"), stored: sum("storage_bytes"),
+      users: u.length, confirmed: u.filter(function (x) { return x.confirmed_at; }).length, newWeek: u.filter(function (x) { return new Date(x.created_at).getTime() > weekAgo; }).length,
+      seen24: u.filter(function (x) { return x.last_sign_in && new Date(x.last_sign_in).getTime() > dayAgo; }).length,
+      errors24: (d.events || []).filter(function (e) { return e.level === "error" && e.source !== "admin" && new Date(e.at).getTime() > dayAgo; }).length,
+      disk: h && h.disk, mem: h && h.memory
+    };
+  }
+
+  /* ---------- line chart: one series, hover crosshair + tooltip ---------- */
+  function lineChart(id, pts, fmt, maxY) {
+    if (pts.length < 2) return '<div class="empty">Not enough snapshots yet. The server reports every 5 minutes.</div>';
+    return '<div class="chart" data-chart="' + id + '"></div>';
+  }
+  var charts = {};
+  function drawCharts() {
+    Object.keys(charts).forEach(function (id) {
+      var host = $('[data-chart="' + id + '"]'); if (!host) return;
+      var c = charts[id], W = host.clientWidth || 600, H = 150, L = 38, R = 8, T = 10, B = 22;
+      var xs = c.pts.map(function (p) { return p.t; }), x0 = xs[0], x1 = xs[xs.length - 1] || x0 + 1;
+      var top = c.max || Math.max.apply(null, c.pts.map(function (p) { return p.v; }).concat([0.0001])) * 1.15;
+      var X = function (t) { return L + (W - L - R) * (t - x0) / ((x1 - x0) || 1); }, Y = function (v) { return T + (H - T - B) * (1 - v / top); };
+      var g = "", ticks = [0, top / 2, top];
+      ticks.forEach(function (v) { g += '<line class="gl" x1="' + L + '" x2="' + (W - R) + '" y1="' + Y(v) + '" y2="' + Y(v) + '"/><text class="ax" x="' + (L - 6) + '" y="' + (Y(v) + 3.5) + '" text-anchor="end">' + esc(c.tick(v)) + "</text>"; });
+      [x0, (x0 + x1) / 2, x1].forEach(function (t, i) { g += '<text class="ax" x="' + X(t) + '" y="' + (H - 6) + '" text-anchor="' + ["start", "middle", "end"][i] + '">' + new Date(t).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" }) + "</text>"; });
+      var d = c.pts.map(function (p, i) { return (i ? "L" : "M") + X(p.t).toFixed(1) + " " + Y(p.v).toFixed(1); }).join(" ");
+      var area = d + " L" + X(x1).toFixed(1) + " " + Y(0) + " L" + X(x0).toFixed(1) + " " + Y(0) + " Z";
+      host.innerHTML = '<svg viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="' + esc(c.label) + '">' + g + '<path class="ar" d="' + area + '"/><path class="ln" d="' + d + '"/>' +
+        '<line class="xh" y1="' + T + '" y2="' + (H - B) + '" visibility="hidden"/><circle class="dot" r="4.5" visibility="hidden"/></svg>';
+      var svg = $("svg", host), xh = $(".xh", host), dot = $(".dot", host), tip = null;
+      var hide = function () { xh.setAttribute("visibility", "hidden"); dot.setAttribute("visibility", "hidden"); if (tip) { tip.remove(); tip = null; } };
+      svg.addEventListener("pointermove", function (e) {
+        var r = svg.getBoundingClientRect(), mx = (e.clientX - r.left) * W / r.width, best = c.pts[0];
+        c.pts.forEach(function (p) { if (Math.abs(X(p.t) - mx) < Math.abs(X(best.t) - mx)) best = p; });
+        var px = X(best.t), py = Y(best.v);
+        xh.setAttribute("x1", px); xh.setAttribute("x2", px); xh.setAttribute("visibility", "visible");
+        dot.setAttribute("cx", px); dot.setAttribute("cy", py); dot.setAttribute("visibility", "visible");
+        if (!tip) { tip = document.createElement("div"); tip.className = "tip"; host.appendChild(tip); }
+        tip.innerHTML = "<b>" + esc(c.fmt(best)) + "</b><br>" + esc(when(best.t));
+        tip.style.left = Math.min(Math.max(px * r.width / W, 70), r.width - 70) + "px"; tip.style.top = (py * r.height / H) + "px";
+      });
+      svg.addEventListener("pointerleave", hide);
+    });
+  }
+  window.addEventListener("resize", function () { clearTimeout(window._rz); window._rz = setTimeout(drawCharts, 150); });
+
+  /* ---------- views ---------- */
+  function kpi(label, val, foot, meter) {
+    var m = "";
+    if (meter != null) m = '<div class="meter' + (meter >= 90 ? " crit" : meter >= 80 ? " warn" : "") + '" role="meter" aria-valuenow="' + meter + '" aria-valuemin="0" aria-valuemax="100" aria-label="' + esc(label) + '"><i style="width:' + Math.min(100, meter) + '%"></i></div>';
+    return '<div class="card kpi"><div class="lbl">' + esc(label) + '</div><div class="val">' + val + '</div><div class="foot">' + foot + "</div>" + m + "</div>";
+  }
+  function statusBanner(issues) {
+    var bad = issues.filter(function (i) { return i.level === "error"; }).length, warn = issues.filter(function (i) { return i.level === "warn"; }).length;
+    var cls = bad ? "bad" : warn ? "warn" : "ok", title = bad ? bad + " problem" + (bad > 1 ? "s" : "") + " need attention" : warn ? warn + " thing" + (warn > 1 ? "s" : "") + " to keep an eye on" : "All systems normal";
+    var list = issues.length ? '<ul class="issues">' + issues.map(function (i) { return '<li class="issue">' + levelPill(i.level) + "<div><b>" + esc(i.title) + "</b>" + (i.detail ? '<div class="d">' + esc(i.detail) + "</div>" : "") + "</div></li>"; }).join("") + "</ul>" : "";
+    return '<div class="status ' + cls + '"><div class="ico">' + (bad ? ICON.crit : warn ? ICON.warn : ICON.ok) + '</div><div style="flex:1;min-width:0"><h3>' + esc(title) + "</h3><p>" +
+      (issues.length ? "From the server's latest health check, the error log and the workspaces." : "Server, backups, schedules and the site are all reporting healthy.") + "</p>" + list + "</div></div>";
+  }
+  function storageBars(orgs, limit) {
+    var list = orgs.slice().sort(function (a, b) { return b.storage_bytes - a.storage_bytes; }).slice(0, limit || 10), max = list.length ? list[0].storage_bytes || 1 : 1;
+    if (!list.length) return '<div class="empty">No workspaces yet.</div>';
+    return '<div class="bars" role="list">' + list.map(function (o) {
+      return '<div class="bar-row" role="listitem" title="' + esc(o.name + ": " + bytes(o.storage_bytes) + " · " + n(o.leads) + " leads · " + n(o.meta_rows + o.google_rows) + " ad rows") + '"><span class="n">' + esc(o.name) + '</span><span class="t"><i style="width:' + (100 * o.storage_bytes / max).toFixed(1) + '%"></i></span><span class="v num">' + bytes(o.storage_bytes) + "</span></div>";
+    }).join("") + "</div>";
+  }
+  function setupCharts(series) {
+    var s = series || [];
+    charts = {
+      disk: { label: "Disk used, last 24 hours", max: 100, tick: function (v) { return Math.round(v) + "%"; }, fmt: function (p) { return p.v.toFixed(1) + "% used (" + bytes(p.raw) + ")"; },
+        pts: s.filter(function (r) { return r.disk && r.disk.total; }).map(function (r) { return { t: new Date(r.taken_at).getTime(), v: 100 * r.disk.used / r.disk.total, raw: r.disk.used }; }) },
+      mem: { label: "Memory used, last 24 hours", max: 100, tick: function (v) { return Math.round(v) + "%"; }, fmt: function (p) { return p.v.toFixed(1) + "% used"; },
+        pts: s.filter(function (r) { return r.memory && r.memory.total; }).map(function (r) { return { t: new Date(r.taken_at).getTime(), v: 100 * (1 - r.memory.available / r.memory.total) }; }) },
+      load: { label: "Load, 5-minute average, last 24 hours", tick: function (v) { return v.toFixed(1); }, fmt: function (p) { return "Load " + p.v.toFixed(2); },
+        pts: s.filter(function (r) { return r.load; }).map(function (r) { return { t: new Date(r.taken_at).getTime(), v: Number(r.load[1]) || 0 }; }) }
+    };
+  }
+
+  function viewOverview(d) {
+    var t = totals(d), dk = t.disk, mm = t.mem, recent = (d.users || []).slice(0, 6);
+    var dp = dk ? pct(dk.used, dk.total) : null;
+    var html = statusBanner(d.issues || []) +
+      '<div class="grid kpis">' +
+      kpi("Workspaces", n(t.orgs), n(t.active) + " active" + (t.orgs - t.active ? " · " + n(t.orgs - t.active) + " suspended" : "")) +
+      kpi("Logins", n(t.users), n(t.confirmed) + " confirmed · " + n(t.newWeek) + " new this week") +
+      kpi("Active today", n(t.seen24), "signed in during the last 24 hours") +
+      kpi("Leads stored", n(t.leads), n(t.adRows) + " ad rows") +
+      kpi("Database", bytes(d.db && d.db.size_bytes), bytes(t.stored) + " is workspace data") +
+      kpi("Server disk", dk ? bytes(dk.free) : "N/A", dk ? "free of " + bytes(dk.total) + " · " + dp + "% used" : "no health data yet", dp) +
+      "</div>" +
+      '<div class="grid two" style="margin-top:16px">' +
+      '<div class="card"><div class="card-h"><div><h2>Storage by workspace</h2><div class="sub">Size of each workspace\'s rows in the database (top 10)</div></div><button class="btn" data-tab="orgs">All workspaces</button></div>' + storageBars(d.orgs || [], 10) + "</div>" +
+      '<div class="card"><div class="card-h"><div><h2>Server disk</h2><div class="sub">% used, last 24 hours</div></div>' + (dk ? pill(dp >= 90 ? "crit" : dp >= 80 ? "warn" : "good", dp + "% used", dp >= 80 ? ICON.warn : ICON.ok) : "") + "</div>" + lineChart("disk", charts.disk.pts) + "</div>" +
+      "</div>" +
+      '<div class="grid two" style="margin-top:16px">' +
+      '<div class="card"><div class="card-h"><div><h2>Newest logins</h2><div class="sub">Account data only</div></div><button class="btn" data-tab="users">All logins</button></div>' +
+      (recent.length ? '<div class="tw" style="border:0"><table><tbody>' + recent.map(function (u) { var st = userState(u); return "<tr><td><div class=\"main\">" + esc(u.email) + '</div><div class="small">' + esc(u.workspaces.map(function (w) { return w.name; }).join(", ") || "no workspace yet") + '</div></td><td class="r">' + pill(st[0], st[1], st[2]) + '<div class="small" style="margin-top:4px">joined ' + esc(ago(u.created_at)) + "</div></td></tr>"; }).join("") + "</tbody></table></div>" : '<div class="empty">No logins yet.</div>') + "</div>" +
+      '<div class="card"><div class="card-h"><div><h2>Memory</h2><div class="sub">% used, last 24 hours</div></div>' + (mm ? pill("info", bytes(mm.available) + " free") : "") + "</div>" + lineChart("mem", charts.mem.pts) +
+      vercelMini() + "</div></div>";
+    return html;
+  }
+  function vercelMini() {
+    var v = S.vercel; if (!v || !v.configured || !v.deployments) return "";
+    var prod = v.deployments.filter(function (x) { return x.target === "production"; })[0]; if (!prod) return "";
+    return '<div style="margin-top:18px;padding-top:14px;border-top:1px solid var(--line);display:flex;justify-content:space-between;gap:10px;align-items:center"><div><div style="font-weight:600;color:var(--ink)">Live site on Vercel</div><div class="small" style="color:var(--muted);font-size:12px">' + esc(prod.message || prod.url) + " · " + esc(ago(prod.created)) + "</div></div>" + depPill(prod.state) + "</div>";
+  }
+  function depPill(s) { s = String(s || "").toUpperCase(); return s === "READY" ? pill("good", "Ready", ICON.ok) : s === "ERROR" ? pill("crit", "Failed", ICON.crit) : s === "CANCELED" ? pill("mute", "Cancelled") : pill("warn", s.charAt(0) + s.slice(1).toLowerCase() || "Unknown", ICON.warn); }
+
+  function viewOrgs(d) {
+    var q = S.q.orgs.toLowerCase(), list = (d.orgs || []).filter(function (o) { return !q || (o.name + " " + o.owners.join(" ") + " " + o.public_id).toLowerCase().indexOf(q) >= 0; });
+    var rows = list.map(function (o) {
+      var key = "org:" + o.id, open = S.open[key], st = Object.keys(o.storage || {}).sort(function (a, b) { return o.storage[b] - o.storage[a]; });
+      return "<tr><td><div class=\"main\">" + esc(o.name) + '</div><div class="small">' + esc(o.owners.join(", ") || "no owner") + " · since " + esc(new Date(o.created_at).toLocaleDateString("en-IN", { month: "short", year: "numeric" })) + "</div>" +
+        '<button class="expand" type="button" data-open="' + key + '" aria-expanded="' + !!open + '">' + (open ? "Hide" : "Show") + " storage by table</button>" +
+        (open ? '<div class="breakdown">' + (st.length ? st.map(function (k) { return "<span>" + esc(k) + "<b class=\"num\">" + bytes(o.storage[k]) + "</b></span>"; }).join("") : "<span>No rows yet</span>") + "</div>" : "") + "</td>" +
+        '<td class="r num">' + n(o.members_joined) + '<div class="small">of ' + n(o.members) + "</div></td>" +
+        '<td class="r num">' + n(o.leads) + '</td><td class="r num">' + n(o.meta_rows + o.google_rows) + "</td>" +
+        '<td class="r num"><b style="color:var(--ink);font-weight:600">' + bytes(o.storage_bytes) + "</b></td>" +
+        "<td>" + esc(ago(o.last_upload)) + '<div class="small">signed in ' + esc(ago(o.last_sign_in)) + "</div></td>" +
+        "<td>" + (o.active ? pill("good", "Active", ICON.ok) : pill("crit", "Suspended", ICON.crit)) + (o.ai_enabled ? '<div style="margin-top:4px">' + pill("info", "AI on") + "</div>" : "") + "</td>" +
+        '<td><div class="acts">' + (o.active ? '<button class="btn" data-act="org-suspend" data-id="' + o.id + '">Suspend</button>' : '<button class="btn" data-act="org-reactivate" data-id="' + o.id + '">Reactivate</button>') +
+        '<button class="btn danger" data-act="org-delete" data-id="' + o.id + '">Delete</button></div></td></tr>';
+    }).join("");
+    return '<div class="section-t" style="margin-top:0"><h2>Workspaces</h2><span class="sub" style="color:var(--muted)">' + n(list.length) + " shown · counts and sizes only, never lead details</span></div>" +
+      '<div class="tools"><input class="search" type="search" placeholder="Search by name, owner or public id" data-q="orgs" value="' + esc(S.q.orgs) + '" aria-label="Search workspaces"></div>' +
+      (list.length ? '<div class="tw"><table><thead><tr><th>Workspace</th><th class="r">Members</th><th class="r">Leads</th><th class="r">Ad rows</th><th class="r">Storage</th><th>Last upload</th><th>Status</th><th class="r">Actions</th></tr></thead><tbody>' + rows + "</tbody></table></div>" : '<div class="card empty">No workspaces match.</div>');
+  }
+
+  function viewUsers(d) {
+    var q = S.q.users.toLowerCase(), f = S.userState;
+    var list = (d.users || []).filter(function (u) { var st = userState(u)[1].toLowerCase(); return (!q || (u.email + " " + u.name + " " + u.workspaces.map(function (w) { return w.name; }).join(" ")).toLowerCase().indexOf(q) >= 0) && (f === "all" || st === f); });
+    var rows = list.map(function (u) {
+      var st = userState(u), me = S.me === u.email;
+      var acts = (!u.confirmed_at ? '<button class="btn" data-act="user-resend" data-id="' + u.id + '">Resend email</button>' : "") +
+        '<button class="btn" data-act="user-signout" data-id="' + u.id + '">Sign out</button>' +
+        (u.disabled_at || st[1] === "Locked" ? '<button class="btn" data-act="user-enable" data-id="' + u.id + '">' + (u.disabled_at ? "Enable" : "Unlock") + "</button>" : '<button class="btn danger" data-act="user-disable" data-id="' + u.id + '"' + (me ? " disabled title=\"That's you\"" : "") + ">Disable</button>");
+      return "<tr><td><div class=\"main\">" + esc(u.email) + "</div>" + (u.name ? '<div class="small">' + esc(u.name) + "</div>" : "") + "</td>" +
+        "<td>" + (u.workspaces.length ? u.workspaces.map(function (w) { return '<div class="small" style="color:var(--fg)">' + esc(w.name) + ' <span style="color:var(--muted)">· ' + esc(w.owner ? "owner" : w.role) + (w.active ? "" : " · suspended") + "</span></div>"; }).join("") : '<span class="small">none yet</span>') + "</td>" +
+        "<td>" + esc(ago(u.created_at)) + '</td><td>' + esc(ago(u.last_sign_in)) + (u.failed_logins ? '<div class="small">' + n(u.failed_logins) + " wrong password" + (u.failed_logins > 1 ? "s" : "") + "</div>" : "") + "</td>" +
+        "<td>" + pill(st[0], st[1], st[2]) + '</td><td><div class="acts">' + acts + "</div></td></tr>";
+    }).join("");
+    return '<div class="section-t" style="margin-top:0"><h2>Logins</h2><span class="sub" style="color:var(--muted)">' + n(list.length) + " shown</span></div>" +
+      '<div class="tools"><input class="search" type="search" placeholder="Search by email, name or workspace" data-q="users" value="' + esc(S.q.users) + '" aria-label="Search logins">' +
+      '<select id="user-state" aria-label="Filter by state">' + ["all", "active", "unconfirmed", "locked", "disabled"].map(function (s) { return '<option value="' + s + '"' + (S.userState === s ? " selected" : "") + ">" + (s === "all" ? "All states" : s.charAt(0).toUpperCase() + s.slice(1)) + "</option>"; }).join("") + "</select></div>" +
+      (list.length ? '<div class="tw"><table><thead><tr><th>Login</th><th>Workspaces</th><th>Joined</th><th>Last sign-in</th><th>State</th><th class="r">Actions</th></tr></thead><tbody>' + rows + "</tbody></table></div>" : '<div class="card empty">No logins match.</div>');
+  }
+
+  function viewServer(d) {
+    var h = d.health, x = (h && h.data) || {}, dk = x.disk, mm = x.memory, b = x.backup || {}, s = x.schedules || {}, db = d.db || {};
+    if (!h) return statusBanner(d.issues || []) + '<div class="card empty">The server hasn\'t sent a health snapshot yet. Run <code>ec2/setup.sh</code> again on the server: it installs the 5-minute health job.</div>';
+    var dp = dk ? pct(dk.used, dk.total) : null, mp = mm ? pct(mm.total - mm.available, mm.total) : null;
+    var certDays = x.cert_expires ? Math.floor((new Date(x.cert_expires) - Date.now()) / 864e5) : null;
+    var svc = Object.keys(x.services || {}).map(function (k) { var a = x.services[k] === "active"; return '<div class="svc"><span>' + esc({ postgresql: "Database (PostgreSQL)", postgrest: "Database API (PostgREST)", caddy: "HTTPS (Caddy)", cron: "Schedules (cron)" }[k] || k) + "</span>" + (a ? pill("good", "Running", ICON.ok) : pill("crit", x.services[k] || "Down", ICON.crit)) + "</div>"; }).join("");
+    var s3 = { ok: pill("good", "Copied to S3", ICON.ok), failed: pill("crit", "S3 copy failed", ICON.crit), off: pill("warn", "Not copied off-server", ICON.warn), none: pill("mute", "No S3 copy yet") }[b.s3] || "";
+    return statusBanner(d.issues || []) +
+      '<div class="grid kpis">' +
+      kpi("Disk used", dk ? bytes(dk.used) : "N/A", dk ? bytes(dk.free) + " free of " + bytes(dk.total) : "", dp) +
+      kpi("Memory used", mm ? bytes(mm.total - mm.available) : "N/A", mm ? bytes(mm.available) + " free of " + bytes(mm.total) : "", mp) +
+      kpi("Load", x.load ? Number(x.load[1]).toFixed(2) : "N/A", "5-minute average · " + n(x.cpus) + " CPU" + (x.cpus > 1 ? "s" : "")) +
+      kpi("Uptime", dur(x.uptime_s), esc(x.host || "") ) +
+      kpi("Database", bytes(db.size_bytes), n(db.connections) + " of " + n(db.max_connections) + " connections") +
+      kpi("Last snapshot", esc(ago(h.taken_at)), "every 5 minutes") +
+      "</div>" +
+      '<div class="grid three" style="margin-top:16px">' +
+      '<div class="card"><div class="card-h"><div><h2>Disk</h2><div class="sub">% used, last 24 hours</div></div></div>' + lineChart("disk", charts.disk.pts) + "</div>" +
+      '<div class="card"><div class="card-h"><div><h2>Memory</h2><div class="sub">% used, last 24 hours</div></div></div>' + lineChart("mem", charts.mem.pts) + "</div>" +
+      '<div class="card"><div class="card-h"><div><h2>Load</h2><div class="sub">5-minute average, last 24 hours</div></div></div>' + lineChart("load", charts.load.pts) + "</div>" +
+      "</div>" +
+      '<div class="grid three" style="margin-top:16px">' +
+      '<div class="card"><div class="card-h"><div><h2>Services</h2><div class="sub">On the database server</div></div></div>' + svc + "</div>" +
+      '<div class="card"><div class="card-h"><div><h2>Backups</h2><div class="sub">Nightly, 14 days on the server</div></div>' + s3 + '</div><dl class="kv">' +
+      "<dt>Newest</dt><dd>" + esc(b.file || "none") + "</dd><dt>Taken</dt><dd>" + esc(b.at ? ago(b.at) : "N/A") + "</dd><dt>Size</dt><dd>" + bytes(b.bytes) + "</dd><dt>Kept on server</dt><dd>" + n(b.count) + "</dd>" +
+      (b.s3_last ? "<dt>S3</dt><dd style=\"font-size:12px\">" + esc(b.s3_last) + "</dd>" : "") + "</dl></div>" +
+      '<div class="card"><div class="card-h"><div><h2>Schedules & HTTPS</h2><div class="sub">Last 24 hours</div></div>' + (s.failed_24h ? pill("warn", n(s.failed_24h) + " failed", ICON.warn) : pill("good", "No failures", ICON.ok)) + '</div><dl class="kv">' +
+      "<dt>Jobs that worked</dt><dd>" + n(s.ok_24h) + "</dd><dt>Jobs that failed</dt><dd>" + n(s.failed_24h) + "</dd>" + (s.last_failure ? "<dt>Last failure</dt><dd style=\"font-size:12px\">" + esc(s.last_failure) + "</dd>" : "") +
+      "<dt>Certificate</dt><dd>" + (certDays == null ? "N/A" : "expires in " + n(certDays) + " days") + "</dd><dt>Kernel</dt><dd style=\"font-size:12px\">" + esc(x.kernel || "") + "</dd></dl></div>" +
+      "</div>" +
+      '<div class="section-t"><h2>Biggest tables</h2><span class="sub" style="color:var(--muted)">All workspaces together, including indexes</span></div>' +
+      '<div class="tw"><table><thead><tr><th>Table</th><th class="r">Rows (approx.)</th><th class="r">Size</th></tr></thead><tbody>' +
+      (db.tables || []).map(function (t) { return "<tr><td class=\"main\">" + esc(t.name) + '</td><td class="r num">' + n(t.rows) + '</td><td class="r num">' + bytes(t.bytes) + "</td></tr>"; }).join("") + "</tbody></table></div>";
+  }
+
+  function viewEvents(d) {
+    var q = S.q.ev.toLowerCase(), lv = S.evLevel, names = {};
+    (d.orgs || []).forEach(function (o) { names[o.id] = o.name; });
+    var list = (d.events || []).filter(function (e) { return (lv === "all" || e.level === lv || (lv === "admin" && e.source === "admin")) && (!q || (e.area + " " + e.message + " " + (names[e.org_id] || "")).toLowerCase().indexOf(q) >= 0); });
+    return '<div class="section-t" style="margin-top:0"><h2>Events</h2><span class="sub" style="color:var(--muted)">Server errors from the site\'s functions and console actions, last 30 days (newest 300)</span></div>' +
+      '<div class="tools"><input class="search" type="search" placeholder="Search events" data-q="ev" value="' + esc(S.q.ev) + '" aria-label="Search events">' +
+      '<select id="ev-level" aria-label="Filter events">' + [["all", "Everything"], ["error", "Errors"], ["warn", "Warnings"], ["admin", "Console actions"]].map(function (o) { return '<option value="' + o[0] + '"' + (lv === o[0] ? " selected" : "") + ">" + o[1] + "</option>"; }).join("") + "</select></div>" +
+      (list.length ? '<div class="tw">' + list.map(function (e) {
+        var det = e.detail || {}, extra = [det.op && "op " + det.op, det.status && "HTTP " + det.status, names[e.org_id] && "workspace " + names[e.org_id]].filter(Boolean).join(" · ");
+        return '<div class="ev"><div class="when">' + esc(when(e.at)) + '</div><div>' + (e.source === "admin" ? pill("info", "Console") : levelPill(e.level)) + '</div><div class="msg"><b style="font-weight:600">' + esc(e.area) + "</b> " + esc(e.message) + (extra ? "<small>" + esc(extra) + "</small>" : "") + "</div></div>";
+      }).join("") + "</div>" : '<div class="card empty">' + ((d.events || []).length ? "No events match." : "No events yet. Server errors from the site will show up here.") + "</div>");
+  }
+
+  function viewVercel() {
+    var v = S.vercel;
+    if (!S.data.vercel) return '<div class="card"><h2>Vercel</h2><p style="color:var(--muted)">Not connected. To see deployments here, add these in Vercel › Settings › Environment Variables (Production) and redeploy:</p><dl class="kv" style="max-width:560px"><dt><code>VERCEL_TOKEN</code></dt><dd style="text-align:left">a read-only token (Vercel › Account Settings › Tokens)</dd><dt><code>VERCEL_PROJECT_ID</code></dt><dd style="text-align:left">Project › Settings › General › Project ID</dd><dt><code>VERCEL_TEAM_ID</code></dt><dd style="text-align:left">only if the project is in a team</dd></dl><p style="color:var(--muted);margin-bottom:0">Function errors are already in Events, without a token.</p></div>';
+    if (!v) return '<div class="skel"></div>';
+    if (v.error) return '<div class="card">' + pill("crit", "Vercel didn't answer", ICON.crit) + '<p style="margin-bottom:0">' + esc(v.error) + "</p></div>";
+    var deps = v.deployments || [];
+    return '<div class="section-t" style="margin-top:0"><h2>Deployments</h2><span class="sub" style="color:var(--muted)">Newest 12, from the Vercel API</span></div>' +
+      (deps.length ? '<div class="tw"><table><thead><tr><th>Change</th><th>Target</th><th>When</th><th>State</th></tr></thead><tbody>' + deps.map(function (x) {
+        return "<tr><td><div class=\"main\">" + esc(x.message || "(no message)") + '</div><div class="small">' + esc((x.sha ? x.sha + " · " : "") + x.url) + "</div></td><td>" + (x.target === "production" ? pill("info", "Production") : pill("mute", "Preview")) + "</td><td>" + esc(ago(x.created)) + "</td><td>" + depPill(x.state) + "</td></tr>";
+      }).join("") + "</tbody></table></div>" : '<div class="card empty">No deployments found.</div>');
+  }
+
+  function renderBody() {
+    var d = S.data, v = { overview: viewOverview, orgs: viewOrgs, users: viewUsers, server: viewServer, events: viewEvents, vercel: viewVercel }[S.tab] || viewOverview;
+    $("#main").innerHTML = v(d); drawCharts();
+  }
+  function render() {
+    var d = S.data; if (!d) return;
+    setupCharts(d.series); var t = totals(d);
+    var cnt = { orgs: t.orgs, users: t.users, events: t.errors24 || null, overview: (d.issues || []).filter(function (i) { return i.level !== "info"; }).length || null };
+    $("#tabs").innerHTML = TABS.map(function (x) { return '<button class="tab" role="tab" type="button" data-tab="' + x[0] + '" aria-selected="' + (S.tab === x[0]) + '">' + x[1] + (cnt[x[0]] ? '<span class="cnt">' + n(cnt[x[0]]) + "</span>" : "") + "</button>"; }).join("");
+    $("#updated").textContent = "Updated " + ago(d.at);
+    renderBody();
+  }
+
+  api("me").then(function (m) { S.me = m.email; $("#who").textContent = m.email; load(); }, function (e) {
+    if (!token() || e.status === 401) gate("Sign in first", "The console uses your Qlarity sign-in. Sign in on the dashboard, then open this page again.", ["/app", "Sign in to Qlarity"]);
+    else gate(e.status === 403 ? "Not available" : "The console couldn't load", e.message, ["/app", "Open the dashboard"]);
+  });
+})();
+</script>
+</body>
+</html>

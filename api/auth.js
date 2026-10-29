@@ -33,6 +33,7 @@ async function checkPassword(pw, stored) {
   const want = Buffer.from(p[5], "base64"), k = await scrypt(pw, Buffer.from(p[4], "base64"), { N: +p[1], r: +p[2], p: +p[3] });
   return want.length === k.length && crypto.timingSafeEqual(want, k);
 }
+const DISABLED = "This account has been disabled. Contact the Qlarity team if you think this is a mistake.";
 const DUMMY = "scrypt$16384$8$1$AAAAAAAAAAAAAAAAAAAAAA==$" + Buffer.alloc(64).toString("base64");
 const passwordProblem = (pw) => (typeof pw !== "string" || pw.length < 8 ? "Use at least 8 characters for the password." : pw.length > 200 ? "That password is too long." : "");
 
@@ -79,8 +80,9 @@ const ops = {
       return [401, { error: "That isn't the password chosen with this sign-up. If you signed up more than once, use the newest email, or sign up again." }];
     const id = await rpc("auth_token_use", { p_hash: h, p_kind: "verify" });
     if (!id) return [400, { error: "This confirmation link has expired or was already used." }];
+    const v = await userBy({ p_id: id }); if (v.disabled_at) return [403, { error: DISABLED, disabled: true }];
     await rpc("auth_user_update", { p_id: id, p_signed_in: true });
-    return [200, session(await userBy({ p_id: id }))];
+    return [200, session(v)];
   },
   async login(req, b) {
     const u = await userBy({ p_email: cleanEmail(b.email) });
@@ -88,6 +90,7 @@ const ops = {
     if (u && u.locked_until && new Date(u.locked_until) > new Date()) return [429, { error: "Too many wrong passwords. Try again in 15 minutes, or reset your password." }];
     if (!u || !good) { if (u) await rpc("auth_user_update", { p_id: u.id, p_failed: true }); return [401, { error: "Invalid login credentials" }]; }
     if (!u.email_confirmed_at) return [403, { error: "Email not confirmed", confirm: true }];   // only after the password check: no hint for guessers
+    if (u.disabled_at) return [403, { error: DISABLED, disabled: true }];
     await rpc("auth_user_update", { p_id: u.id, p_signed_in: true });
     return [200, session(u)];
   },
@@ -105,7 +108,7 @@ const ops = {
     const id = await rpc("auth_token_use", { p_hash: D.sha256(String(b.token || "")), p_kind: "reset" });
     if (!id) return [400, { error: "This reset link has expired or was already used. Ask for a new one." }];
     const tv = await rpc("auth_user_update", { p_id: id, p_hash: await hashPassword(b.password), p_signed_in: true });
-    const u = await userBy({ p_id: id });
+    const u = await userBy({ p_id: id }); if (u.disabled_at) return [403, { error: DISABLED, disabled: true }];
     return [200, session(Object.assign({}, u, { token_version: tv }))];
   },
   async me(req) {
@@ -127,7 +130,7 @@ const ops = {
   },
 };
 
-module.exports = async function handler(req, res) {
+module.exports = D.logged("auth", async function handler(req, res) {
   const op = String((req.query && req.query.op) || "");
   if (!ops[op]) return D.send(res, 404, { error: "Unknown action." });
   if (req.method !== "POST" && !(op === "me" && req.method === "GET")) return D.send(res, 405, { error: "Use POST" });
@@ -138,6 +141,7 @@ module.exports = async function handler(req, res) {
     console.error("auth " + op + ": " + (e && e.message));
     D.send(res, /not set on this site|isn't set up/.test(String(e && e.message)) ? 503 : 500, { error: /not set on this site|isn't set up/.test(String(e && e.message)) ? e.message : "Something went wrong. Try again in a minute." });
   }
-};
+});
 module.exports.hashPassword = hashPassword;
 module.exports.checkPassword = checkPassword;
+module.exports.sendLink = sendLink;

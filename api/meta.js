@@ -15,7 +15,7 @@ const { VER, COLS, accountRows, adAccounts, accountsSpend, accountFunds, account
 const DAY_RE = /^\d{4}-\d{2}-\d{2}$/;
 const send = D.send;
 
-module.exports = async function handler(req, res) {
+module.exports = D.logged("meta", async function handler(req, res) {
   try {
     const op = String((req.query && req.query.op) || "status");
     const me = await D.auth(req);
@@ -82,4 +82,4 @@ module.exports = async function handler(req, res) {
   } catch (e) {
     return send(res, 502, { error: String((e && e.message) || e) });
   }
-};
+});

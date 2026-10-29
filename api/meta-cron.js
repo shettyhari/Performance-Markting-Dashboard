@@ -29,7 +29,7 @@ const acctId = (x) => { const s = String(x || "").trim(); return s.indexOf("act_
 const BUDGET_MS = +process.env.META_CRON_BUDGET_MS || 50000;   // stop starting new pieces in time to finish within Vercel's 60 s
 const q = (s) => '"' + String(s).replace(/\\/g, "\\\\").replace(/"/g, '\\"') + '"';
 
-module.exports = async function handler(req, res) {
+module.exports = D.logged("meta-cron", async function handler(req, res) {
   const t0 = Date.now();
   try {
     if (!(await D.cronAllowed(req))) return send(res, 401, { error: "Not allowed" });
@@ -131,4 +131,4 @@ module.exports = async function handler(req, res) {
   } catch (e) {
     return send(res, 502, { error: String((e && e.message) || e) });
   }
-};
+});

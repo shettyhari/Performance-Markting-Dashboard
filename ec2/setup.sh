@@ -17,7 +17,7 @@
 set -euo pipefail
 [ "$(id -u)" = 0 ] || { echo "Run with sudo."; exit 1; }
 HERE="$(cd "$(dirname "$0")" && pwd)"; ROOT="$(cd "$HERE/.." && pwd)"
-[ -f "$ROOT/db/00-platform.sql" ] && [ -f "$ROOT/db/10-schema.sql" ] && [ -f "$ROOT/db/20-auth.sql" ] || { echo "db/ folder not found next to ec2/."; exit 1; }
+[ -f "$ROOT/db/00-platform.sql" ] && [ -f "$ROOT/db/10-schema.sql" ] && [ -f "$ROOT/db/20-auth.sql" ] && [ -f "$ROOT/db/30-platform.sql" ] || { echo "db/ folder not found next to ec2/."; exit 1; }
 : "${APP_URL:?Set APP_URL=https://your-app.vercel.app}"
 APP_URL="${APP_URL%/}"
 case "$APP_URL" in *ebg-dashboard.vercel.app*) echo "APP_URL must be this product's own site, not ebg-dashboard.vercel.app."; exit 1;; esac
@@ -64,6 +64,7 @@ sudo -u postgres psql -qtAc "select 1 from pg_database where datname = 'lp'" | g
 sudo -u postgres psql -q -v ON_ERROR_STOP=1 -d lp < "$ROOT/db/00-platform.sql" >/dev/null
 sudo -u postgres psql -q -v ON_ERROR_STOP=1 -d lp < "$ROOT/db/10-schema.sql" >/dev/null
 sudo -u postgres psql -q -v ON_ERROR_STOP=1 -d lp < "$ROOT/db/20-auth.sql" >/dev/null
+sudo -u postgres psql -q -v ON_ERROR_STOP=1 -d lp < "$ROOT/db/30-platform.sql" >/dev/null
 sudo -u postgres psql -q -v ON_ERROR_STOP=1 -d lp -c "alter role authenticator with login password '$PG_AUTH_PASS';" >/dev/null
 PGCONF=$(sudo -u postgres psql -qtAc "show config_file")
 grep -q "^listen_addresses = 'localhost'" "$PGCONF" || echo "listen_addresses = 'localhost'" >> "$PGCONF"
@@ -141,7 +142,8 @@ find /var/backups/lp -name 'lp-*.dump' -mtime +14 -delete
 # off-server copy (needs the AWS CLI and an instance role allowed to s3:PutObject there); a failure is logged: journalctl -t lp-backup
 U=\$(grep '^BACKUP_S3_URI=' /etc/lp.env | cut -d= -f2-)
 if [ -n "\$U" ]; then
-  if /usr/local/bin/aws s3 cp "\$F" "\$U/\$(basename "\$F")" --only-show-errors; then   # full path: the daily schedule has a short PATH logger -t lp-backup "copied \$(basename "\$F") to \$U"
+  # full path: the daily schedule has a short PATH
+  if /usr/local/bin/aws s3 cp "\$F" "\$U/\$(basename "\$F")" --only-show-errors; then logger -t lp-backup "copied \$(basename "\$F") to \$U"
   else logger -t lp-backup "S3 copy FAILED for \$(basename "\$F") to \$U"; fi
 fi
 logger -t lp-backup "backup \$(basename "\$F") \$(stat -c %s "\$F") bytes"
@@ -161,6 +163,12 @@ cat > /etc/cron.d/lp-fanout <<'EOF'
 45 3 * * *     root  /usr/local/bin/lp-fanout "/api/suite?op=cron&mode=digest"
 EOF
 chmod 644 /etc/cron.d/lp-fanout
+install -m 755 "$HERE/health.sh" /usr/local/bin/lp-health
+cat > /etc/cron.d/lp-health <<'EOF'
+# Qlarity server health for the CEO console (/admin): a snapshot every 5 minutes (ec2/health.sh)
+*/5 * * * *  root  /usr/local/bin/lp-health
+EOF
+chmod 644 /etc/cron.d/lp-health
 systemctl enable --now cron >/dev/null
 
 echo "== check"

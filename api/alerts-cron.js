@@ -6,7 +6,7 @@ const D = require("./_db");
 const A = require("./_alertlib");
 const M = require("./_monitor");
 
-module.exports = async function handler(req, res) {
+module.exports = D.logged("alerts-cron", async function handler(req, res) {
   try {
     if (!(await D.cronAllowed(req))) return D.send(res, 401, { error: "Not allowed" });
     const org = await D.orgById(req.query && req.query.org);
@@ -24,4 +24,4 @@ module.exports = async function handler(req, res) {
       return D.send(res, 200, { monitor: mon, cpl });
     });
   } catch (e) { return D.send(res, 502, { error: String((e && e.message) || e) }); }
-};
+});

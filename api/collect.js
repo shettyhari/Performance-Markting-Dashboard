@@ -22,7 +22,7 @@ async function workspace(pid) {
   return (cache[pid] = { t: Date.now(), org, S });
 }
 
-module.exports = async function handler(req, res) {
+module.exports = D.logged("collect", async function handler(req, res) {
   const origin = String(req.headers.origin || "");
   const cors = { "access-control-allow-origin": origin || "*", "access-control-allow-methods": "POST, OPTIONS", "access-control-allow-headers": "content-type", vary: "origin" };
   if (req.method === "OPTIONS") { res.statusCode = 204; Object.keys(cors).forEach((k) => res.setHeader(k, cors[k])); return res.end(); }
@@ -57,4 +57,4 @@ module.exports = async function handler(req, res) {
   } catch (e) {
     return D.send(res, 502, { error: "Not saved" }, cors);
   }
-};
+});

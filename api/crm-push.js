@@ -72,7 +72,7 @@ function classify(status, S) {
   return false;
 }
 
-module.exports = async function handler(req, res) {
+module.exports = D.logged("crm-push", async function handler(req, res) {
   try {
     const org = await D.orgFromKey(req.headers["x-push-key"] || D.bearer(req), "crm_push");
     if (!org) return send(res, 401, { error: "Not allowed: unknown or revoked CRM push key." });
@@ -80,7 +80,7 @@ module.exports = async function handler(req, res) {
   } catch (e) {
     return send(res, 502, { error: String((e && e.message) || e) });
   }
-};
+});
 async function ingest(req, res) {
   try {
     if (req.method === "GET") return send(res, 200, { ok: true, workspace: D.orgName(), message: "Key accepted. POST leads as a JSON array." });

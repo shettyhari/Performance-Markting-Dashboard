@@ -58,6 +58,7 @@ language sql stable security definer set search_path = '' as $$
      and (m.user_id = u.id
           or (m.user_id is null and m.email = lower(u.email) and u.email_confirmed_at is not null
               and (u.confirmation_sent_at is not null or u.invited_at is not null)))
+     and exists (select 1 from public.organizations o where o.id = p_org and o.active)   -- a suspended workspace (CEO console) is closed to its members
 $$;
 revoke all on function private.org_role(uuid) from public;
 grant execute on function private.org_role(uuid) to authenticated;
@@ -71,6 +72,7 @@ language sql stable security definer set search_path = '' as $$
      and (m.user_id = u.id
           or (m.user_id is null and m.email = lower(u.email) and u.email_confirmed_at is not null
               and (u.confirmation_sent_at is not null or u.invited_at is not null)))
+     and exists (select 1 from public.organizations o where o.id = p_org and o.active)   -- a suspended workspace (CEO console) is closed to its members
 $$;
 revoke all on function private.is_owner(uuid) from public;
 grant execute on function private.is_owner(uuid) to authenticated;
@@ -411,9 +413,16 @@ create trigger keep_an_admin before update or delete on public.org_members for e
 -- owners: only set through create_organization / set_member_owner (never by a direct write from the browser); an owner stays an admin;
 -- only an owner changes or removes an owner; a workspace always keeps at least one owner
 -- runs with the caller's rights (security invoker): a write straight from the browser runs as authenticated, the app's functions as their owner
+-- is the workspace itself gone (its members are being removed by the cascade from deleting it)? Definer rights: RLS can't make it look gone
+create or replace function private.org_gone(p_org uuid) returns boolean language sql stable security definer set search_path = '' as $$
+  select not exists (select 1 from public.organizations o where o.id = p_org)
+$$;
+revoke all on function private.org_gone(uuid) from public;
+grant execute on function private.org_gone(uuid) to authenticated, service_role;
 create or replace function private.guard_owner() returns trigger language plpgsql security invoker set search_path = '' as $$
 declare direct boolean := current_user in ('authenticated', 'anon');   -- inside the app's functions current_user is their owner
 begin
+  if tg_op = 'DELETE' and private.org_gone(old.org_id) then return old; end if;   -- the whole workspace is being deleted (CEO console)
   if tg_op <> 'DELETE' and new.is_owner and new.role <> 'admin' then raise exception 'An owner must stay an admin. Remove owner first.'; end if;
   if direct then
     if tg_op = 'INSERT' and new.is_owner then raise exception 'Owners are set from the team list by an owner.'; end if;

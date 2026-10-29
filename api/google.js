@@ -7,7 +7,7 @@ const D = require("./_db");
 const G = require("./_gadslib");
 const { syncGoogle } = require("./_gadsync");
 
-module.exports = async function handler(req, res) {
+module.exports = D.logged("google", async function handler(req, res) {
   try {
     const op = String((req.query && req.query.op) || "status");
     const me = await D.auth(req);
@@ -22,4 +22,4 @@ module.exports = async function handler(req, res) {
       return D.send(res, 400, { error: "Unknown op" });
     });
   } catch (e) { return D.send(res, 502, { error: String((e && e.message) || e) }); }
-};
+});

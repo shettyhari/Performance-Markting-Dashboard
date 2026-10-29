@@ -31,7 +31,7 @@ async function webhook(req, res) {
   });
   return send(res, 200, { ok: true });
 }
-module.exports = async function handler(req, res) {
+module.exports = D.logged("alerts", async function handler(req, res) {
   try {
     const op = String((req.query && req.query.op) || "status");
     if (op === "tg-webhook") return await webhook(req, res);
@@ -39,7 +39,7 @@ module.exports = async function handler(req, res) {
     if (me.error) return send(res, me.status, { error: me.error });
     return await D.withOrg(me.org, () => run(req, res, op, me));
   } catch (e) { return send(res, 502, { error: String((e && e.message) || e) }); }
-};
+});
 async function run(req, res, op, me) {
   try {
     const S = await D.orgSettings();

@@ -54,7 +54,7 @@ async function trackingStatus(S, days) {
     allowedDomains: ((S.tracking || {}).domains || []), publicId: D.org().public_id };
 }
 
-module.exports = async function handler(req, res) {
+module.exports = D.logged("suite", async function handler(req, res) {
   const op = String((req.query && req.query.op) || "");
   try {
     if (req.method === "OPTIONS") { res.statusCode = 204; Object.keys(CORS).forEach((k) => res.setHeader(k, CORS[k])); return res.end(); }
@@ -91,4 +91,4 @@ module.exports = async function handler(req, res) {
   } catch (e) {
     return D.send(res, 502, { error: String((e && e.message) || e) });
   }
-};
+});

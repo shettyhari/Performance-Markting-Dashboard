@@ -5,15 +5,17 @@
 
 alter table auth.users add column if not exists failed_logins integer not null default 0;
 alter table auth.users add column if not exists locked_until timestamptz;
+-- set by a platform admin (CEO console): no sign-in and no session until cleared; unlike locked_until, a password reset does not lift it
+alter table auth.users add column if not exists disabled_at timestamptz;
 -- a sign-up link carries the password chosen at that sign-up: confirming needs it, so a link from someone else's sign-up with your email is useless
 alter table auth.email_tokens add column if not exists password_hash text;
 
 drop function if exists public.auth_user_get(uuid, text);
 create function public.auth_user_get(p_id uuid default null, p_email text default null)
 returns table (id uuid, email text, encrypted_password text, email_confirmed_at timestamptz, confirmation_sent_at timestamptz,
-               invited_at timestamptz, raw_user_meta_data jsonb, token_version integer, locked_until timestamptz)
+               invited_at timestamptz, raw_user_meta_data jsonb, token_version integer, locked_until timestamptz, disabled_at timestamptz)
 language sql stable security definer set search_path = '' as $$
-  select u.id, u.email, u.encrypted_password, u.email_confirmed_at, u.confirmation_sent_at, u.invited_at, u.raw_user_meta_data, u.token_version, u.locked_until
+  select u.id, u.email, u.encrypted_password, u.email_confirmed_at, u.confirmation_sent_at, u.invited_at, u.raw_user_meta_data, u.token_version, u.locked_until, u.disabled_at
   from auth.users u
   where (p_id is not null and u.id = p_id) or (p_id is null and u.email = lower(btrim(p_email)))
   limit 1
@@ -104,7 +106,7 @@ returns void language plpgsql stable security definer set search_path = '' as $$
 declare c jsonb := coalesce(nullif(current_setting('request.jwt.claims', true), '')::jsonb, '{}');
 begin
   if c->>'role' is distinct from 'authenticated' then return; end if;
-  if not exists (select 1 from auth.users u where u.id::text = c->>'sub' and u.token_version = coalesce((c->>'tv')::int, 0)) then
+  if not exists (select 1 from auth.users u where u.id::text = c->>'sub' and u.token_version = coalesce((c->>'tv')::int, 0) and u.disabled_at is null) then
     raise sqlstate 'PT401' using message = 'Sign in again.';
   end if;
 end $$;

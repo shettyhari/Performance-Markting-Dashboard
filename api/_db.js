@@ -132,13 +132,13 @@ async function orgFromKey(key, kind) {
 }
 const bearer = (req) => String(req.headers.authorization || "").replace(/^Bearer\s+/i, "").trim();
 
-/* the person behind a sign-in token (still valid: account exists, password not changed since), with their email flags; else null */
+/* the person behind a sign-in token (still valid: account exists and isn't disabled, password not changed since), with their email flags; else null */
 async function signedIn(req) {
   const c = jwtVerify(bearer(req));
   if (!c || c.role !== "authenticated" || !UUID.test(String(c.sub || ""))) return null;
   const r = await raw("rpc/auth_user_get", { method: "POST", body: JSON.stringify({ p_id: c.sub }) });
   const u = r && r[0];
-  if (!u || Number(u.token_version) !== Number(c.tv || 0)) return null;
+  if (!u || u.disabled_at || Number(u.token_version) !== Number(c.tv || 0)) return null;   // disabled from the CEO console: no session
   return { id: u.id, email: String(u.email || "").toLowerCase(), name: (u.raw_user_meta_data && u.raw_user_meta_data.full_name) || "",
     email_confirmed_at: u.email_confirmed_at, confirmation_sent_at: u.confirmation_sent_at, invited_at: u.invited_at, token_version: u.token_version };
 }
@@ -164,6 +164,33 @@ async function cronAllowed(req) {
   const k = req.headers["x-cron-key"];
   if (!k || String(k).length < 32) return false;
   try { return (await raw("rpc/cron_key_ok", { method: "POST", body: JSON.stringify({ k: String(k) }) })) === true; } catch (e) { return false; }
+}
+
+/* ---------- error log for the CEO console (public.platform_events, service_role only) ---------- */
+/* one row; never throws. Messages are cut short and never carry tokens (callers pass error texts, not request bodies) */
+function logEvent(area, message, opt) {
+  opt = opt || {};
+  if (!API_URL() || !JWT_SECRET()) return Promise.resolve();
+  const row = { source: opt.source || "vercel", level: opt.level || "error", area: String(area || "").slice(0, 60), message: String(message || "").slice(0, 500),
+    org_id: opt.org || currentOrg() || null, detail: opt.detail || {} };
+  return raw("platform_events", { method: "POST", body: JSON.stringify(row), headers: { prefer: "return=minimal" } }).catch(() => {});
+}
+/* wraps an endpoint: any answer with status 500+ (and any uncaught error) is written to the error log before the answer goes out */
+function logged(area, handler) {
+  return async function (req, res) {
+    const end = res.end; let pending = null;
+    res.end = function () {
+      const args = arguments;
+      if (!(res.statusCode >= 500) || pending) return end.apply(res, args);
+      let msg = ""; try { const b = JSON.parse(String(args[0] || "")); msg = b && (b.error || b.message); } catch (e) {}
+      pending = logEvent(area, msg || "HTTP " + res.statusCode, { detail: { status: res.statusCode, op: String((req.query && (req.query.op || req.query.mode)) || ""), method: req.method } })
+        .then(() => end.apply(res, args));
+      return res;
+    };
+    try { await handler(req, res); }
+    catch (e) { if (!pending && !res.headersSent) send(res, 500, { error: "Something went wrong. Try again in a minute." }); }
+    if (pending) await pending;
+  };
 }
 
 /* ---------- per-workspace settings and tokens ---------- */
@@ -204,4 +231,4 @@ const phoneCC = () => { const c = ctx(), s = c && c.settings; return String((s &
 const appUrl = (req) => (process.env.APP_URL || (req && req.headers && req.headers.host ? "https://" + req.headers.host : "")).replace(/\/+$/, "");
 
 module.exports = { send, same, sha256, raw, sbFetch, sbAll, sbCount, scopePath, scopeBody, withOrg, currentOrg, org, orgById, orgByPublicId, orgFromKey, bearer, auth, signedIn, jwtSign, jwtVerify,
-  cronAllowed, orgSettings, settingsUpdatedAt, orgSecret, tzMin, tzMs, orgNow, orgDay, tzLabel, cur, currency, locale, crm, orgName, appUrl, phoneCC, UUID, API_URL };
+  cronAllowed, logEvent, logged, orgSettings, settingsUpdatedAt, orgSecret, tzMin, tzMs, orgNow, orgDay, tzLabel, cur, currency, locale, crm, orgName, appUrl, phoneCC, UUID, API_URL };
