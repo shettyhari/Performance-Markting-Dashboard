@@ -2,7 +2,7 @@
 // Members (sign-in token + x-org-id header, same rule as the database):
 //   GET  ?op=perf|attribution|trend&from=&to=&brand=[&model=&by=&granularity=]   · ?op=journey&id=   · ?op=find&q=
 //   GET  ?op=capi-status[&days=7] · ?op=audiences-status · ?op=tracking-status[&days=7]
-//   POST ?op=capi-run · ?op=audiences-run   (admins / editors)       POST ?op=ask {question, history}
+//   POST ?op=capi-run · ?op=audiences-run   (admins / editors)       POST ?op=ask {question, history, context}
 //   POST ?op=ai-models {provider} · ?op=ai-test   (workspace owners: Settings › AI)
 // Scheduler (pg_cron Vault key or CRON_SECRET), once per workspace:  POST ?op=cron&mode=capi|audiences|digest&org=<id>
 // Machine access (a workspace API key):  /api/mcp (MCP server)  ·  GET ?op=ext&from=&to= (Chrome extension)
@@ -80,7 +80,7 @@ module.exports = async function handler(req, res) {
         case "capi-run": if (req.method !== "POST") break; if (!canRun) return D.send(res, 403, { error: "Admins and editors only." }); return D.send(res, 200, await require("./_capi").run(S, { force: true }));
         case "audiences-run": if (req.method !== "POST") break; if (!canRun) return D.send(res, 403, { error: "Admins and editors only." }); return D.send(res, 200, await require("./_audiences").run(S, { force: true }));
         case "ask": { if (req.method !== "POST") break; const b = body(req); if (!String(b.question || "").trim()) return D.send(res, 400, { error: "Ask a question." });
-          return D.send(res, 200, await require("./_ai").ask(S, b.question, b.history)); }
+          return D.send(res, 200, await require("./_ai").ask(S, b.question, b.history, b.context)); }
         case "ai-models": { if (req.method !== "POST") break; if (!me.owner) return D.send(res, 403, { error: "Only the workspace owner manages AI settings." });
           return D.send(res, 200, { models: await require("./_ai").models(String(body(req).provider || "")) }); }
         case "ai-test": { if (req.method !== "POST") break; if (!me.owner) return D.send(res, 403, { error: "Only the workspace owner manages AI settings." });

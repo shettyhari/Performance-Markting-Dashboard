@@ -30,7 +30,7 @@ async function runTool(S, name, a) {
   if (name === "lead_journey") { const j = await U.journey(S, String(a.lead_id || "")); return j || { error: "No lead with that id." }; }
   return { error: "Unknown tool" };
 }
-function system(S) {
+function system(S, ctx) {
   return [
     "You are the marketing analyst inside " + D.orgName() + "'s lead performance dashboard (brands: " + ((S.brands || []).join(", ") || "none set yet") + "; CRM: " + D.crm() + ").",
     "Today is " + U.istDay(0) + " (" + D.tzLabel() + "). Currency is " + D.currency() + " (" + D.cur().trim() + "). Answer like a senior performance marketer: business impact first, plain language, short.",
@@ -38,8 +38,9 @@ function system(S) {
     "When a value is null or missing, say N/A and why (for example: no sales statuses ticked yet, no deal value set, no spend for that channel). Never treat N/A as 0.",
     "Use the definitions the tools return. Compare periods by calling the tool for each period. Say which dates you used.",
     "Est. revenue and ROAS are estimates (sales × average deal value from Settings); label them as estimates.",
-    "End with at most three concrete next actions when the question is about performance."
-  ].join("\n");
+    "End with at most three concrete next actions when the question is about performance.",
+    "Format for a chat panel: short paragraphs, bullet lists, **bold** for key figures, and a small markdown table only when comparing several rows."
+  ].concat(ctx ? [ctx] : []).join("\n");
 }
 /* ---------- providers: each workspace's owner picks one in Settings › AI (org_ai_config); its key is in the vault (ai_<provider>_key) ---------- */
 const PROVIDERS = {
@@ -138,8 +139,17 @@ const ADAPTERS = {
 };
 ADAPTERS.compatible = ADAPTERS.openai;
 
+/* what the person is looking at in the dashboard (checked; only a default when the question names no dates or brand) */
+function contextLine(c) {
+  if (!c || typeof c !== "object") return "";
+  const day = (x) => (/^\d{4}-\d{2}-\d{2}$/.test(String(x || "")) ? String(x) : ""), txt = (x, n) => String(x || "").replace(/[\r\n]+/g, " ").trim().slice(0, n);
+  const page = txt(c.page, 40), from = day(c.from), to = day(c.to), brand = txt(c.brand, 80);
+  if (!page && !from && !brand) return "";
+  return "Context: the person is looking at the " + JSON.stringify(page || "dashboard") + " page" + (from && to ? " for " + from + " to " + to : "") +
+    (brand ? ", brand " + JSON.stringify(brand) : ", all brands") + ". When the question doesn't name dates or a brand, use these.";
+}
 /* one question (with optional earlier turns as plain text) → answer text + the tools used + which model answered */
-async function ask(S, question, history) {
+async function ask(S, question, history, context) {
   const cfg = await settings();
   if (!cfg.enabled) { const e = new Error(OFF); e.code = "AI_OFF"; throw e; }
   if (!cfg.model) throw new Error("No model chosen yet. Your workspace owner picks one in Settings › AI.");
@@ -147,7 +157,7 @@ async function ask(S, question, history) {
   const prior = (Array.isArray(history) ? history : []).filter((m) => m && (m.role === "user" || m.role === "assistant") && typeof m.content === "string" && m.content.trim())
     .slice(-10).map((m) => ({ role: m.role, content: m.content.slice(0, 4000) }));
   prior.push({ role: "user", content: String(question).slice(0, 4000) });
-  const st = A.start(system(S), prior), used = [], by = { provider: cfg.label, model: cfg.model };
+  const st = A.start(system(S, contextLine(context)), prior), used = [], by = { provider: cfg.label, model: cfg.model };
   for (let turn = 0; turn < 6; turn++) {
     const r = await A.turn(cfg, st, true);
     if (r.stop === "refusal") return { answer: "I can't answer that one. Try asking about spend, leads, QL, sales or campaigns.", tools: used, by };
@@ -185,4 +195,4 @@ async function digest(S) {
     "Cover: total spend, Meta leads, CRM leads, QL, sales if configured, CPL and CPQL with change; the best and worst brand by CPQL (only brands with 5+ QL in either period); campaigns that spent 1,500+ (workspace currency) with 0 QL; and the top 3 actions. " +
     "Plain text, no markdown tables, under 1,800 characters.", []);
 }
-module.exports = { ask, digest, models, test, settings, safeBase, PROVIDERS, TOOLS, runTool };
+module.exports = { ask, digest, models, test, settings, safeBase, contextLine, PROVIDERS, TOOLS, runTool };

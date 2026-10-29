@@ -1,5 +1,6 @@
 /* Lead Performance — attribution suite pages (loaded after index.html's main script; ES5 like the rest).
-   Pages: Attribution (models, channels, AI search, conversion paths), Lead journeys, Report builder, Ask AI, Sync & tracking.
+   Pages: Attribution (models, channels, AI search, conversion paths), Lead journeys, Report builder, Sync & tracking.
+   Ask AI: a floating assistant on every page (AIW below), using the page's dates and brand as context.
    Settings sections: Attribution & sync (deal values, Conversions API, website tracking, channel costs, audiences, AI digest, MCP / Chrome extension),
    Workspace, and AI (owners only: provider, model and keys for Ask AI).
    Server: /api/suite (api/_suite.js and friends). Numbers follow the dashboard's definitions; N/A, never 0, when data is missing. */
@@ -188,9 +189,7 @@
     var a = el("a", {href: URL.createObjectURL(new Blob(["﻿" + lines.join("\n")], {type: "text/csv"})), download: name.replace(/[^\w\- ]+/g, "") + ".csv"}); document.body.appendChild(a); a.click(); a.remove();
   }
 
-  /* ================= Ask AI ================= */
-  var SUGGEST = ["How did we do last week vs the week before?", "Which campaigns spent the most with no qualified leads in the last 14 days?", "Which brand has the best CPQL this month?",
-    "How many leads came from ChatGPT or other AI search this month?", "Which brand's cost per lead changed most over the last 30 days?"];
+  /* ================= Ask AI: a floating assistant on every page ================= */
   var AI_LABEL = {anthropic: "Anthropic Claude", openai: "OpenAI", gemini: "Google Gemini", compatible: "OpenAI-compatible"};
   /* on / off and which provider · model answers (every member may see this; keys and addresses stay with the owner) */
   function aiStatus(force){
@@ -198,32 +197,150 @@
     sb.client.rpc("ai_status").then(function(r){ if (X.aiFor !== k) return; X.ai = r.error ? {err: r.error.message} : ((r.data || [])[0] || {enabled: false}); render(); });
     return null;
   }
-  function viewAsk(){
-    if (!ready()) return needDb();
-    var st = aiStatus(), off = st && !st.err && !(st.enabled && st.model);
-    var ta = el("textarea", {rows: 3, placeholder: "Ask about spend, leads, QL, sales, campaigns, channels…", "aria-label": "Question", spellcheck: "true"});
-    var send = function(text){ var qtext = String(text || ta.value).trim(); if (!qtext || X.asking) return;
-      var hist = X.chat.map(function(m){ return {role: m.role, content: m.text}; }); X.chat.push({role: "user", text: qtext}); X.asking = true; render();
-      api("ask", {}, {question: qtext, history: hist}).then(function(d){ X.chat.push({role: "assistant", text: d.answer, tools: d.tools || [], by: d.by || null}); })
-        .catch(function(e){ X.chat.push({role: "assistant", text: "Couldn't answer: " + e.message, error: true}); }).then(function(){ X.asking = false; render(); }); };
-    ta.addEventListener("keydown", function(e){ if (e.key === "Enter" && (e.ctrlKey || e.metaKey)){ e.preventDefault(); send(); } });
-    var box = el("section", {cls: "panel"}, head("Ask your data", "An AI analyst answers from the dashboard's own numbers (same definitions). It never sees phone numbers or emails. Always check important numbers on the dashboard before acting."));
-    if (st && st.enabled && st.model) box.appendChild(el("div", {cls: "small", text: "Answers by " + (AI_LABEL[st.provider] || st.provider) + " · " + st.model + ", chosen by your workspace owner."}));
-    if (off) box.appendChild(el("div", {cls: "banner warn"}, el("span", {text: sbIsOwner() ? "Ask AI isn't set up yet. Choose a provider, model and key in " : "Ask AI isn't set up yet. Your workspace owner can switch it on in Settings › AI."}),
-      sbIsOwner() ? el("button", {cls: "linkbtn", type: "button", onclick: function(){ state.tab = "settings"; state.setTab = "ai"; render(); }}, "Settings › AI") : null));
-    var log = el("div", {style: "display:grid;gap:12px"});
-    X.chat.forEach(function(m){ log.appendChild(el("div", {cls: "group", style: m.role === "user" ? "background:transparent" : ""},
-      el("div", {cls: "eyebrow", text: m.role === "user" ? "You" : "AI analyst" + (m.by ? " · " + m.by.provider + " · " + m.by.model : "")}), el("div", {style: "white-space:pre-wrap;line-height:1.55", text: m.text}),
-      m.tools && m.tools.length ? el("div", {cls: "small", text: "Looked up: " + m.tools.map(function(t){ return t.tool.replace(/_/g, " ") + (t.input && t.input.from ? " " + t.input.from + "→" + t.input.to : "") + (t.input && t.input.brand ? " (" + t.input.brand + ")" : ""); }).join(" · ")}) : null)); });
-    if (X.asking) log.appendChild(el("div", {cls: "empty", text: "Looking at the numbers…"}));
-    box.appendChild(log);
-    if (!X.chat.length && !off) box.appendChild(el("div", {cls: "chips", style: "flex-wrap:wrap"}, SUGGEST.map(function(s){ return el("button", {cls: "chip", type: "button", onclick: function(){ send(s); }}, s); })));
-    box.appendChild(ta);
-    box.appendChild(el("div", {style: "display:flex;gap:8px;flex-wrap:wrap"}, el("button", {cls: "btn", type: "button", disabled: X.asking || off ? true : null, onclick: function(){ send(); }}, "Ask"),
-      X.chat.length ? el("button", {cls: "btn ghost", type: "button", onclick: function(){ X.chat = []; render(); }}, "New conversation") : null,
-      el("span", {cls: "small", text: "Ctrl + Enter to send"})));
+  var NS = "http://www.w3.org/2000/svg";
+  var ICONS = {spark: ["M12 3l1.8 4.7L18.5 9.5l-4.7 1.8L12 16l-1.8-4.7L5.5 9.5l4.7-1.8z", "M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"],
+    close: ["M6 6l12 12", "M18 6L6 18"], expand: ["M15 3h6v6", "M9 21H3v-6", "M21 3l-7 7", "M3 21l7-7"], shrink: ["M4 14h6v6", "M20 10h-6V4", "M14 10l7-7", "M3 21l7-7"],
+    edit: ["M12 20h9", "M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"], send: ["M12 19V5", "M5 12l7-7 7 7"], arrow: ["M5 12h14", "M13 6l6 6-6 6"]};
+  function ico(k){ var s = document.createElementNS(NS, "svg"); s.setAttribute("viewBox", "0 0 24 24"); s.setAttribute("fill", "none"); s.setAttribute("stroke", "currentColor");
+    s.setAttribute("stroke-width", "2"); s.setAttribute("stroke-linecap", "round"); s.setAttribute("stroke-linejoin", "round"); s.setAttribute("aria-hidden", "true");
+    ICONS[k].forEach(function(d){ var p = document.createElementNS(NS, "path"); p.setAttribute("d", d); s.appendChild(p); }); return s; }
+
+  /* answers: paragraphs, lists, headings, tables, **bold** and `code`, built as DOM (never HTML from the model) */
+  function mdInline(s, parent){
+    var re = /(\*\*[^*]+\*\*|`[^`]+`)/g, last = 0, m;
+    while ((m = re.exec(s))){ if (m.index > last) parent.appendChild(document.createTextNode(s.slice(last, m.index)));
+      parent.appendChild(m[0].charAt(0) === "`" ? el("code", {text: m[0].slice(1, -1)}) : el("strong", {text: m[0].slice(2, -2)})); last = re.lastIndex; }
+    if (last < s.length) parent.appendChild(document.createTextNode(s.slice(last)));
+    return parent;
+  }
+  function md(text){
+    var box = el("div", {cls: "aiw-bot"}), lines = String(text || "").replace(/\r/g, "").split("\n"), i = 0, isRow = function(x){ return /^\|.*\|$/.test(x.trim()); };
+    var isItem = function(x, ord){ return ord ? /^\s*\d+[.)]\s+/.test(x) : /^\s*[-*•]\s+/.test(x); };
+    while (i < lines.length){
+      var t = lines[i].trim();
+      if (!t){ i++; continue; }
+      if (isRow(t)){ var rows = []; while (i < lines.length && isRow(lines[i])){ rows.push(lines[i].trim()); i++; }
+        var tb = el("table"); rows.filter(function(r){ return !/^\|[\s:|-]+\|$/.test(r); }).forEach(function(r, k){ var tr = el("tr");
+          r.slice(1, -1).split("|").forEach(function(c){ tr.appendChild(mdInline(c.trim(), el(k === 0 ? "th" : "td"))); }); tb.appendChild(tr); });
+        box.appendChild(el("div", {cls: "aiw-tbl"}, tb)); continue; }
+      var h = /^#{1,6}\s+(.*)$/.exec(t); if (h){ box.appendChild(mdInline(h[1], el("h4"))); i++; continue; }
+      if (isItem(t, false) || isItem(t, true)){ var ord = isItem(t, true), list = el(ord ? "ol" : "ul");
+        while (i < lines.length && isItem(lines[i], ord)){ list.appendChild(mdInline(lines[i].replace(/^\s*(?:[-*•]|\d+[.)])\s+/, ""), el("li"))); i++; }
+        box.appendChild(list); continue; }
+      var p = el("p"), n = 0;
+      while (i < lines.length && lines[i].trim() && !isRow(lines[i]) && !/^#{1,6}\s/.test(lines[i].trim()) && !isItem(lines[i], false) && !isItem(lines[i], true)){
+        if (n++) p.appendChild(el("br")); mdInline(lines[i].trim(), p); i++; }
+      box.appendChild(p);
+    }
     return box;
   }
+
+  var AIW = {root: null, open: false, wide: false, useCtx: true, draft: "", org: "", sig: "", fab: null};
+  var AIW_SUG = {
+    overview: ["How did we do in this period compared with the one before?", "Which brand has the best cost per qualified lead?", "Where is spend not turning into qualified leads?"],
+    campaigns: ["Which campaigns spent the most with no qualified leads?", "Which campaigns deserve more budget, and why?", "Which campaigns' cost per lead got worse?"],
+    trends: ["How did cost per lead move week by week?", "Which week had the best qualified-lead rate?", "Is spend growing faster than leads?"],
+    attribution: ["Which channels bring the most qualified leads?", "How many leads came from ChatGPT or other AI search?", "Which campaigns get the most credit for sales?"],
+    reports: ["Summarise this period for leadership in five points.", "Which brands are on track against their targets?", "What changed most since the last period?"]};
+  AIW_SUG.adsets = AIW_SUG.ads = AIW_SUG.campaigns;
+  function aiwKey(){ return "lp-aiw:" + (sb.org ? sb.org.id : ""); }
+  function aiwSave(){ try { sessionStorage.setItem(aiwKey(), JSON.stringify({chat: X.chat.slice(-30), open: AIW.open, wide: AIW.wide, useCtx: AIW.useCtx})); } catch (e) {} }
+  function aiwLoadOrg(){
+    var id = sb.org ? sb.org.id : ""; if (AIW.org === id) return; AIW.org = id; X.chat = []; AIW.open = false; AIW.wide = false; AIW.useCtx = true; AIW.draft = "";
+    try { var s = JSON.parse(sessionStorage.getItem(aiwKey()) || "null"); if (s){ X.chat = s.chat || []; AIW.open = !!s.open; AIW.wide = !!s.wide; AIW.useCtx = s.useCtx !== false; } } catch (e) {}
+  }
+  /* what the person is looking at: page, dates and brand (the AI uses them when the question names none) */
+  function aiwCtx(){
+    var page = (PAGE_INFO[state.tab] || PAGE_INFO.overview)[0], r = state.R ? rangeOf(state.range) : null, av = state.R && state.R.avail;
+    if (!r && av && av.min !== null && av.min !== undefined) r = {from: av.min, to: av.max};
+    var brand = state.brand && state.brand !== "All" ? state.brand : "";
+    return {page: page, from: r ? isoDay(r.from) : null, to: r ? isoDay(r.to) : null, brand: brand, label: r ? spanText(r) : "", tab: state.tab};
+  }
+  function aiwOn(){ return !!(sb.cfg && sb.status === "ready" && sb.org && sb.client); }
+  function aiwSend(text){
+    var q = String(text || AIW.draft || "").trim(); if (!q || X.asking) return;
+    var hist = X.chat.filter(function(m){ return !m.error; }).map(function(m){ return {role: m.role, content: m.text}; }), c = AIW.useCtx ? aiwCtx() : null;
+    X.chat.push({role: "user", text: q}); AIW.draft = ""; X.asking = true; aiwSave(); aiwDraw(true);
+    api("ask", {}, {question: q, history: hist, context: c ? {page: c.page, from: c.from, to: c.to, brand: c.brand} : null})
+      .then(function(d){ X.chat.push({role: "assistant", text: d.answer, tools: d.tools || [], by: d.by || null, truncated: !!d.truncated}); })
+      .catch(function(e){ X.chat.push({role: "assistant", text: e.message || String(e), error: true}); })
+      .then(function(){ X.asking = false; aiwSave(); aiwDraw(true); });
+  }
+  function aiwToggle(open){ AIW.open = open; aiwSave(); aiwDraw(true);
+    setTimeout(function(){ var t = open ? AIW.root.querySelector("textarea") : AIW.root.querySelector(".aiw-fab"); if (t) t.focus(); }, 30); }
+  function aiwDraw(force){
+    if (!AIW.root){ AIW.root = el("div", {id: "aiw"}); document.body.appendChild(AIW.root); }
+    var on = aiwOn(); if (on) aiwLoadOrg();
+    var st = on ? aiStatus() : null, ctx = on ? aiwCtx() : null;
+    var sig = JSON.stringify([on, AIW.open, AIW.wide, AIW.useCtx, AIW.org, X.chat.length, !!X.asking, st, ctx && [ctx.page, ctx.label, ctx.brand], sb.role, sb.org && sb.org.is_owner]);
+    if (!force && sig === AIW.sig) return; AIW.sig = sig;
+    var R = AIW.root; R.textContent = "";
+    if (!on) return;
+    if (!AIW.open){
+      R.appendChild(el("button", {cls: "aiw-fab", type: "button", "aria-label": "Ask AI (Ctrl+K)", title: "Ask AI · Ctrl+K", onclick: function(){ aiwToggle(true); }},
+        ico("spark"), el("span", {text: "Ask AI"}), el("kbd", {text: /Mac|iPhone|iPad/.test(navigator.platform || "") ? "⌘K" : "Ctrl K"})));
+      return;
+    }
+    var ready = st && !st.err && st.enabled && st.model, owner = sbIsOwner();
+    var sub = st === null ? "Connecting…" : st.err ? "Couldn't check the AI settings" : ready ? (AI_LABEL[st.provider] || st.provider) + " · " + st.model : "Not set up yet";
+    var panel = el("section", {cls: "aiw-panel" + (AIW.wide ? " wide" : ""), role: "dialog", "aria-label": "Ask AI", "aria-modal": "false"});
+    panel.appendChild(el("div", {cls: "aiw-head"}, el("div", {cls: "aiw-badge"}, ico("spark")),
+      el("div", {cls: "aiw-title"}, el("b", {text: "Ask AI"}), el("span", null, el("i", {cls: ready ? "" : "off"}), sub)),
+      X.chat.length ? el("button", {cls: "aiw-ib", type: "button", title: "New conversation", "aria-label": "New conversation", onclick: function(){ if (X.asking) return; X.chat = []; aiwSave(); aiwDraw(true); }}, ico("edit")) : null,
+      el("button", {cls: "aiw-ib aiw-wide", type: "button", title: AIW.wide ? "Smaller" : "Larger", "aria-label": AIW.wide ? "Make the panel smaller" : "Make the panel larger", onclick: function(){ AIW.wide = !AIW.wide; aiwSave(); aiwDraw(true); }}, ico(AIW.wide ? "shrink" : "expand")),
+      el("button", {cls: "aiw-ib", type: "button", title: "Close (Esc)", "aria-label": "Close Ask AI", onclick: function(){ aiwToggle(false); }}, ico("close"))));
+    if (ready) panel.appendChild(el("div", {cls: "aiw-ctx"},
+      el("span", null, AIW.useCtx ? "Using " : "Not using ", el("b", {text: ctx.page}), ctx.label ? " · " + ctx.label : "", " · " + (ctx.brand || "all brands")),
+      el("button", {cls: "aiw-sw", type: "button", role: "switch", "aria-checked": AIW.useCtx ? "true" : "false", title: "Use this page's dates and brand when a question doesn't name them",
+        "aria-label": "Use this page's dates and brand", onclick: function(){ AIW.useCtx = !AIW.useCtx; aiwSave(); aiwDraw(true); }})));
+    var body = el("div", {cls: "aiw-body", "aria-live": "polite"});
+    if (!ready){
+      body.appendChild(el("div", {cls: "aiw-setup"}, el("div", {cls: "aiw-badge"}, ico("spark")),
+        el("h3", {text: st === null ? "Connecting…" : st.err ? "Ask AI couldn't load" : "Ask AI isn't set up yet"}),
+        el("p", {text: st && st.err ? st.err : owner ? "Choose a provider and model, and add its API key. It takes a minute." : "Your workspace owner can switch it on in Settings › AI."}),
+        owner && st && !st.err ? el("button", {cls: "btn", type: "button", onclick: function(){ aiwToggle(false); state.tab = "settings"; state.setTab = "ai"; render(); }}, "Open Settings › AI") : null));
+    } else if (!X.chat.length){
+      var first = String((sb.user && sb.user.user_metadata && sb.user.user_metadata.full_name) || "").trim().split(/\s+/)[0];   /* a name they set, never the email */
+      var sugs = (AIW_SUG[ctx.tab] || AIW_SUG.overview).slice();
+      if (ctx.brand) sugs.unshift("How is " + ctx.brand + " doing in this period?");
+      body.appendChild(el("div", {cls: "aiw-hello"}, el("h3", null, "Hi" + (first ? " " + first : "") + ", ", el("em", {text: "what should we look at?"})),
+        el("p", {text: "Ask about spend, leads, qualified leads, sales and campaigns. Answers come from this workspace's own numbers, with the dashboard's definitions."}),
+        el("div", {cls: "aiw-sugs"}, sugs.slice(0, 4).map(function(s){ return el("button", {cls: "aiw-sug", type: "button", onclick: function(){ aiwSend(s); }}, ico("arrow"), el("span", {text: s})); }))));
+    }
+    X.chat.forEach(function(m){
+      if (m.role === "user"){ body.appendChild(el("div", {cls: "aiw-msg me"}, el("div", {cls: "aiw-me", text: m.text}))); return; }
+      var tags = (m.tools || []).map(function(t){ return el("span", {cls: "aiw-tag", text: t.tool.replace(/_/g, " ") + (t.input && t.input.from ? " · " + t.input.from + " → " + t.input.to : "") + (t.input && t.input.brand ? " · " + t.input.brand : "")}); });
+      var copy = el("button", {cls: "aiw-act", type: "button", onclick: function(){ try { navigator.clipboard.writeText(m.text); copy.textContent = "Copied"; setTimeout(function(){ copy.textContent = "Copy"; }, 1500); } catch (e) {} }}, "Copy");
+      body.appendChild(el("div", {cls: "aiw-msg"}, el("div", {cls: "aiw-av"}, ico("spark")),
+        el("div", {style: "flex:1;min-width:0"}, m.error ? el("div", {cls: "aiw-err", role: "alert", text: m.text}) : md(m.text),
+          m.truncated ? el("div", {cls: "aiw-tag", text: "The answer was cut short. Ask for less at once."}) : null,
+          m.error ? null : el("div", {cls: "aiw-meta"}, tags.length ? el("span", {cls: "aiw-lbl", text: "Looked up"}) : null, tags, copy,
+            m.by ? el("span", {cls: "aiw-lbl", text: "· " + m.by.model}) : null))));
+    });
+    if (X.asking) body.appendChild(el("div", {cls: "aiw-msg"}, el("div", {cls: "aiw-av"}, ico("spark")),
+      el("div", {cls: "aiw-typing"}, el("span", {cls: "aiw-dots"}, el("i"), el("i"), el("i")), el("span", {text: "Reading your numbers…"}))));
+    panel.appendChild(body);
+    if (ready){
+      var ta = el("textarea", {rows: 1, placeholder: "Ask about spend, leads, QL, campaigns…", "aria-label": "Your question", spellcheck: "true"});
+      ta.value = AIW.draft;
+      var go = el("button", {cls: "aiw-send", type: "button", "aria-label": "Send", disabled: X.asking || !AIW.draft.trim() ? true : null, onclick: function(){ aiwSend(); }}, ico("send"));
+      var fit = function(){ if (!ta.scrollHeight) return; ta.style.height = "auto"; ta.style.height = Math.min(160, ta.scrollHeight) + "px"; ta.style.overflowY = ta.scrollHeight > 160 ? "auto" : "hidden"; };
+      ta.addEventListener("input", function(){ AIW.draft = ta.value; go.disabled = X.asking || !ta.value.trim(); fit(); });
+      ta.addEventListener("keydown", function(e){ if (e.key === "Enter" && !e.shiftKey && !e.isComposing){ e.preventDefault(); aiwSend(); } });
+      panel.appendChild(el("div", {cls: "aiw-foot"}, el("div", {cls: "aiw-box"}, ta, go),
+        el("div", {cls: "aiw-note", text: "Enter to send · Shift+Enter for a new line"})));
+      setTimeout(fit, 0);
+    }
+    R.appendChild(panel);
+    setTimeout(function(){ body.scrollTop = body.scrollHeight; }, 0);
+  }
+  document.addEventListener("keydown", function(e){
+    if ((e.ctrlKey || e.metaKey) && !e.altKey && String(e.key).toLowerCase() === "k" && aiwOn()){ e.preventDefault(); aiwToggle(!AIW.open); return; }
+    if (e.key === "Escape" && AIW.open && AIW.root && AIW.root.contains(document.activeElement)) aiwToggle(false);
+  });
+  /* the assistant follows every page change, sign-in and workspace switch */
+  var baseRender = render;
+  render = function(){ var r = baseRender.apply(this, arguments); try { aiwDraw(false); } catch (e) { if (window.console) console.warn("Ask AI:", e); } return r; };
 
   /* ================= Sync & tracking (Conversions API log, audiences, website tracking health) ================= */
   function viewSync(){
@@ -501,9 +618,8 @@
   PAGE_INFO.attribution = ["Attribution", "Which channels and campaigns really produce leads, qualified leads and sales, under the attribution model you pick."];
   PAGE_INFO.journeys = ["Lead journeys", "Every touch of one lead, from the first click to the CRM, and what was sent to Meta."];
   PAGE_INFO.builder = ["Report builder", "Group and count the loaded data any way you need; save reports for the team."];
-  PAGE_INFO.ask = ["Ask AI", "Plain-language questions answered from the dashboard's numbers."];
   PAGE_INFO.capi = ["Sync & tracking", "Conversions API events sent to Meta, website tracking health and Meta audiences."];
-  EXTRA_VIEWS.attribution = viewAttribution; EXTRA_VIEWS.journeys = viewJourneys; EXTRA_VIEWS.builder = viewBuilder; EXTRA_VIEWS.ask = viewAsk; EXTRA_VIEWS.capi = viewSync;
+  EXTRA_VIEWS.attribution = viewAttribution; EXTRA_VIEWS.journeys = viewJourneys; EXTRA_VIEWS.builder = viewBuilder; EXTRA_VIEWS.capi = viewSync;
   SET_TABS.splice(SET_TABS.length - 1, 0, ["growth", "Attribution & sync", "Deal values, sending qualified leads and sales to Meta, website tracking, channel costs, audiences, the AI digest and API access."]);
   EXTRA_SET.growth = setGrowth;
   SET_TABS.splice(SET_TABS.length - 1, 0, ["ai", "AI", "Owners only: which AI provider and model answer Ask AI and write the digest, and their API keys."]);

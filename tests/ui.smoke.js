@@ -7,6 +7,7 @@ const attr = fs.readFileSync(path.join(repo, "attribution.js"), "utf8");
 html = html.replace(/<script src="https:\/\/cdnjs[^"]*"><\/script>/, "").replace('<script src="attribution.js"></script>', "<script>" + attr.split("</script>").join("<\\/script>") + "</script>");
 
 const calls = [], errors = [];
+let aiStat = null;   // what ai_status() answers (null = never set up)
 let orgs = [], user = { id: "u1", email: "owner@acme.test", user_metadata: {}, created_at: "2026-01-01" };
 function result(data, error) { return Promise.resolve({ data, error: error || null }); }
 function query(table) {
@@ -41,6 +42,7 @@ function apiFake(calls) {
     if (op === "signup" || op === "forgot") return reply(200, { ok: true });
     if (op === "verify") return b.password === "right password" ? reply(200, { token: TOKEN, user }) : reply(401, { error: "That isn't the password chosen with this sign-up." });
     if (op === "me") return reply(200, { user });
+    if (u.indexOf("/api/suite?op=ask") >= 0) return reply(200, { answer: ["**Spend** was N/A for this range.", "", "- First point", "- Second point", "", "| Brand | CPL |", "|---|---|", "| Alpha | N/A |"].join("\n"), tools: [{ tool: "campaign_performance", input: { from: "2026-10-01", to: "2026-10-22" } }], by: { provider: "OpenAI", model: "gpt-test" } });
     return reply(404, {});
   };
 }
@@ -52,6 +54,7 @@ const fakeSupabase = {
       rpc: (fn, args) => {
         calls.push({ op: "rpc", fn, args });
         if (fn === "accept_invites") return result(0);
+        if (fn === "ai_status") return result(aiStat ? [aiStat] : []);
         if (fn === "my_orgs") return result(orgs.slice());
         if (fn === "create_organization") { orgs.push({ id: "11111111-1111-4111-8111-111111111111", public_id: "pub123", name: args.p_name, logo: null, currency: args.p_currency, tz_offset_min: args.p_tz_offset_min, crm_name: args.p_crm_name, role: "admin", is_owner: true }); return result(orgs[0].id); }
         return result(null);
@@ -159,13 +162,38 @@ const submit = (doc) => doc.querySelector("form").dispatchEvent(new doc.defaultV
   [...W5.document.querySelectorAll("button")].filter((b) => b.textContent === "Save AI settings")[0].click(); await wait(200);
   const sc = calls.filter((c) => c.fn === "set_ai_config").pop();
   ok(sc && sc.args.p_enabled === true && sc.args.p_provider === "compatible" && sc.args.p_model === "some-model" && sc.args.p_base_url === "https://openrouter.ai/api/v1", "Save AI settings sends provider, model and address to set_ai_config");
-  W5.eval("state.tab = 'ask'; render();"); await wait(200);
-  ok(/isn't set up yet/.test(t5()) && [...W5.document.querySelectorAll("button")].filter((b) => b.textContent === "Ask")[0].disabled, "Ask AI off: a clear message and Ask is disabled");
+  /* Ask AI is a floating assistant on every page */
+  const D5 = W5.document, aiText = () => (D5.getElementById("aiw") || {}).textContent || "";
+  const ctrlK = () => D5.dispatchEvent(new W5.KeyboardEvent("keydown", { key: "k", ctrlKey: true, bubbles: true }));
+  ok(D5.querySelector(".aiw-fab") && !D5.querySelector('.tab[data-tab="ask"]'), "Ask AI is a floating button on every page, not a tab");
+  D5.querySelector(".aiw-fab").click(); await wait(200);
+  ok(D5.querySelector(".aiw-panel") && /isn't set up yet/.test(aiText()) && /Open Settings › AI/.test(aiText()), "Ask AI off: the panel says so and offers the owner Settings › AI");
+  ctrlK(); await wait(50);
+  ok(!D5.querySelector(".aiw-panel") && D5.querySelector(".aiw-fab"), "Ctrl+K closes it again");
   W5.eval("sbSwitchOrg('22222222-2222-4222-8222-222222222222')"); await wait(300);
   W5.eval("state.tab = 'settings'; state.setTab = 'ai'; render();"); await wait(100);
   ok(nav5().indexOf("AI") < 0 && !/Ask AI is on for this workspace/.test(t5()), "a viewer (not owner) has no AI section, even when asking for it");
-  W5.eval("state.tab = 'ask'; render();"); await wait(200);
-  ok(/workspace owner can switch it on/.test(t5()), "…and Ask AI tells them the owner sets it up");
+  ctrlK(); await wait(200);
+  ok(/workspace owner can switch it on/.test(aiText()) && !/Open Settings › AI/.test(aiText()), "…and the assistant tells them the owner sets it up");
+  ctrlK(); await wait(50);
+  aiStat = { enabled: true, provider: "openai", model: "gpt-test" };
+  W5.eval("sbSwitchOrg('11111111-1111-4111-8111-111111111111')"); await wait(300);
+  W5.eval("state.tab = 'campaigns'; render();"); await wait(100);
+  D5.querySelector(".aiw-fab").click(); await wait(200);
+  const sug = [...D5.querySelectorAll(".aiw-sug")];
+  ok(/OpenAI · gpt-test/.test(aiText()) && /Using Campaigns/.test(aiText()) && sug.length >= 3 && /campaigns/i.test(sug[0].textContent), "set up: shows the model, the page it uses, and campaign suggestions on the Campaigns page");
+  sug[0].click(); await wait(400);
+  const askCall = calls.filter((c) => c.op === "fetch" && /op=ask/.test(c.u)).pop(), askBody = askCall && JSON.parse(askCall.body);
+  ok(askBody && askBody.context && askBody.context.page === "Campaigns" && /campaigns/i.test(askBody.question), "the question goes to the server with the page as context");
+  const P = D5.querySelector(".aiw-panel");
+  ok(P.querySelector(".aiw-me") && P.querySelector(".aiw-bot strong") && P.querySelectorAll(".aiw-bot li").length === 2 && P.querySelector(".aiw-bot table") && /Looked up/.test(aiText()) && /gpt-test/.test(aiText()) && !P.querySelector(".aiw-bot script"),
+    "the answer shows formatted: bold, list, table, what it looked up");
+  const ta = P.querySelector("textarea"); ta.value = "And last month?"; ta.dispatchEvent(new W5.Event("input"));
+  ta.dispatchEvent(new W5.KeyboardEvent("keydown", { key: "Enter", bubbles: true })); await wait(400);
+  const second = JSON.parse(calls.filter((c) => c.op === "fetch" && /op=ask/.test(c.u)).pop().body);
+  ok(second.question === "And last month?" && second.history.length === 2, "Enter sends a follow-up with the conversation so far");
+  W5.eval("state.tab = 'overview'; render();"); await wait(100);
+  ok(D5.querySelectorAll(".aiw-me").length === 2 && /Using Overview/.test(aiText()), "changing page keeps the conversation and updates the context");
   /* a site without its database settings says so, instead of quietly showing upload-only mode */
   const d2 = new JSDOM(html, { url: "https://app.example.test/", runScripts: "dangerously", pretendToBeVisual: true, beforeParse(x) {
     x.XLSX = {}; x.scrollTo = () => {}; x.matchMedia = () => ({ matches: false, addListener() {}, addEventListener() {} });
