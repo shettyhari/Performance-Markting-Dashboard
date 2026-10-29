@@ -36,6 +36,10 @@
   },
   "rewrites": [
     {
+      "source": "/app",
+      "destination": "/app.html"
+    },
+    {
       "source": "/api/mcp",
       "destination": "/api/suite?op=mcp"
     },

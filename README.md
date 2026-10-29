@@ -34,7 +34,7 @@ Anyone can belong to several workspaces (agencies, groups); switch from the prof
 
 ## Running the site (one deployment serves every company)
 
-**Stack:** static `index.html` + `attribution.js` (ES5, no build) and serverless functions in `api/` on **Vercel**; one **database server on AWS EC2** running Postgres 16 (localhost only), PostgREST (the REST API the page and functions use; row level security per workspace) and Caddy (HTTPS). Sign-in is the site's own (`api/auth.js`): email + password, email confirmation, password reset.
+**Stack:** a static marketing page (`index.html`, at `/`), the dashboard `app.html` (at `/app`) + `attribution.js` (ES5, no build) and serverless functions in `api/` on **Vercel**; one **database server on AWS EC2** running Postgres 16 (localhost only), PostgREST (the REST API the page and functions use; row level security per workspace) and Caddy (HTTPS). Sign-in is the site's own (`api/auth.js`): email + password, email confirmation, password reset.
 
 1. **Database server.** Launch an EC2 instance (Ubuntu 24.04, e.g. t4g.small, 20 GB gp3) with an Elastic IP; security group: 22 from your IP, 80 and 443 from anywhere. Optionally point a domain (e.g. `api.yourdomain.com`) at the Elastic IP. Then from this repo:
 
@@ -66,5 +66,5 @@ Schedules run on the database server (`/etc/cron.d/lp-fanout`, UTC): each one ca
 
 - `npm run test:ui` — `tests/ui.smoke.js`: loads the page in jsdom with a fake database API and walks sign-in → workspace wizard → settings pages → the email-confirmation link (needs `npm install` for jsdom).
 - `npm test` — `tests/monitor.test.js` (alerts and reports), `tests/suite.test.js` (definitions, attribution, Conversions API, MCP, collector), `tests/tenancy.test.js` (workspace isolation: scoped queries, concurrent requests, keys, collector domains, invite rules, sign-in tokens), `tests/db.test.js` (the real `db/*.sql` in PGlite: isolation between workspaces under row level security), `tests/auth.test.js` (sign-up, confirmation, sign-in, lockout, reset, session ending, against the real SQL). No network; Meta / Telegram / email are faked.
-- Before pushing: `node --check api/*.js`, ES5 parse of the inline script in `index.html`, `attribution.js` and `lp-track.js`, `npm test`. Keep phone width working (no horizontal scroll).
+- Before pushing: `node --check api/*.js`, ES5 parse of the inline script in `app.html`, `attribution.js` and `lp-track.js`, `npm test`. Keep phone width working (no horizontal scroll).
 - Server code never calls the database API directly: use `api/_db.js` (`withOrg`, `sbFetch`, `orgSecret`, `orgSettings`), which scopes everything to the request's workspace.

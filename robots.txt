@@ -1,0 +1,7 @@
+# Qlarity: the marketing and legal pages are public; the dashboard and API are behind sign-in
+User-agent: *
+Allow: /
+Disallow: /app
+Disallow: /api/
+
+Sitemap: https://qlarity-dashboard.vercel.app/sitemap.xml

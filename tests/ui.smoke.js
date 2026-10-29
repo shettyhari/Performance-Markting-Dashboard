@@ -1,8 +1,8 @@
-// UI smoke test (npm run test:ui, needs the jsdom dev dependency): boot index.html + attribution.js in jsdom with a fake query builder and a fake /api/auth, walk sign-in → wizard → workspace → settings pages, then the email-link and setup screens.
+// UI smoke test (npm run test:ui, needs the jsdom dev dependency): boot app.html + attribution.js in jsdom with a fake query builder and a fake /api/auth, walk sign-in → wizard → workspace → settings pages, then the email-link and setup screens.
 const { JSDOM } = require("jsdom");
 const fs = require("fs"), path = require("path");
 const repo = path.join(__dirname, "..");
-let html = fs.readFileSync(path.join(repo, "index.html"), "utf8");
+let html = fs.readFileSync(path.join(repo, "app.html"), "utf8");
 const attr = fs.readFileSync(path.join(repo, "attribution.js"), "utf8");
 html = html.replace(/<script src="https:\/\/cdnjs[^"]*"><\/script>/, "").replace('<script src="attribution.js"></script>', "<script>" + attr.split("</script>").join("<\\/script>") + "</script>");
 

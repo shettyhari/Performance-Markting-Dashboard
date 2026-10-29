@@ -52,7 +52,7 @@ test("sign up → confirmation email; no sign-in until confirmed; the link needs
   assert.strictEqual(r.status, 400);
   r = await call("signup", { email: "Ann@Alpha.example", password: "correct horse 1", name: "Ann" });
   assert.strictEqual(r.status, 200); assert.strictEqual(mails.length, 1);
-  assert.strictEqual(mails[0].to, "ann@alpha.example"); assert.ok(/^https:\/\/app\.example\/\?verify=/.test(String(mails[0].text).split("\n\n")[1]));
+  assert.strictEqual(mails[0].to, "ann@alpha.example"); assert.ok(/^https:\/\/app\.example\/app\?verify=/.test(String(mails[0].text).split("\n\n")[1]));
   assert.strictEqual((await call("login", { email: "ann@alpha.example", password: "correct horse 1" })).status, 403, "not confirmed yet");
   const link = linkIn(mails[0], "verify");
   assert.strictEqual((await call("verify", { token: link, password: "wrong password" })).status, 401);
