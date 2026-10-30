@@ -64,6 +64,27 @@ Schedules run on the database server (`/etc/cron.d/lp-fanout`, UTC): each one ca
 
 **Console (`/admin`, the Qlarity team only).** Sign in on the dashboard with an email listed in `SUPER_ADMIN_EMAILS`, then open `/admin`: every workspace with its members, leads, ad rows and storage (per table); every login with its state; the server's disk, memory, load, services, backups (local and S3), schedules and HTTPS certificate (a snapshot every 5 minutes from `ec2/health.sh`, kept 7 days); server errors from the site's functions (kept 30 days); Vercel deployments. Actions: suspend / reactivate or delete a workspace (typed name), sign out, disable / enable a login, resend a confirmation email; each is logged. It shows counts and sizes only, never a workspace's leads or tokens.
 
+### Moving the server (e.g. EC2 → Lightsail)
+
+Everything moves through the backup bucket: `ec2/migrate-out.sh` on the old server sends a full copy (accounts, workspaces, data, the vault and its key) to `<BACKUP_S3_URI>/migrate/` with a row count per table; `ec2/migrate-in.sh` on the new server restores it, re-applies `db/*.sql` and checks every count. The new server keeps its own `JWT_SECRET` / `CRON_SECRET`, so Vercel gets three new values and everyone signs in once more.
+
+1. **New server.** Lightsail › Create instance › Mumbai › Linux › OS only › Ubuntu (24.04 or newer) › 2 GB plan. Networking: attach a **static IP**; IPv4 firewall: SSH, HTTP, HTTPS (SSH can be limited to "Lightsail browser SSH"). Connect with the browser SSH button.
+2. **A key for backups** (Lightsail can't use an instance role). IAM › Users › create `qlarity-lightsail-backup` (no console access) with this inline policy, then create an access key ("Application running outside AWS"):
+   ```json
+   {"Version": "2012-10-17", "Statement": [
+     {"Effect": "Allow", "Action": "s3:PutObject", "Resource": "arn:aws:s3:::<bucket>/lp/*"},
+     {"Effect": "Allow", "Action": "s3:GetObject", "Resource": "arn:aws:s3:::<bucket>/lp/migrate/*"}]}
+   ```
+   It can add backups and read only the migration copy; it can't read, list or delete backups.
+3. **Set up the new server** (browser SSH):
+   ```bash
+   sudo git clone --depth 1 https://github.com/<owner>/<repo>.git /opt/lp-src && sudo APP_URL=https://your-site.vercel.app BACKUP_S3_URI=s3://<bucket>/lp bash /opt/lp-src/ec2/setup.sh
+   sudo /usr/local/bin/aws configure      # the key from step 2; region ap-south-1; output json
+   ```
+4. **Rehearsal** (the site keeps running): on the old server `sudo bash /opt/lp-src/ec2/migrate-out.sh`, then on the new one `sudo bash /opt/lp-src/ec2/migrate-in.sh`. It must end with "all … tables match".
+5. **The move** (about 15 minutes, at a quiet time): old server `sudo bash /opt/lp-src/ec2/migrate-out.sh --final` (read-only from now on); new server `sudo bash /opt/lp-src/ec2/migrate-in.sh --force`; then in Vercel set `API_URL` (`https://<new API_DOMAIN>`), `JWT_SECRET`, `CRON_SECRET` from the new server's `/etc/lp.env` and redeploy. Sign in, check the dashboard and `/admin`.
+6. **Old server:** stop it (its schedules would otherwise keep calling the site with a secret that no longer works), keep it a week as a fallback, then delete it with its volumes, snapshots and Elastic IP. To go back instead: `migrate-out.sh --undo` there and the old values in Vercel.
+
 **Not included:** billing / plans, custom domains per workspace, call tracking, daylight-saving time zones (time zones are fixed offsets).
 
 ## Developing

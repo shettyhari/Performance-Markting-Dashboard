@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Qlarity — set up (or update) the API server on one EC2 instance (Ubuntu 24.04, x86_64 or arm64).
+# Qlarity — set up (or update) the API server on one EC2 or Lightsail instance (Ubuntu 24.04 or 26.04, x86_64 or arm64).
 #
 #   1. Copy the repo's db/ and ec2/ folders to the server:   scp -r db ec2 ubuntu@<elastic-ip>:~/lp/
 #   2. Run:   sudo APP_URL=https://your-app.vercel.app [API_DOMAIN=api.yourdomain.com] [ADMIN_IP=1.2.3.4] bash ~/lp/ec2/setup.sh
@@ -8,10 +8,13 @@
 #                       address while moving); kept in /etc/lp.env, so a later run without it keeps them. EXTRA_ORIGINS=none clears them
 #        API_DOMAIN  a domain pointing at this server's Elastic IP; leave out to use <ip>.sslip.io (free HTTPS, no domain needed)
 #        ADMIN_IP    your IP for SSH; leave out to keep SSH open to all (the EC2 security group should still limit it)
-#        BACKUP_S3_URI  optional, e.g. s3://my-bucket/lead-performance (needs an instance role with s3:PutObject)
+#        BACKUP_S3_URI  optional, e.g. s3://my-bucket/lead-performance (needs s3:PutObject there: an EC2 instance role, or on
+#                       Lightsail a restricted access key saved with: sudo /usr/local/bin/aws configure)
+#        PG_MAJOR    optional, the Postgres version (default 18); keep it the same on every server
+#   Moving to a new server: ec2/migrate-out.sh on the old one, then ec2/migrate-in.sh on the new one (README › Moving the server).
 #   3. It prints API_URL, JWT_SECRET and CRON_SECRET once: put them in Vercel › Settings › Environment Variables (never in chat).
 #
-# What runs here: Postgres 16 (localhost only) · PostgREST (localhost:3000) · Caddy (HTTPS on 443, the only public entry) ·
+# What runs here: Postgres 18 (localhost only) · PostgREST (localhost:3000) · Caddy (HTTPS on 443, the only public entry) ·
 # nightly backups (14 days) · the schedules that call the site once per workspace. Safe to run again: it keeps the secrets and data,
 # re-applies db/*.sql and updates the services.
 set -euo pipefail
@@ -26,7 +29,17 @@ PGRST_VERSION="v12.2.3"
 echo "== packages"
 export DEBIAN_FRONTEND=noninteractive
 apt-get update -qq
-apt-get install -y -qq postgresql postgresql-contrib curl jq ufw cron xz-utils debian-keyring debian-archive-keyring apt-transport-https gnupg >/dev/null
+apt-get install -y -qq curl jq ufw cron git xz-utils debian-keyring debian-archive-keyring apt-transport-https gnupg >/dev/null
+# Postgres $PG_MAJOR (default 18) on any Ubuntu: from Ubuntu itself when it has that version (26.04), else from the PostgreSQL
+# project's own apt repository (24.04). One version everywhere, so a backup from one server restores on another.
+PG_MAJOR="${PG_MAJOR:-18}"
+if ! apt-cache show "postgresql-$PG_MAJOR" >/dev/null 2>&1; then
+  install -d /usr/share/postgresql-common/pgdg
+  curl -fsSL -o /usr/share/postgresql-common/pgdg/apt.postgresql.org.asc https://www.postgresql.org/media/keys/ACCC4CF8.asc
+  echo "deb [signed-by=/usr/share/postgresql-common/pgdg/apt.postgresql.org.asc] https://apt.postgresql.org/pub/repos/apt $(. /etc/os-release && echo "$VERSION_CODENAME")-pgdg main" > /etc/apt/sources.list.d/pgdg.list
+  apt-get update -qq
+fi
+apt-get install -y -qq "postgresql-$PG_MAJOR" >/dev/null
 if ! command -v caddy >/dev/null; then
   curl -1sLf https://dl.cloudsmith.io/public/caddy/stable/gpg.key | gpg --dearmor -o /usr/share/keyrings/caddy-stable-archive-keyring.gpg
   curl -1sLf https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt > /etc/apt/sources.list.d/caddy-stable.list
