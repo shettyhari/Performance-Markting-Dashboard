@@ -1,0 +1,3 @@
+# keep Unix line endings in the repo: the server scripts and SQL run on Linux (a Windows CR breaks bash)
+* text=auto eol=lf
+*.png binary
