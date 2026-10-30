@@ -35,7 +35,7 @@ a{color:var(--accent-text)}
 .num{font-variant-numeric:tabular-nums}
 /* top bar */
 .top{position:sticky;top:0;z-index:30;background:linear-gradient(120deg,var(--navy) 0%,var(--deep) 70%,#0a3fb3 100%);color:#fff;border-bottom:1px solid rgba(255,255,255,.08)}
-.top-in{max-width:1320px;margin:0 auto;padding:12px 24px;display:flex;align-items:center;gap:14px}
+.top-in{max-width:1840px;margin:0 auto;padding:12px 24px;display:flex;align-items:center;gap:14px}
 .top img{height:30px;width:auto;display:block}
 .badge-console{font:700 11px/1 Inter;letter-spacing:.14em;text-transform:uppercase;padding:6px 9px;border-radius:999px;background:rgba(0,227,255,.14);color:var(--cyan2);border:1px solid rgba(0,227,255,.3)}
 .top .sp{flex:1}
@@ -46,19 +46,20 @@ a{color:var(--accent-text)}
 .ibtn.spin svg{animation:spin 1s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 /* tabs */
-.tabs{max-width:1320px;margin:0 auto;padding:0 24px;display:flex;gap:4px;overflow-x:auto;scrollbar-width:none}
+.tabs{max-width:1840px;margin:0 auto;padding:0 24px;display:flex;gap:4px;overflow-x:auto;scrollbar-width:none}
 .tabs::-webkit-scrollbar{display:none}
 .tab{border:0;background:none;color:rgba(255,255,255,.66);padding:11px 14px 13px;font-weight:600;font-size:13.5px;border-bottom:2px solid transparent;white-space:nowrap}
 .tab:hover{color:#fff}
 .tab[aria-selected="true"]{color:#fff;border-bottom-color:var(--cyan2)}
 .tab .cnt{margin-left:6px;font-size:11px;padding:2px 6px;border-radius:999px;background:rgba(255,255,255,.14)}
 /* layout */
-main{max-width:1320px;margin:0 auto;padding:24px 24px 64px}
-.grid{display:grid;gap:16px}
+main{max-width:1840px;margin:0 auto;padding:20px 24px 40px}
+.grid{display:grid;gap:14px}
+.two,.three{align-items:start}   /* cards keep their own height: no empty space under a short card */
 .kpis{grid-template-columns:repeat(6,minmax(0,1fr))}
 .two{grid-template-columns:minmax(0,1.4fr) minmax(0,1fr)}
 .three{grid-template-columns:repeat(3,minmax(0,1fr))}
-.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);padding:18px 20px;min-width:0}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);padding:16px 18px;min-width:0}
 .card h2{font-size:16px}
 .card .sub{color:var(--muted);font-size:12.5px;margin-top:2px}
 .card-h{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:14px}
@@ -68,10 +69,10 @@ main{max-width:1320px;margin:0 auto;padding:24px 24px 64px}
 .meter{height:6px;border-radius:999px;background:var(--soft);margin-top:10px;overflow:hidden;border:1px solid var(--line)}
 .meter i{display:block;height:100%;border-radius:999px;background:var(--series)}
 .meter.warn i{background:var(--warn)} .meter.crit i{background:var(--crit)}
-.section-t{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin:28px 0 12px}
+.section-t{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin:22px 0 10px}
 .section-t h2{font-size:18px}
 /* status banner */
-.status{display:flex;gap:14px;align-items:flex-start;border-radius:14px;padding:16px 18px;margin-bottom:16px;border:1px solid var(--line);background:var(--panel);box-shadow:var(--shadow)}
+.status{display:flex;gap:14px;align-items:flex-start;border-radius:14px;padding:14px 16px;margin-bottom:14px;border:1px solid var(--line);background:var(--panel);box-shadow:var(--shadow)}
 .status .ico{width:34px;height:34px;flex:none;border-radius:10px;display:grid;place-items:center}
 .status .ico svg{width:19px;height:19px}
 .status.ok .ico{background:var(--good-bg);color:var(--good)}
