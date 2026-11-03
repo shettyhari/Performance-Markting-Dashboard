@@ -386,6 +386,48 @@ header.top .wrap{padding-block:22px 10px;align-items:center}
 .ov-classic .kpi-group{display:grid;gap:10px}
 @media (min-width:1100px){ .ov-classic .kpi-group .kpis{grid-template-columns:repeat(auto-fit,minmax(150px,1fr))} }
 .ov-classic .kpi .v{font-weight:700;letter-spacing:-.02em}
+/* funnel visualization */
+.funnel-card{border:1px solid var(--line);background:var(--panel);border-radius:var(--r);padding:16px 18px;display:grid;gap:14px;min-width:0;box-shadow:var(--shadow);margin-block:12px}
+.funnel-head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:8px}
+.funnel-head h3{margin:0;font-size:15px;font-weight:700;color:var(--ink);letter-spacing:-.01em}
+.funnel-head .note{font-size:12px;color:var(--muted)}
+.funnel-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;align-items:stretch}
+.funnel-step{position:relative;background:var(--band);border:1px solid var(--line);border-radius:var(--r-sm);padding:12px 14px;display:grid;gap:6px;transition:border-color .15s}
+.funnel-step:hover{border-color:var(--ink)}
+.funnel-step .lbl{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:600}
+.funnel-step .val{font-family:var(--font-display);font-size:22px;color:var(--ink);font-weight:700;letter-spacing:-.02em;line-height:1.1}
+.funnel-step .rate{font-size:11.5px;color:var(--good);font-weight:600;display:flex;align-items:center;gap:4px}
+.funnel-step .cost{font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
+.funnel-bar-wrap{height:4px;background:var(--line);border-radius:2px;overflow:hidden;margin-top:2px}
+.funnel-bar{height:100%;background:linear-gradient(90deg,var(--accent),#60a5fa);border-radius:2px}
+.demo-bar{background:linear-gradient(90deg,#0f172a,#1e293b);color:#f1f5f9;padding:9px 16px;border-bottom:1px solid #334155;font-size:13px}
+.demo-bar .wrap{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;max-width:1440px;margin:0 auto}
+.demo-bar em{color:#60a5fa;font-style:normal;font-weight:600}
+/* performance marketing suite */
+.pm-bar-wrap{height:8px;background:var(--line);border-radius:4px;overflow:hidden;position:relative}
+.pm-bar-fill{height:100%;border-radius:4px;transition:width .25s ease}
+.pm-bar-fill.good{background:var(--good)}
+.pm-bar-fill.warn{background:var(--warn)}
+.pm-bar-fill.bad{background:var(--bad)}
+.pm-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:6px;font-size:11.5px;font-weight:600;white-space:nowrap}
+.pm-badge.winner{background:#e6f4ea;color:#137333;border:1px solid #ceead6}
+.pm-badge.scale{background:#e8f0fe;color:#1a73e8;border:1px solid #d2e3fc}
+.pm-badge.fatigue{background:#fef7e0;color:#b06000;border:1px solid #fce8b2}
+.pm-badge.bleeder{background:#fce8e6;color:#c5221f;border:1px solid #fad2cf}
+.pm-badge.stable{background:var(--band);color:var(--muted);border:1px solid var(--line)}
+.pm-fmt{display:inline-block;padding:2px 6px;border-radius:4px;font-size:11px;font-weight:600;background:var(--band);color:var(--muted);border:1px solid var(--line);text-transform:uppercase}
+.pm-fmt.video{background:#ede9fe;color:#6d28d9;border-color:#ddd6fe}
+.pm-fmt.carousel{background:#e0f2fe;color:#0369a1;border-color:#bae6fd}
+.pm-fmt.image{background:#f1f5f9;color:#475569;border-color:#e2e8f0}
+.action-card{border:1px solid var(--line);border-left:4px solid var(--line);border-radius:6px;padding:12px 14px;background:var(--panel);display:grid;gap:6px;margin-bottom:8px}
+.action-card.crit{border-left-color:var(--bad)}
+.action-card.warn{border-left-color:var(--warn)}
+.action-card.opp{border-left-color:var(--good)}
+.action-card.done{opacity:.55}
+.macro-pill{display:inline-flex;align-items:center;background:var(--band);border:1px solid var(--line);border-radius:4px;padding:3px 8px;font-family:monospace;font-size:11.5px;color:var(--ink);cursor:pointer;transition:all .15s}
+.macro-pill:hover{background:var(--accent);color:#fff;border-color:var(--accent)}
+.cohort-cell{text-align:right;padding:6px 10px;font-variant-numeric:tabular-nums;border-radius:4px}
+.sim-slider{width:100%;accent-color:var(--accent);cursor:pointer}
 .ov-classic .charts{gap:18px}
 .save-bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:12px 14px;border:1px solid var(--line);border-radius:var(--r);background:var(--panel);position:sticky;bottom:12px;z-index:4;box-shadow:var(--shadow)}
 .save-bar.dirty{border-color:var(--warn);background:var(--warn-bg)}
@@ -1052,6 +1094,12 @@ tr.total-bottom td{position:static!important;background:#dce3f0!important;color:
       <button class="tab sub" role="tab" data-tab="ads" aria-selected="false"><svg class="sub-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 15l5-5 4 4 3-3 6 6"/></svg><span>Ads</span></button>
       <button class="tab sub" role="tab" data-tab="status" aria-selected="false"><svg class="sub-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13"/><circle cx="4" cy="6" r="1"/><circle cx="4" cy="12" r="1"/><circle cx="4" cy="18" r="1"/></svg><span>Lead status</span></button>
       <button class="tab sub" role="tab" data-tab="forms" aria-selected="false"><svg class="sub-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13"/><circle cx="4" cy="6" r="1"/><circle cx="4" cy="12" r="1"/><circle cx="4" cy="18" r="1"/></svg><span>Lead forms</span></button>
+      <div class="side-sec">Performance marketing</div>
+      <button class="tab" role="tab" data-tab="creatives" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="2.18"/><line x1="7" y1="2" x2="7" y2="22"/><line x1="17" y1="2" x2="17" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="2" y1="7" x2="7" y2="7"/><line x1="2" y1="17" x2="7" y2="17"/><line x1="17" y1="17" x2="22" y2="17"/><line x1="17" y1="7" x2="22" y2="7"/></svg><span>Creative fatigue</span></button>
+      <button class="tab" role="tab" data-tab="pacing" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg><span>Budget pacing &amp; scale</span></button>
+      <button class="tab" role="tab" data-tab="lag" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><span>Conversion lag</span></button>
+      <button class="tab" role="tab" data-tab="guardrails" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg><span>Guardrails radar</span></button>
+      <button class="tab" role="tab" data-tab="utm" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg><span>Dynamic UTMs</span></button>
       <div class="side-sec">Attribution</div>
       <button class="tab" role="tab" data-tab="attribution" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="5" cy="6" r="2"/><circle cx="5" cy="18" r="2"/><circle cx="19" cy="12" r="2"/><path d="M7 6h3a4 4 0 0 1 4 4v0a2 2 0 0 0 2 2h1M7 18h3a4 4 0 0 0 4-4"/></svg><span>Attribution</span></button>
       <button class="tab" role="tab" data-tab="journeys" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19c4 0 4-14 8-14s4 14 8 14"/><circle cx="4" cy="19" r="1.5"/><circle cx="20" cy="19" r="1.5"/></svg><span>Lead journeys</span></button>
@@ -1091,6 +1139,15 @@ tr.total-bottom td{position:static!important;background:#dce3f0!important;color:
   </div>
 </header>
 
+<div id="demo-banner" class="demo-bar" hidden>
+  <div class="wrap">
+    <span>🚀 <strong>Interactive Demo Mode</strong> — Exploring sample performance data for <em>Apex Living</em> & <em>Lumina Skin</em></span>
+    <div style="display:flex;gap:8px;align-items:center;">
+      <a href="/app?signup=1" class="btn primary sm" style="text-decoration:none;padding:5px 12px;font-size:12px;">Create Workspace</a>
+      <a href="/app" class="btn ghost sm" onclick="try{localStorage.removeItem('lp-demo');}catch(e){}" style="text-decoration:none;padding:5px 12px;font-size:12px;border:1px solid #475569;color:#cbd5e1;">Exit Demo</a>
+    </div>
+  </div>
+</div>
 <div class="band">
   <div class="wrap">
     <div id="team-banner" class="banner" hidden></div>
@@ -1136,6 +1193,7 @@ tr.total-bottom td{position:static!important;background:#dce3f0!important;color:
 <div id="toast" class="toast" hidden></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="demo-data.js"></script>
 <script>
 // ENGINE START
 var QL_POS_DEF = ["qualified","interested","details shared","shared details","site visit","visit scheduled","visit done","meeting","discussion scheduled","proposal","negotiation","token","payment","booked","booking","converted","closed won","won","hot","ready to invest","agreement"];
@@ -4697,6 +4755,31 @@ function viewOverview(){
     kpi("Working-hrs TAT", fMin(T.whAvg), "avg · median " + fMin(T.whMed) + " · " + whText()),
     kpi("Not Contacted", fInt(T.pend), T.pend ? "waiting " + fMin(T.pendAgeO) + " avg · " + fMin(T.pendAgeW) + " in working hrs" : "none waiting", T.pend ? "warn" : ""),
     kpi("SLA ≤ " + R.slaMin + " min", fPct(T.sla), T.win + " of " + T.elig + " leads (overall TAT)", isNum(T.sla) ? (T.sla < R.slaTarget ? "warn" : "good") : "")]));
+  if (WON_ON || state.source === "demo"){
+    sec.appendChild(grp("Sales & Revenue", [
+      kpi("Sales (Won)", fInt(T.won), "Won leads in CRM"),
+      kpi("Lead-to-Sale", isNum(T.saleRate) ? fPct(T.saleRate) : "N/A", "Sales ÷ CRM leads"),
+      kpi("Cost per Sale", isNum(T.cps) ? fINR(T.cps) : "N/A", "Spend ÷ sales"),
+      kpi("Est. Revenue", isNum(T.estRev) ? fINR(T.estRev) : (VAL_ON ? "N/A (check brand value)" : "Set in Settings › Attribution"), isNum(T.estRev) ? "Sales × avg deal value" : "Estimate"),
+      kpi("Est. ROAS", isNum(T.estRoas) ? T.estRoas.toFixed(2) + "×" : "N/A", "Est. revenue ÷ spend")]));
+  }
+  sec.appendChild(renderFunnel(T));
+  /* performance marketing hub quick strip */
+  sec.appendChild(el("div", {cls: "funnel-card", style: "border-color:var(--accent);background:radial-gradient(ellipse at top left, var(--accent-soft), var(--panel) 75%)"},
+    el("div", {cls: "funnel-head"},
+      el("div", null,
+        el("h3", {text: "🚀 Performance Marketing Hub"}),
+        el("span", {cls: "note", text: "Creative fatigue radar, budget pacing & scaling simulator, conversion cohorts, and guardrail rules."})
+      ),
+      el("div", {style: "display:flex;gap:6px;flex-wrap:wrap"},
+        el("button", {cls: "btn ghost", type: "button", onclick: function(){ state.tab = "creatives"; render(); window.scrollTo(0,0); }}, "🎬 Creative Fatigue"),
+        el("button", {cls: "btn ghost", type: "button", onclick: function(){ state.tab = "pacing"; render(); window.scrollTo(0,0); }}, "📈 Budget Pacing & Scale"),
+        el("button", {cls: "btn ghost", type: "button", onclick: function(){ state.tab = "lag"; render(); window.scrollTo(0,0); }}, "⏳ Conversion Lag"),
+        el("button", {cls: "btn ghost", type: "button", onclick: function(){ state.tab = "guardrails"; render(); window.scrollTo(0,0); }}, "🛡️ Action Radar"),
+        el("button", {cls: "btn ghost", type: "button", onclick: function(){ state.tab = "utm"; render(); window.scrollTo(0,0); }}, "🏷️ Dynamic UTMs")
+      )
+    )
+  ));
   /* brand summary */
   var br = R.brandRows.filter(function(b){ return brandOK(b.brand); });
   var bt = sumRows(br.map(function(b){ return b; })); bt.brand = "TOTAL"; bt.noCamp = br.reduce(function(s, b){ return s + b.noCamp; }, 0);
@@ -4735,6 +4818,45 @@ function viewOverview(){
   sec.appendChild(table("statusmix", [{k: "status", label: "Lead status", t: "text", cls: "name"}, {k: "n", label: "Leads", t: "int"}, {k: "share", label: "Share", t: "pct"},
     {k: "ql", label: "Counts as", t: "text", render: function(r){ return el("span", {cls: "pill " + (r.ql === "QL" ? "good" : "mut"), text: r.ql}); }}], srows, {empty: "No CRM leads for this filter."}));
   return sec;
+}
+function renderFunnel(T){
+  var card = el("div", {cls: "funnel-card"});
+  var head = el("div", {cls: "funnel-head"},
+    el("h3", {text: "Conversion Funnel"}),
+    el("span", {cls: "note", text: "End-to-end pipeline from impressions to won customers"}));
+  card.appendChild(head);
+
+  var grid = el("div", {cls: "funnel-grid"});
+  function step(lbl, val, rateText, costText, pctWidth){
+    var s = el("div", {cls: "funnel-step"},
+      el("div", {cls: "lbl", text: lbl}),
+      el("div", {cls: "val", text: val}),
+      el("div", {cls: "rate", text: rateText || "—"}),
+      el("div", {cls: "cost", text: costText || ""}),
+      el("div", {cls: "funnel-bar-wrap"}, el("div", {cls: "funnel-bar", style: "width:" + Math.max(4, Math.min(100, pctWidth || 0)) + "%"})));
+    return s;
+  }
+
+  // 1. Impressions
+  grid.appendChild(step("1. Impressions", fInt(T.imp), "Top of Funnel", isNum(T.cpm) ? "CPM " + fINR(T.cpm) : "", 100));
+  // 2. Clicks
+  var clkPct = (T.imp && T.clk) ? (T.clk / T.imp) * 100 : 0;
+  grid.appendChild(step("2. Clicks", fInt(T.clk), isNum(T.ctr) ? fPct(T.ctr) + " CTR" : "—", isNum(T.cpc) ? "CPC " + fINR2(T.cpc) : "", Math.max(8, clkPct * 25)));
+  // 3. Meta Leads
+  var uiPct = (T.clk && T.ui) ? (T.ui / T.clk) * 100 : 0;
+  grid.appendChild(step("3. Leads in UI", fInt(T.ui), T.clk ? fPct(T.ui / T.clk) + " of clicks" : "—", isNum(T.cpl) ? "CPL " + fINR(T.cpl) : "", Math.max(12, uiPct * 3)));
+  // 4. CRM Leads
+  var crmPct = (T.ui && T.crm) ? (T.crm / T.ui) * 100 : 100;
+  grid.appendChild(step("4. Leads in CRM", fInt(T.crm), T.ui ? fPct(T.crm / T.ui) + " capture rate" : "—", isNum(T.diff) ? (T.diff === 0 ? "100% matched" : (T.diff > 0 ? T.diff + " missing in CRM" : Math.abs(T.diff) + " extra in CRM")) : "", Math.max(15, crmPct)));
+  // 5. Qualified Leads
+  var qlPct = (T.crm && T.ql) ? (T.ql / T.crm) * 100 : 0;
+  grid.appendChild(step("5. Qualified (QL)", fInt(T.ql), T.crm ? fPct(T.ql / T.crm) + " QL rate" : "—", isNum(T.cpql) ? "CPQL " + fINR(T.cpql) : "", Math.max(10, qlPct)));
+  // 6. Won Sales
+  var wonPct = (T.crm && T.won) ? (T.won / T.crm) * 100 : 0;
+  grid.appendChild(step("6. Sales (Won)", WON_ON ? fInt(T.won) : "—", WON_ON && T.crm ? fPct(T.won / T.crm) + " win rate" : (WON_ON ? "0 won" : "Tick sales in QL"), WON_ON && isNum(T.cps) ? "Cost/Sale " + fINR(T.cps) : "", Math.max(6, wonPct * 2)));
+
+  card.appendChild(grid);
+  return card;
 }
 function fCompact(v){ if (!isNum(v)) return "N/A"; var a = Math.abs(v);
   if (a >= 1e7) return (v / 1e7).toFixed(2) + " Cr"; if (a >= 1e5) return (v / 1e5).toFixed(2) + " L"; if (a >= 1e3) return (v / 1e3).toFixed(1) + "K"; return fInt(v); }
@@ -4787,6 +4909,10 @@ function gaSnapshot(T, P){
     {k: "ql", label: "Qualified leads", v: T.ql, p: P && P.ql, fmt: fInt, dir: 1},
     {k: "cpql", label: "CPQL", v: T.cpql, p: P && P.cpql, fmt: fINR, dir: -1},
     {k: "sla", label: "SLA ≤ " + R.slaMin + " min", v: T.sla, p: P && P.sla, fmt: fPct, dir: 1}];
+  if (WON_ON || (state.source === "demo" && T.won)){
+    M.push({k: "won", label: "Sales (Won)", v: T.won, p: P && P.won, fmt: fInt, dir: 1});
+    M.push({k: "estRev", label: "Est. Revenue", v: T.estRev, p: P && P.estRev, fmt: fShortINR, dir: 1, full: fINR});
+  }
   var cur = state.gaMetric || "crm", m = M.filter(function(x){ return x.k === cur; })[0] || M[0];
   var card = el("div", {cls: "ga-card ga-snap"});
   var tabs = el("div", {cls: "ga-tabs", role: "tablist", "aria-label": "Metric"});
@@ -4922,6 +5048,7 @@ function renderEmpty(){
         step(4, "Follow up leads", "TAT & calls lists leads that weren't called in time."),
         step(5, "Share", "Download Excel to send the report to anyone.")),
       el("div", {cls: "actions"}, sb.status !== "ready" ? el("button", {cls: "btn", type: "button", onclick: toggleSaved}, "Sign in") : null,
+        el("button", {cls: "btn ghost", type: "button", onclick: function(){ loadDemoMode(); }}, "Explore Live Demo"),
         el("button", {cls: "btn ghost", type: "button", onclick: function(){ state.tab = "help"; render(); }}, "How this dashboard works"))));
     return;
   }
@@ -4934,6 +5061,7 @@ function renderEmpty(){
       step(4, "Pick dates and brands", "Use the date picker and brand chips to view any day, week or month."),
       step(5, "Share", "Download Excel to send the report to anyone.")),
     el("div", {cls: "actions"}, el("button", {cls: "btn", type: "button", onclick: function(){ var u = document.getElementById("upload"); u.hidden = false; u.scrollIntoView({block: "nearest"}); }}, "Lead data upload"),
+      el("button", {cls: "btn ghost", type: "button", onclick: function(){ loadDemoMode(); }}, "Explore Live Demo"),
       (saved.ok && saved.list.length) || team.list.length ? el("button", {cls: "btn ghost", type: "button", onclick: toggleSaved}, "Open saved data (" + (saved.list.length + team.list.length) + ")")
         : sb.cfg && sb.status !== "ready" ? el("button", {cls: "btn ghost", type: "button", onclick: toggleSaved}, "Sign in to the workspace database")
         : team.status === "locked" ? el("button", {cls: "btn ghost", type: "button", onclick: toggleSaved}, "Open team data") : null)));
@@ -6584,9 +6712,52 @@ state.settings = loadSettings();
 setTimeout(function(){ renderMetaBrandPick(); var mb = document.getElementById("meta-brand"); if (mb) mb.addEventListener("change", function(){ mb.classList.remove("need"); document.getElementById("er-meta").textContent = ""; }); }, 0);
 try { var g0 = localStorage.getItem("lp-lead-dash-gran"); if (g0) state.trendGran = g0; } catch (e) {}
 try { var t0 = localStorage.getItem("lp-lead-dash-tab"); if (t0) state.tab = t0; var r0 = JSON.parse(localStorage.getItem("lp-lead-dash-range") || "null"); if (r0 && r0.preset) state.range = r0; } catch (e) {}
+function isDemoMode(){
+  try {
+    var q = new URLSearchParams(location.search || "");
+    if (q.get("demo") === "1" || q.get("demo") === "true"){
+      try { localStorage.setItem("lp-demo", "1"); } catch (e) {}
+      return true;
+    }
+    if (q.get("demo") === "0" || q.get("demo") === "false"){
+      try { localStorage.removeItem("lp-demo"); } catch (e) {}
+      return false;
+    }
+    return localStorage.getItem("lp-demo") === "1";
+  } catch (e){ return false; }
+}
+
+function loadDemoMode(){
+  state.booting = false;
+  state.source = "demo";
+  var db = document.getElementById("demo-banner");
+  if (db) db.hidden = false;
+  var demo = (typeof QLARITY_DEMO !== "undefined" && QLARITY_DEMO.getDemoData) ? QLARITY_DEMO.getDemoData() : null;
+  if (!demo){
+    if (typeof toast === "function") toast("Demo data module not found.");
+    return;
+  }
+  sb.status = "ready";
+  sb.role = "admin";
+  sb.email = "demo@qlarity.io";
+  sb.org = {id: "demo-org-id", name: "Acme Enterprises (Demo)", role: "admin", is_owner: true, currency: "INR", tz_offset_min: 330, crm_name: "TeleCRM"};
+  sb.orgs = [sb.org];
+  state.settings = Object.assign(clone(DEFAULT_SETTINGS), demo.settings);
+  state.raw = {meta: demo.meta, crm: demo.crm};
+  state.brand = "All";
+  state.range = {preset: "last30"};
+  rebuild();
+  render();
+  if (typeof toast === "function") toast("Interactive demo loaded: Apex Living & Lumina Skin");
+}
+
 function boot(){
   state.booting = /^https?:$/.test(location.protocol);
   if (typeof XLSX === "undefined"){ var b = document.getElementById("team-banner"); b.hidden = false; b.className = "banner warn"; b.textContent = "The spreadsheet reader did not load, so exports cannot be opened. Check your connection and reload the page."; }
+  if (isDemoMode()){
+    loadDemoMode();
+    return;
+  }
   render();
   if (typeof XLSX !== "undefined") state.caps.downloads = {save: function(o){ var a = document.createElement("a"), url = URL.createObjectURL(new Blob([o.data], {type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}));
     a.href = url; a.download = o.filename; document.body.appendChild(a); a.click(); a.remove(); setTimeout(function(){ URL.revokeObjectURL(url); }, 4000); return Promise.resolve({status: "saved"}); }};
@@ -6605,5 +6776,6 @@ function boot(){
 boot();
 </script>
 <script src="attribution.js"></script>
+<script src="performance.js"></script>
 </body>
 </html>

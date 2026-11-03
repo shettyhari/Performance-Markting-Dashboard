@@ -27,17 +27,18 @@ const SEV = { critical: 0, high: 1, medium: 2, low: 3 };
 
 /* totals of one window, from the summed brand rows: ratios from sums */
 function kpi(x, unavailable) {
-  x = x || {}; const s = +x.spend || 0, l = +x.leads || 0, c = +x.crm || 0, q = +x.ql || 0, i = unavailable ? null : +x.imp || 0, k = unavailable ? null : +x.clk || 0;
-  return { spend: s, leads: l, crm: c, ql: q, imp: i, clk: k, cpl: l > 0 ? s / l : null, cpql: q > 0 ? s / q : null, ctr: i > 0 ? k / i : null, cpc: k > 0 ? s / k : null, cpm: i > 0 ? s / i * 1000 : null,
-    qlRate: c > 0 ? q / c : null, sync: l > 0 ? c / l : null };
+  x = x || {}; const s = +x.spend || 0, l = +x.leads || 0, c = +x.crm || 0, q = +x.ql || 0, w = +x.won || 0, rev = +x.rev || 0, i = unavailable ? null : +x.imp || 0, k = unavailable ? null : +x.clk || 0;
+  return { spend: s, leads: l, crm: c, ql: q, won: w, rev: rev, imp: i, clk: k, cpl: l > 0 ? s / l : null, cpql: q > 0 ? s / q : null, cps: w > 0 ? s / w : null,
+    ctr: i > 0 ? k / i : null, cpc: k > 0 ? s / k : null, cpm: i > 0 ? s / i * 1000 : null,
+    qlRate: c > 0 ? q / c : null, winRate: c > 0 ? w / c : null, sync: l > 0 ? c / l : null };
 }
 function sumRows(rows, from, to, brands) {
-  const o = {}; brands.forEach((b) => { o[b] = { spend: 0, leads: 0, crm: 0, ql: 0, imp: 0, clk: 0, days: {} }; });
+  const o = {}; brands.forEach((b) => { o[b] = { spend: 0, leads: 0, crm: 0, ql: 0, won: 0, rev: 0, imp: 0, clk: 0, days: {} }; });
   rows.forEach((r) => { if (r.day < from || r.day > to || !o[r.brand]) return; const x = o[r.brand];
-    x.spend += +r.spend || 0; x.leads += +r.leads || 0; x.crm += +r.crm || 0; x.ql += +r.ql || 0; x.imp += +r.impressions || 0; x.clk += +r.clicks || 0; if (+r.spend > 0) x.days[r.day] = 1; });
+    x.spend += +r.spend || 0; x.leads += +r.leads || 0; x.crm += +r.crm || 0; x.ql += +r.ql || 0; x.won += +r.won || 0; x.rev += +r.rev || 0; x.imp += +r.impressions || 0; x.clk += +r.clicks || 0; if (+r.spend > 0) x.days[r.day] = 1; });
   return o;
 }
-function totalOf(map, brands, unavailable) { const o = { spend: 0, leads: 0, crm: 0, ql: 0, imp: 0, clk: 0 }; brands.forEach((b) => { const x = map[b]; if (x) Object.keys(o).forEach((k) => { o[k] += x[k]; }); }); return kpi(o, unavailable); }
+function totalOf(map, brands, unavailable) { const o = { spend: 0, leads: 0, crm: 0, ql: 0, won: 0, rev: 0, imp: 0, clk: 0 }; brands.forEach((b) => { const x = map[b]; if (x) Object.keys(o).forEach((k) => { o[k] += x[k]; }); }); return kpi(o, unavailable); }
 function outsideOf(rows, from, to, listed) { let s = 0; const names = {}; rows.forEach((r) => { if (r.day < from || r.day > to || listed.indexOf(r.brand) >= 0) return; s += +r.spend || 0; if (+r.spend > 0) names[r.brand] = 1; }); return { spend: s, names: Object.keys(names) }; }
 
 /* ---------- reach: only where it can be counted without double-counting people ----------
@@ -88,6 +89,7 @@ function split(head, first, blocks, tail) {
 /* ================= DAILY ================= */
 function daily(D, found, opt) {
   opt = opt || {}; const S = D.S, listed = D.listed.slice(), day = opt.day || D.today, partial = day === D.today, reach = opt.reach || {};
+  const wonOn = (S.wonStatuses || []).length > 0;
   if (!partial) found = found.filter((x) => !new RegExp("\\|" + D.today + "$").test(x.key));   // a past day's report leaves out today's intraday issues
   const noImp = !D.v2, cur = sumRows(D.brandRows, day, day, listed), base = sumRows(D.brandRows, addDays(day, -7), addDays(day, -1), listed);
   const tot = totalOf(cur, listed, noImp), out = outsideOf(D.brandRows, day, day, listed), F = D.feedsInfo || {};
@@ -106,7 +108,7 @@ function daily(D, found, opt) {
     blocks.push(["🏢 <b>" + esc(r.b) + "</b>", "",
       "💰 Spend: " + inr(x.spend), "👁️ Impressions: " + int(x.imp), "👥 Reach: " + (rc && ok(rc.reach) ? int(rc.reach) : "N/A" + (rc && rc.why ? " (" + rc.why + ")" : "")),
       "🖱️ Link clicks: " + int(x.clk), "📊 CTR: " + pct(x.ctr, 2), "💵 CPC: " + inr(x.cpc), "📣 CPM: " + inr(x.cpm), "",
-      "🎯 Meta Leads: " + int(x.leads), "📥 " + DB.crm() + " Leads: " + int(x.crm), "✅ Qualified Leads: " + int(x.ql), "",
+      "🎯 Meta Leads: " + int(x.leads), "📥 " + DB.crm() + " Leads: " + int(x.crm), "✅ Qualified Leads: " + int(x.ql) + (wonOn ? "\n🏆 Sales: " + int(x.won) + (ok(x.cps) ? " · Cost per sale: " + inr(x.cps) : "") + (x.rev ? " · Est. Revenue: " + inr(x.rev) : "") : ""), "",
       "📈 CPL: " + inr(x.cpl), "💵 CPQL: " + inr(x.cpql), "📉 CPL Trend: " + (ok(cplC) ? sgn(cplC) + " vs 7-day baseline (" + inr(r.p.cpl) + ")" : "N/A (no baseline)"), "",
       "📢 Campaigns / 🧩 Ad sets / 🖼️ Ads: " + countTxt(dv.counts, dv.partialCounts), "",
       "Status: " + dv.status, "Attention: " + esc(att), LINE].join("\n")); });
@@ -130,7 +132,7 @@ function daily(D, found, opt) {
   /* overall */
   const sumCheck = rows.reduce((s, r) => s + r.x.spend, 0), sumLeads = rows.reduce((s, r) => s + r.x.leads, 0), recOk = Math.abs(sumCheck - tot.spend) < 1 && Math.abs(sumLeads - tot.leads) < 0.5;
   const first = ["<b>OVERALL PERFORMANCE</b>" + (partial ? " · <i>PARTIAL DAY (up to " + istStamp().split(", ")[1] + ")</i>" : " · complete day"),
-    "💰 Total Spend: " + inr(tot.spend), "🎯 Meta Leads: " + int(tot.leads), "📥 " + DB.crm() + " Leads: " + int(tot.crm), "✅ Qualified Leads: " + int(tot.ql),
+    "💰 Total Spend: " + inr(tot.spend), "🎯 Meta Leads: " + int(tot.leads), "📥 " + DB.crm() + " Leads: " + int(tot.crm), "✅ Qualified Leads: " + int(tot.ql) + (wonOn ? "\n🏆 Total Sales: " + int(tot.won) + (ok(tot.cps) ? " · Cost per sale: " + inr(tot.cps) : "") + (tot.rev ? " · Est. Revenue: " + inr(tot.rev) : "") : ""),
     "📈 Blended CPL: " + inr(tot.cpl), "💵 CPQL: " + inr(tot.cpql), "👁️ Impressions: " + int(tot.imp) + " · 🖱️ Clicks: " + int(tot.clk) + " · CTR " + pct(tot.ctr, 2) + " · CPC " + inr(tot.cpc) + " · CPM " + inr(tot.cpm), "",
     "📢 Live Campaigns: " + (liveOk ? int(lc) : "N/A"), "🧩 Active Ad Sets: " + (liveOk ? int(ls) : "N/A"), "🖼️ Active Ads: " + (liveOk ? int(la) : "N/A") + ((D.live || {}).errors && D.live.errors.length ? " (some accounts unreadable)" : ""), "",
     "🏷️ Brands monitored: " + listed.length + " · with alerts: " + brandsAlert,
@@ -149,6 +151,7 @@ function daily(D, found, opt) {
 function weekBounds(today) { const dow = (new Date(Date.parse(today + "T00:00:00Z")).getUTCDay() + 6) % 7, from = addDays(today, -dow - 7); return { from, to: addDays(from, 6), prevFrom: addDays(from, -7), prevTo: addDays(from, -1) }; }
 function weeklyFull(D, found, opt) {
   opt = opt || {}; const S = D.S, listed = D.listed.slice(), wb = weekBounds(D.today), reach = opt.reach || {}, noImp = !D.v2;
+  const wonOn = (S.wonStatuses || []).length > 0;
   const cur = sumRows(D.brandRows, wb.from, wb.to, listed), prev = sumRows(D.brandRows, wb.prevFrom, wb.prevTo, listed), tot = totalOf(cur, listed, noImp), ptot = totalOf(prev, listed, noImp);
   const mk = D.today.slice(0, 7), TG = (((S.report || {}).months || {})[mk] || {}).brands || {}, dim = new Date(Date.UTC(+mk.slice(0, 4), +mk.slice(5, 7), 0)).getUTCDate();
   const mtd = sumRows(D.brandRows, mk + "-01", D.today, listed), el = Math.max(0.5, +D.today.slice(8) - 1 + D.hour / 24);
@@ -191,7 +194,7 @@ function weeklyFull(D, found, opt) {
     return ["🏢 <b>" + esc(r.b) + "</b>", "",
       "💰 Spend: " + inr(a.spend), "Previous week: " + inr(p.spend), "↔️ Spend Change: " + sgn(r.spendC), "",
       "👁️ Impressions: " + int(a.imp) + " · 👥 Reach: " + (rc && ok(rc.reach) ? int(rc.reach) : "N/A" + (rc && rc.why ? " (" + rc.why + ")" : "")), "🖱️ Link clicks: " + int(a.clk), "",
-      "🎯 Meta Leads: " + int(a.leads), "📥 " + DB.crm() + " Leads: " + int(a.crm), "✅ Qualified Leads: " + int(a.ql), "",
+      "🎯 Meta Leads: " + int(a.leads), "📥 " + DB.crm() + " Leads: " + int(a.crm), "✅ Qualified Leads: " + int(a.ql) + (wonOn ? "\n🏆 Sales: " + int(a.won) + " (vs " + int(p.won) + " prev week)" + (ok(a.cps) ? " · Cost per sale: " + inr(a.cps) : "") + (a.rev ? " · Est. Revenue: " + inr(a.rev) : "") : ""), "",
       "📈 CPL: " + inr(a.cpl), "Previous CPL: " + inr(p.cpl), "CPL Change: " + (ok(r.cplC) ? sgn(r.cplC) : a.cpl && p.cpl ? sgn(a.cpl / p.cpl - 1) + " (small sample)" : "N/A"), "",
       "💵 CPQL: " + inr(a.cpql), "Previous CPQL: " + inr(p.cpql), "CPQL Change: " + (ok(r.cpqlC) ? sgn(r.cpqlC) : "N/A"), "",
       "📊 CTR: " + pct(a.ctr, 2), "🖱️ CPC: " + inr(a.cpc), "📣 CPM: " + inr(a.cpm), "",

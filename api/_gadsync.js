@@ -54,4 +54,61 @@ async function syncGoogle(S, sbFetch, opt) {
   } catch (e) { /* status only */ }
   return { from: R.from, to: R.to, accounts: accounts.length, done: done.length, left, rows: rowsSaved, errors, details: done, ms: Date.now() - t0 };
 }
-module.exports = { syncGoogle, googleRange, AUTO_FILE };
+
+/* Google Ads offline conversions: upload qualified leads & sales with gclid to Google Ads */
+async function syncGoogleOfflineConversions(S, sbFetch, opt) {
+  opt = opt || {};
+  const cfg = S.googleConversions || {};
+  if (!cfg.enabled && !opt.force) return { skipped: "Google offline conversions is disabled in Settings." };
+  const accounts = (Array.isArray(S.googleAccounts) ? S.googleAccounts : []).filter((a) => a && digits(a.id) && a.on !== false);
+  if (!accounts.length) return { skipped: "No Google Ads account configured." };
+  const targetAccount = accounts[0];
+  const customerId = digits(targetAccount.id);
+  const from = cfg.since && DAY_RE.test(cfg.since) ? cfg.since : addDays(istDay(0), -28);
+  const actionQl = String(cfg.actionQl || "Qualified Lead").trim();
+  const actionWon = String(cfg.actionWon || "Converted Sale").trim();
+  const U = require("./_suite");
+  const W = U.wonSet(S);
+
+  const leads = await U.sbAll("crm_leads?select=lead_id,created_on,campaign,status,brand,is_ql,phone,email&created_on=gte." + from + "&prev_lead=is.null&order=created_on", 5000);
+  const candidates = [];
+  leads.forEach((L) => {
+    if (cfg.sendQl !== false && L.is_ql) candidates.push([L, "ql"]);
+    if (cfg.sendWon !== false && U.isWon(L.status, W)) candidates.push([L, "won"]);
+  });
+  if (!candidates.length) return { candidates: 0, sent: 0, from };
+
+  const J = await U.journeys(S, Array.from(new Map(candidates.map((c) => [c[0].lead_id, c[0]])).values()));
+  const conversions = [];
+  candidates.forEach(([L, stage]) => {
+    const touches = (J[L.lead_id] || {}).touches || [];
+    const gTouch = touches.filter((t) => t.gclid).pop();
+    if (gTouch && gTouch.gclid) {
+      const convTime = new Date(Date.parse(String(L.created_on).replace(" ", "T") + "+05:30")).toISOString().replace("T", " ").slice(0, 19) + "+05:30";
+      const actionName = stage === "ql" ? actionQl : actionWon;
+      const convObj = {
+        gclid: gTouch.gclid,
+        conversionAction: "customers/" + customerId + "/conversionActions/" + actionName,
+        conversionDateTime: convTime
+      };
+      if (stage === "won" && S.dealValue && S.dealValue[L.brand]) {
+        convObj.conversionValue = Number(S.dealValue[L.brand]);
+        convObj.currencyCode = S.currency || "INR";
+      }
+      conversions.push(convObj);
+    }
+  });
+
+  if (!conversions.length) return { candidates: candidates.length, withGclid: 0, sent: 0, note: "No matching leads had a Google click id (gclid)." };
+
+  let uploadRes = null;
+  const { uploadClickConversions } = require("./_gadslib");
+  try {
+    uploadRes = await uploadClickConversions(customerId, conversions.slice(0, 1000), targetAccount.via || "");
+  } catch (e) {
+    return { candidates: candidates.length, withGclid: conversions.length, error: e.message };
+  }
+  return { candidates: candidates.length, withGclid: conversions.length, sent: conversions.length, uploadRes };
+}
+
+module.exports = { syncGoogle, syncGoogleOfflineConversions, googleRange, AUTO_FILE };

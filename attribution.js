@@ -11,6 +11,70 @@
 
   /* ---------- server calls ---------- */
   function api(op, params, body){
+    if (state.source === "demo"){
+      var d = (typeof QLARITY_DEMO !== "undefined" && QLARITY_DEMO.getDemoData) ? QLARITY_DEMO.getDemoData() : null;
+      if (op === "attribution"){
+        var model = (params && params.model) || X.model || "last";
+        var by = (params && params.by) || X.by || "channel";
+        var rows = d ? d.attribution.slice() : [];
+        return Promise.resolve({
+          from: params && params.from, to: params && params.to, model: model, by: by,
+          rows: rows,
+          paths: [
+            {path: "Meta Ads → Direct", steps: 2, leads: 54, ql: 32, won: 11},
+            {path: "Google Ads → Meta Ads", steps: 2, leads: 28, ql: 16, won: 5},
+            {path: "ChatGPT → Website → Direct", steps: 3, leads: 18, ql: 12, won: 4},
+            {path: "Organic Search → Meta Ads", steps: 2, leads: 22, ql: 13, won: 4}
+          ],
+          total: {leads: 255, ql: 141, won: 46, spend: 366000}
+        });
+      }
+      if (op === "find"){
+        var fLeads = [
+          {lead_id: "APX-1014", created_on: "2026-10-28 14:10:00", brand: "Apex Living", campaign: "Apex Living | Luxury Villas", status: "Booked / Won", is_ql: true, phone: "+91 98112 34567", email: "rajesh.gupta@example.com"},
+          {lead_id: "LUM-1025", created_on: "2026-10-29 11:30:00", brand: "Lumina Skin", campaign: "Lumina Skin | HydraFacial Promo", status: "Payment Received", is_ql: true, phone: "+91 97118 99221", email: "simran.kaur@example.com"}
+        ];
+        return Promise.resolve({leads: fLeads});
+      }
+      if (op === "journey"){
+        return Promise.resolve({
+          lead: {id: (params && params.id) || "APX-1014", created: "2026-10-28 14:10:00", source: "Meta Ads", brand: "Apex Living", campaign: "Apex Living | Luxury Villas", status: "Booked / Won", qualified: true, sale: true, owner: "Aditi Sharma", manager: "Karan Malhotra", tatMin: 8, hasPhone: true, hasEmail: true, hasFacebookLeadId: true},
+          touches: [
+            {at: new Date(Date.now() - 5 * 86400000).toISOString(), channel: "ChatGPT / AI Search", campaign: "", page: "apexliving.example/luxury-villas", from: "Website"},
+            {at: new Date(Date.now() - 3 * 86400000).toISOString(), channel: "Meta Ads", campaign: "Apex Living | Luxury Villas", adset: "South Delhi HNI 35-55", ad: "Villa Walkthrough Video 4K", from: "Website"},
+            {at: new Date(Date.now() - 1 * 86400000).toISOString(), channel: "Meta Ads", campaign: "Apex Living | Luxury Villas", adset: "South Delhi HNI 35-55", ad: "Floorplan & Pricing Carousel", from: "CRM"}
+          ],
+          sentToMeta: [
+            {stage: "ql", event_name: "Qualified Lead", status: "sent", sent_at: new Date().toISOString()},
+            {stage: "won", event_name: "Converted", status: "sent", sent_at: new Date().toISOString()}
+          ]
+        });
+      }
+      if (op === "capi-status"){
+        return Promise.resolve({
+          config: {enabled: true, qlEvent: "Qualified Lead", wonEvent: "Converted", testCode: ""},
+          tokenSet: true,
+          events: [
+            {lead_id: "APX-1014", stage: "ql", status: "sent", created_at: new Date().toISOString()},
+            {lead_id: "APX-1014", stage: "won", status: "sent", created_at: new Date().toISOString()},
+            {lead_id: "LUM-1025", stage: "ql", status: "sent", created_at: new Date().toISOString()},
+            {lead_id: "LUM-1025", stage: "won", status: "sent", created_at: new Date().toISOString()}
+          ]
+        });
+      }
+      if (op === "ask"){
+        var qStr = String((body && body.question) || "").toLowerCase();
+        var ans = (d && d.aiAnswers && d.aiAnswers.default) || "Demo AI ready.";
+        if (qStr.indexOf("cpl") >= 0 || qStr.indexOf("cost") >= 0) ans = d.aiAnswers.cpl;
+        else if (qStr.indexOf("tat") >= 0 || qStr.indexOf("speed") >= 0 || qStr.indexOf("sla") >= 0 || qStr.indexOf("call") >= 0) ans = d.aiAnswers.tat;
+        return Promise.resolve({
+          answer: ans,
+          tools: ["crm_leads (255 rows)", "meta_ad_rows (30 days)", "sales_pipeline"],
+          by: {model: "Claude 3.5 Sonnet (Demo)"},
+          truncated: false
+        });
+      }
+    }
     if (!sb.client) return Promise.reject(new Error("Connect the workspace database first (Saved data › Workspace database)."));
     return Promise.resolve(lpAuth.token()).then(function(tok){
       if (!tok) throw new Error("Sign in first");
@@ -32,7 +96,7 @@
     return null;
   }
   function errOf(op, params){ return X.err[op + "|" + JSON.stringify(params)]; }
-  function ready(){ return sb.cfg && sb.status === "ready"; }
+  function ready(){ return (sb.cfg && sb.status === "ready") || state.source === "demo"; }
   function needDb(){ return el("section", {cls: "panel"}, el("div", {cls: "banner warn", text: "These pages read the workspace database. Sign in with your team account (Saved data › Workspace database) to use them."})); }
   function rangeParams(){ var r = rangeOf(state.range), t = todayDay();
     if (!r || state.range.preset === "max") r = {from: t - 29, to: t};
@@ -46,7 +110,7 @@
   function head(title, note){ return el("div", {cls: "sec-head"}, el("h2", {text: title}), note ? el("span", {cls: "note", text: note}) : null); }
   function chips(list, cur, on, label){ return el("div", {cls: "chips", role: "group", "aria-label": label}, list.map(function(x){
     return el("button", {cls: "chip", type: "button", "aria-pressed": x[0] === cur ? "true" : "false", onclick: function(){ on(x[0]); }}, x[1]); })); }
-  function canEdit(){ return typeof sbCanWrite === "function" && sbCanWrite(); }
+  function canEdit(){ return state.source === "demo" || (typeof sbCanWrite === "function" && sbCanWrite()); }
   function pre(text){ return el("pre", {cls: "code-box", style: "white-space:pre-wrap;word-break:break-all;margin:0;padding:12px;border:1px solid var(--line);background:var(--panel);font-size:12px;max-width:100%;overflow:auto"}, text); }
 
   /* ================= Attribution ================= */
@@ -193,6 +257,7 @@
   var AI_LABEL = {anthropic: "Anthropic Claude", openai: "OpenAI", gemini: "Google Gemini", compatible: "OpenAI-compatible"};
   /* on / off and which provider · model answers (every member may see this; keys and addresses stay with the owner) */
   function aiStatus(force){
+    if (state.source === "demo") return {enabled: true, provider: "Anthropic", model: "Claude 3.5 Sonnet (Demo)"};
     var k = sb.org ? sb.org.id : ""; if (!force && X.aiFor === k) return X.ai; X.aiFor = k; X.ai = null;
     sb.client.rpc("ai_status").then(function(r){ if (X.aiFor !== k) return; X.ai = r.error ? {err: r.error.message} : ((r.data || [])[0] || {enabled: false}); render(); });
     return null;
@@ -256,7 +321,7 @@
     var brand = state.brand && state.brand !== "All" ? state.brand : "";
     return {page: page, from: r ? isoDay(r.from) : null, to: r ? isoDay(r.to) : null, brand: brand, label: r ? spanText(r) : "", tab: state.tab};
   }
-  function aiwOn(){ return !!(sb.cfg && sb.status === "ready" && sb.org && sb.client); }
+  function aiwOn(){ return !!((sb.cfg && sb.status === "ready" && sb.org && sb.client) || state.source === "demo"); }
   function aiwSend(text){
     var q = String(text || AIW.draft || "").trim(); if (!q || X.asking) return;
     var hist = X.chat.filter(function(m){ return !m.error; }).map(function(m){ return {role: m.role, content: m.text}; }), c = AIW.useCtx ? aiwCtx() : null;

@@ -5,7 +5,7 @@
 // Platform env: GOOGLE_ADS_CLIENT_ID / SECRET (one OAuth client). Per workspace: refresh token (+ optional manager id) in Settings › Data connections.
 const D = require("./_db");
 const G = require("./_gadslib");
-const { syncGoogle } = require("./_gadsync");
+const { syncGoogle, syncGoogleOfflineConversions } = require("./_gadsync");
 
 module.exports = D.logged("google", async function handler(req, res) {
   try {
@@ -19,6 +19,7 @@ module.exports = D.logged("google", async function handler(req, res) {
       if (me.role !== "admin" && me.role !== "editor") return D.send(res, 403, { error: "Only admins and editors can do this." });
       if (op === "accounts") return D.send(res, 200, await G.listAccounts());
       if (op === "sync") return D.send(res, 200, await syncGoogle(await D.orgSettings(), D.sbFetch, { from: req.query.from, to: req.query.to, budgetMs: 50000 }));
+      if (op === "offline-conversions") return D.send(res, 200, await syncGoogleOfflineConversions(await D.orgSettings(), D.sbFetch, { force: req.query.force === "1" }));
       return D.send(res, 400, { error: "Unknown op" });
     });
   } catch (e) { return D.send(res, 502, { error: String((e && e.message) || e) }); }

@@ -90,4 +90,13 @@ async function campaignDaily(customerId, via, from, to) {
     impressions: n((x.metrics || {}).impressions), clicks: n((x.metrics || {}).clicks) }))
     .filter((x) => x.date && x.campaign && (x.spend > 0 || x.conversions > 0 || x.impressions > 0));
 }
-module.exports = { VER, configured, digits, accessToken, search, listAccounts, campaignDaily, n };
+/* offline conversion upload: uploads click conversions (gclid + conversionAction) back to Google Ads */
+async function uploadClickConversions(customerId, conversions, via) {
+  const cid = digits(customerId);
+  if (!cid) throw new Error("No customerId provided for offline conversion upload");
+  return await call("/customers/" + cid + ":uploadClickConversions", {
+    method: "POST",
+    body: JSON.stringify({ conversions: conversions || [], partialFailure: true })
+  }, via);
+}
+module.exports = { VER, configured, digits, accessToken, search, listAccounts, campaignDaily, uploadClickConversions, n };

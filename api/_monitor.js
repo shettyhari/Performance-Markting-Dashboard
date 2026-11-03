@@ -64,6 +64,23 @@ async function loadData(S, sbFetch, opt) {
   catch (e) {   // monitoring.sql not run yet: fall back to the alerts function (no impressions / clicks)
     D.v2 = false; errors.push("CTR / CPC / CPM and campaign alerts need the latest database setup: whoever runs the site re-runs ec2/setup.sh on the database server (it applies db/*.sql; data stays).");
     D.brandRows = (await sbFetch("rpc/alerts_brand_daily", { method: "POST", body: JSON.stringify({ p_from: from, p_excluded: exc }) }) || []).map((r) => Object.assign({ impressions: 0, clicks: 0 }, r)); }
+  const wonList = (S.wonStatuses || []).map((x) => String(x || "").trim().toLowerCase()).filter(Boolean);
+  if (wonList.length > 0) {
+    try {
+      const wonSet = new Set(wonList);
+      const leads = await sbFetch("crm_leads?select=brand,created_on,status&created_on=gte." + from + "&prev_lead=is.null");
+      const wonMap = {}, dv = S.dealValue || {};
+      (leads || []).forEach((L) => {
+        const st = String(L.status || "").trim().toLowerCase();
+        if (wonSet.has(st)) {
+          const b = L.brand || "Unmapped", day = String(L.created_on || "").slice(0, 10), k = b + "|" + day;
+          if (!wonMap[k]) wonMap[k] = { won: 0, rev: 0 };
+          wonMap[k].won++; const v = Number(dv[b]); if (isFinite(v) && v > 0) wonMap[k].rev += v;
+        }
+      });
+      (D.brandRows || []).forEach((r) => { const k = (r.brand || "Unmapped") + "|" + r.day; if (wonMap[k]) { r.won = wonMap[k].won; r.rev = wonMap[k].rev; } });
+    } catch (e) { /* silent fallback in mock or missing table */ }
+  }
   try { D.campRows = D.v2 ? await rpcAll(sbFetch, "mon_campaign_daily", { p_from: addDays(today, -8), p_excluded: exc }) : []; } catch (e) { D.campRows = []; errors.push("campaigns: " + e.message); }
   try { D.uploads = await sbFetch("uploads?select=meta_files,crm_file,uploaded_at,meta_rows,crm_rows&order=uploaded_at.desc&limit=60") || []; } catch (e) { D.uploads = []; errors.push("feeds: " + e.message); }
   try { D.acts = await sbFetch("meta_activity?select=*&event_time=gte." + encodeURIComponent(new Date(Date.now() - 864e5).toISOString()) + "&order=event_time.desc&limit=500") || []; } catch (e) { D.acts = []; }

@@ -4,7 +4,10 @@ const fs = require("fs"), path = require("path");
 const repo = path.join(__dirname, "..");
 let html = fs.readFileSync(path.join(repo, "app.html"), "utf8");
 const attr = fs.readFileSync(path.join(repo, "attribution.js"), "utf8");
-html = html.replace(/<script src="https:\/\/cdnjs[^"]*"><\/script>/, "").replace('<script src="attribution.js"></script>', "<script>" + attr.split("</script>").join("<\\/script>") + "</script>");
+const pm = fs.readFileSync(path.join(repo, "performance.js"), "utf8");
+html = html.replace(/<script src="https:\/\/cdnjs[^"]*"><\/script>/, "")
+           .replace('<script src="attribution.js"></script>', "<script>" + attr.split("</script>").join("<\\/script>") + "</script>")
+           .replace('<script src="performance.js"></script>', "<script>" + pm.split("</script>").join("<\\/script>") + "</script>");
 
 const calls = [], errors = [];
 let aiStat = null;   // what ai_status() answers (null = never set up)
