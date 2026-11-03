@@ -148,26 +148,25 @@ assert.ok(v5 && v5.tag === "section", "viewUTM returns section element");
 
 console.log("✓ performance.js direct unit verification passed (5 views rendered)");
 
-// 2. Full JSDOM integration test with demo mode
+// 2. Full JSDOM integration test
 (async () => {
   let html = fs.readFileSync(path.join(__dirname, "../app.html"), "utf8");
-  const demoCode = fs.readFileSync(path.join(__dirname, "../demo-data.js"), "utf8");
   const attrCode = fs.readFileSync(path.join(__dirname, "../attribution.js"), "utf8");
   const pmCode = fs.readFileSync(path.join(__dirname, "../performance.js"), "utf8");
 
   html = html.replace(/<script src="https:\/\/cdnjs[^"]*"><\/script>/, "")
-             .replace('<script src="demo-data.js"></script>', "<script>" + demoCode.split("</script>").join("<\\/script>") + "</script>")
              .replace('<script src="attribution.js"></script>', "<script>" + attrCode.split("</script>").join("<\\/script>") + "</script>")
              .replace('<script src="performance.js"></script>', "<script>" + pmCode.split("</script>").join("<\\/script>") + "</script>");
 
   const errors = [];
   const dom = new JSDOM(html, {
-    url: "https://app.example.test/?demo=1",
+    url: "https://app.example.test/",
     runScripts: "dangerously",
     pretendToBeVisual: true,
     beforeParse(w) {
       w.XLSX = {};
       w.scrollTo = () => {};
+      w.fetch = () => Promise.resolve({ ok: false, status: 404, json: () => Promise.resolve({}), text: () => Promise.resolve("") });
       w.matchMedia = () => ({ matches: false, addListener() {}, addEventListener() {} });
       w.addEventListener("error", (e) => errors.push(e.message));
       w.console.error = (...a) => errors.push(a.map(String).join(" "));
@@ -176,6 +175,22 @@ console.log("✓ performance.js direct unit verification passed (5 views rendere
 
   await new Promise((r) => setTimeout(r, 400));
   const w = dom.window;
+
+  // Load sample dataset for testing views
+  w.eval(`
+    state.raw = {
+      meta: [
+        ["Campaign name", "Ad set name", "Ad name", "Amount spent", "Results", "Link clicks", "Impressions", "Reporting starts", "Reporting ends"],
+        ["Apex Living | Luxury Villas", "South Delhi HNI 35-55", "Villa Walkthrough Video 4K", 12000, 14, 320, 18500, "2026-10-01", "2026-10-30"]
+      ],
+      crm: [
+        ["Lead id", "Created On", "Lead Source", "Facebook Campaign Name", "Facebook Ad Set Name", "Facebook Ad", "Status", "Brand", "First Attempted Call", "Assignee name"],
+        ["APX-101", "2026-10-15 12:00:00", "Meta Ads", "Apex Living | Luxury Villas", "South Delhi HNI 35-55", "Villa Walkthrough Video 4K", "Booked / Won", "Apex Living", "2026-10-15 12:12:00", "Aditi Sharma"]
+      ]
+    };
+    rebuild();
+    render();
+  `);
 
   assert.strictEqual(errors.length, 0, "No script errors during boot: " + errors.join(", "));
 

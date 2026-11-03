@@ -400,9 +400,6 @@ header.top .wrap{padding-block:22px 10px;align-items:center}
 .funnel-step .cost{font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
 .funnel-bar-wrap{height:4px;background:var(--line);border-radius:2px;overflow:hidden;margin-top:2px}
 .funnel-bar{height:100%;background:linear-gradient(90deg,var(--accent),#60a5fa);border-radius:2px}
-.demo-bar{background:linear-gradient(90deg,#0f172a,#1e293b);color:#f1f5f9;padding:9px 16px;border-bottom:1px solid #334155;font-size:13px}
-.demo-bar .wrap{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;max-width:1440px;margin:0 auto}
-.demo-bar em{color:#60a5fa;font-style:normal;font-weight:600}
 /* performance marketing suite */
 .pm-bar-wrap{height:8px;background:var(--line);border-radius:4px;overflow:hidden;position:relative}
 .pm-bar-fill{height:100%;border-radius:4px;transition:width .25s ease}
@@ -1139,15 +1136,6 @@ tr.total-bottom td{position:static!important;background:#dce3f0!important;color:
   </div>
 </header>
 
-<div id="demo-banner" class="demo-bar" hidden>
-  <div class="wrap">
-    <span>🚀 <strong>Interactive Demo Mode</strong> — Exploring sample performance data for <em>Apex Living</em> & <em>Lumina Skin</em></span>
-    <div style="display:flex;gap:8px;align-items:center;">
-      <a href="/app?signup=1" class="btn primary sm" style="text-decoration:none;padding:5px 12px;font-size:12px;">Create Workspace</a>
-      <a href="/app" class="btn ghost sm" onclick="try{localStorage.removeItem('lp-demo');}catch(e){}" style="text-decoration:none;padding:5px 12px;font-size:12px;border:1px solid #475569;color:#cbd5e1;">Exit Demo</a>
-    </div>
-  </div>
-</div>
 <div class="band">
   <div class="wrap">
     <div id="team-banner" class="banner" hidden></div>
@@ -1193,7 +1181,6 @@ tr.total-bottom td{position:static!important;background:#dce3f0!important;color:
 <div id="toast" class="toast" hidden></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-<script src="demo-data.js"></script>
 <script>
 // ENGINE START
 var QL_POS_DEF = ["qualified","interested","details shared","shared details","site visit","visit scheduled","visit done","meeting","discussion scheduled","proposal","negotiation","token","payment","booked","booking","converted","closed won","won","hot","ready to invest","agreement"];
@@ -4755,7 +4742,7 @@ function viewOverview(){
     kpi("Working-hrs TAT", fMin(T.whAvg), "avg · median " + fMin(T.whMed) + " · " + whText()),
     kpi("Not Contacted", fInt(T.pend), T.pend ? "waiting " + fMin(T.pendAgeO) + " avg · " + fMin(T.pendAgeW) + " in working hrs" : "none waiting", T.pend ? "warn" : ""),
     kpi("SLA ≤ " + R.slaMin + " min", fPct(T.sla), T.win + " of " + T.elig + " leads (overall TAT)", isNum(T.sla) ? (T.sla < R.slaTarget ? "warn" : "good") : "")]));
-  if (WON_ON || state.source === "demo"){
+  if (WON_ON){
     sec.appendChild(grp("Sales & Revenue", [
       kpi("Sales (Won)", fInt(T.won), "Won leads in CRM"),
       kpi("Lead-to-Sale", isNum(T.saleRate) ? fPct(T.saleRate) : "N/A", "Sales ÷ CRM leads"),
@@ -4909,7 +4896,7 @@ function gaSnapshot(T, P){
     {k: "ql", label: "Qualified leads", v: T.ql, p: P && P.ql, fmt: fInt, dir: 1},
     {k: "cpql", label: "CPQL", v: T.cpql, p: P && P.cpql, fmt: fINR, dir: -1},
     {k: "sla", label: "SLA ≤ " + R.slaMin + " min", v: T.sla, p: P && P.sla, fmt: fPct, dir: 1}];
-  if (WON_ON || (state.source === "demo" && T.won)){
+  if (WON_ON){
     M.push({k: "won", label: "Sales (Won)", v: T.won, p: P && P.won, fmt: fInt, dir: 1});
     M.push({k: "estRev", label: "Est. Revenue", v: T.estRev, p: P && P.estRev, fmt: fShortINR, dir: 1, full: fINR});
   }
@@ -5048,7 +5035,6 @@ function renderEmpty(){
         step(4, "Follow up leads", "TAT & calls lists leads that weren't called in time."),
         step(5, "Share", "Download Excel to send the report to anyone.")),
       el("div", {cls: "actions"}, sb.status !== "ready" ? el("button", {cls: "btn", type: "button", onclick: toggleSaved}, "Sign in") : null,
-        el("button", {cls: "btn ghost", type: "button", onclick: function(){ loadDemoMode(); }}, "Explore Live Demo"),
         el("button", {cls: "btn ghost", type: "button", onclick: function(){ state.tab = "help"; render(); }}, "How this dashboard works"))));
     return;
   }
@@ -5061,7 +5047,6 @@ function renderEmpty(){
       step(4, "Pick dates and brands", "Use the date picker and brand chips to view any day, week or month."),
       step(5, "Share", "Download Excel to send the report to anyone.")),
     el("div", {cls: "actions"}, el("button", {cls: "btn", type: "button", onclick: function(){ var u = document.getElementById("upload"); u.hidden = false; u.scrollIntoView({block: "nearest"}); }}, "Lead data upload"),
-      el("button", {cls: "btn ghost", type: "button", onclick: function(){ loadDemoMode(); }}, "Explore Live Demo"),
       (saved.ok && saved.list.length) || team.list.length ? el("button", {cls: "btn ghost", type: "button", onclick: toggleSaved}, "Open saved data (" + (saved.list.length + team.list.length) + ")")
         : sb.cfg && sb.status !== "ready" ? el("button", {cls: "btn ghost", type: "button", onclick: toggleSaved}, "Sign in to the workspace database")
         : team.status === "locked" ? el("button", {cls: "btn ghost", type: "button", onclick: toggleSaved}, "Open team data") : null)));
@@ -6712,52 +6697,10 @@ state.settings = loadSettings();
 setTimeout(function(){ renderMetaBrandPick(); var mb = document.getElementById("meta-brand"); if (mb) mb.addEventListener("change", function(){ mb.classList.remove("need"); document.getElementById("er-meta").textContent = ""; }); }, 0);
 try { var g0 = localStorage.getItem("lp-lead-dash-gran"); if (g0) state.trendGran = g0; } catch (e) {}
 try { var t0 = localStorage.getItem("lp-lead-dash-tab"); if (t0) state.tab = t0; var r0 = JSON.parse(localStorage.getItem("lp-lead-dash-range") || "null"); if (r0 && r0.preset) state.range = r0; } catch (e) {}
-function isDemoMode(){
-  try {
-    var q = new URLSearchParams(location.search || "");
-    if (q.get("demo") === "1" || q.get("demo") === "true"){
-      try { localStorage.setItem("lp-demo", "1"); } catch (e) {}
-      return true;
-    }
-    if (q.get("demo") === "0" || q.get("demo") === "false"){
-      try { localStorage.removeItem("lp-demo"); } catch (e) {}
-      return false;
-    }
-    return localStorage.getItem("lp-demo") === "1";
-  } catch (e){ return false; }
-}
-
-function loadDemoMode(){
-  state.booting = false;
-  state.source = "demo";
-  var db = document.getElementById("demo-banner");
-  if (db) db.hidden = false;
-  var demo = (typeof QLARITY_DEMO !== "undefined" && QLARITY_DEMO.getDemoData) ? QLARITY_DEMO.getDemoData() : null;
-  if (!demo){
-    if (typeof toast === "function") toast("Demo data module not found.");
-    return;
-  }
-  sb.status = "ready";
-  sb.role = "admin";
-  sb.email = "demo@qlarity.io";
-  sb.org = {id: "demo-org-id", name: "Acme Enterprises (Demo)", role: "admin", is_owner: true, currency: "INR", tz_offset_min: 330, crm_name: "TeleCRM"};
-  sb.orgs = [sb.org];
-  state.settings = Object.assign(clone(DEFAULT_SETTINGS), demo.settings);
-  state.raw = {meta: demo.meta, crm: demo.crm};
-  state.brand = "All";
-  state.range = {preset: "last30"};
-  rebuild();
-  render();
-  if (typeof toast === "function") toast("Interactive demo loaded: Apex Living & Lumina Skin");
-}
 
 function boot(){
   state.booting = /^https?:$/.test(location.protocol);
   if (typeof XLSX === "undefined"){ var b = document.getElementById("team-banner"); b.hidden = false; b.className = "banner warn"; b.textContent = "The spreadsheet reader did not load, so exports cannot be opened. Check your connection and reload the page."; }
-  if (isDemoMode()){
-    loadDemoMode();
-    return;
-  }
   render();
   if (typeof XLSX !== "undefined") state.caps.downloads = {save: function(o){ var a = document.createElement("a"), url = URL.createObjectURL(new Blob([o.data], {type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}));
     a.href = url; a.download = o.filename; document.body.appendChild(a); a.click(); a.remove(); setTimeout(function(){ URL.revokeObjectURL(url); }, 4000); return Promise.resolve({status: "saved"}); }};

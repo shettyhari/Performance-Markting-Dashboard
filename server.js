@@ -38,7 +38,6 @@ const MIME = {
 const REWRITES = {
   "/": "/index.html",
   "/app": "/app.html",
-  "/demo": "/demo.html",
   "/admin": "/admin.html",
   "/privacy": "/privacy.html",
   "/terms": "/terms.html"
@@ -111,8 +110,6 @@ server.listen(PORT, "0.0.0.0", () => {
   console.log("\n=======================================================");
   console.log("  🚀 Qlarity Local Server running at:");
   console.log(`  - Landing page:     http://localhost:${PORT}/`);
-  console.log(`  - Interactive Demo: http://localhost:${PORT}/demo.html`);
-  console.log(`  - Direct Demo:      http://localhost:${PORT}/app?demo=1`);
   console.log(`  - App Dashboard:    http://localhost:${PORT}/app`);
   console.log(`  - Admin Console:    http://localhost:${PORT}/admin`);
   console.log("=======================================================\n");
