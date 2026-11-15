@@ -2,7 +2,7 @@
 <html lang="en-IN">
 <head>
 <meta charset="utf-8">
-<script>try{var _t=localStorage.getItem("lp-theme");if(_t==="dark"||_t==="light")document.documentElement.setAttribute("data-theme",_t);}catch(e){}</script>
+<script>try{var _t=localStorage.getItem("lp-theme");if(!_t && window.matchMedia && matchMedia("(prefers-color-scheme: dark)").matches)_t="dark";if(_t==="dark"||_t==="light")document.documentElement.setAttribute("data-theme",_t);}catch(e){}</script>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
 <title>Qlarity Console</title>
