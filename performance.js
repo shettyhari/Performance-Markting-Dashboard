@@ -246,7 +246,7 @@
     statusOpts.forEach(function(opt){
       var btn = el("button", {
         cls: "btn ghost" + (PM.creativeFilter === opt[0] ? " on" : ""),
-        style: PM.creativeFilter === opt[0] ? "background:var(--accent);color:#fff;border-color:var(--accent)" : "",
+        style: PM.creativeFilter === opt[0] ? "background:var(--accent);color:var(--btn-fg);border-color:var(--accent)" : "",
         type: "button",
         onclick: function(){
           PM.creativeFilter = opt[0];
@@ -263,7 +263,7 @@
     fmtOpts.forEach(function(opt){
       var btn = el("button", {
         cls: "btn ghost" + (PM.formatFilter === opt[0] ? " on" : ""),
-        style: PM.formatFilter === opt[0] ? "background:var(--ink);color:var(--bg)" : "",
+        style: PM.formatFilter === opt[0] ? "background:var(--accent);color:var(--btn-fg);border-color:var(--accent)" : "",
         type: "button",
         onclick: function(){
           PM.formatFilter = opt[0];
@@ -903,7 +903,7 @@
     ].forEach(function(opt){
       var btn = el("button", {
         cls: "btn ghost",
-        style: PM.guardrailFilter === opt[0] ? "background:var(--accent);color:#fff;border-color:var(--accent)" : "",
+        style: PM.guardrailFilter === opt[0] ? "background:var(--accent);color:var(--btn-fg);border-color:var(--accent)" : "",
         type: "button",
         onclick: function(){
           PM.guardrailFilter = opt[0];
@@ -1044,7 +1044,7 @@
     platforms.forEach(function(p){
       var btn = el("button", {
         cls: "btn ghost",
-        style: PM.utmPlatform === p[0] ? "background:var(--accent);color:#fff;border-color:var(--accent)" : "",
+        style: PM.utmPlatform === p[0] ? "background:var(--accent);color:var(--btn-fg);border-color:var(--accent)" : "",
         type: "button",
         onclick: function(){
           PM.utmPlatform = p[0];

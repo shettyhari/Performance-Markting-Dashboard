@@ -1,7 +1,8 @@
 /* Qlarity legal pages (privacy.html, terms.html): same type and colours as the app, readable on phones, light and dark */
 @import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap");
 :root{--bg:#f8f9fa;--panel:#fff;--ink:#202124;--fg:#3c4043;--muted:#5f6368;--line:#dadce0;--accent:#1a73e8;--ai-1:#1a73e8;--ai-2:#1967d2;--fill:#e8f0fe;--fill-fg:#1967d2;color-scheme:light}
-@media (prefers-color-scheme: dark){:root{--bg:#202124;--panel:#292a2d;--ink:#e8eaed;--fg:#bdc1c6;--muted:#9aa0a6;--line:#3c4043;--accent:#8ab4f8;--fill:#2b3a55;--fill-fg:#8ab4f8;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#202124;--panel:#292a2d;--ink:#ffffff;--fg:#e8eaed;--muted:#9aa0a6;--line:#3c4043;--accent:#8ab4f8;--fill:#2b3a55;--fill-fg:#8ab4f8;color-scheme:dark}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#202124;--panel:#292a2d;--ink:#ffffff;--fg:#e8eaed;--muted:#9aa0a6;--line:#3c4043;--accent:#8ab4f8;--fill:#2b3a55;--fill-fg:#8ab4f8;color-scheme:dark}}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.7 "Plus Jakarta Sans",system-ui,-apple-system,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased}
 a{color:var(--accent)}
