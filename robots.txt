@@ -3,5 +3,6 @@ User-agent: *
 Allow: /
 Disallow: /app
 Disallow: /api/
+Disallow: /admin
 
-Sitemap: https://qlarity-dashboard.vercel.app/sitemap.xml
+Sitemap: https://getqlarity.online/sitemap.xml
