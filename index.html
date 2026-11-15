@@ -33,108 +33,241 @@
 {"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://qlarity-dashboard.vercel.app/#site","url":"https://qlarity-dashboard.vercel.app/","name":"Qlarity","inLanguage":"en-IN"},{"@type":"Organization","@id":"https://qlarity-dashboard.vercel.app/#org","name":"Qlarity","url":"https://qlarity-dashboard.vercel.app/","logo":"https://qlarity-dashboard.vercel.app/brand/qlarity-icon-512.png","email":"harikrishnashetty1@gmail.com"},{"@type":"SoftwareApplication","name":"Qlarity","url":"https://qlarity-dashboard.vercel.app/","applicationCategory":"BusinessApplication","applicationSubCategory":"Performance marketing analytics","operatingSystem":"Web browser","publisher":{"@id":"https://qlarity-dashboard.vercel.app/#org"},"image":"https://qlarity-dashboard.vercel.app/brand/qlarity-icon-512.png","description":"AI-powered performance marketing analytics: track ad spend, leads and customer data in one place, spot wasted spend and make smarter marketing decisions.","offers":{"@type":"Offer","price":"0","priceCurrency":"INR","description":"Free during early access"},"featureList":["Campaign analytics","Brand awareness tracking","Lead and conversion tracking","E-commerce performance","Ad spend and ROI","Reports and alerts","Multi-brand dashboard"]}]}
 </script>
 <style>
-/* Qlarity brand colours only (from the logo): cyan #00c2fb · blue #005df5 · deep blue #052885 · navy #021434 */
-:root{--cyan:#00c2fb;--cyan-2:#00e3ff;--blue:#005df5;--deep:#052885;--navy:#021434;--navy-2:#071d4a;
-  --bg:#ffffff;--panel:#ffffff;--soft:#f3f8ff;--ink:#021434;--fg:#3a4660;--muted:#667089;--line:#e3eaf5;--nav-bg:rgba(255,255,255,.88);--btn2-border:#c9d6ea;--accent-text:#005df5;color-scheme:light;
-  --grad:linear-gradient(135deg,var(--cyan),var(--blue));--r:16px;--card-pad:24px;--icon:44px;--btn-h:48px;--gap:20px}
-/* dark theme: brand navy backgrounds, light text, cyan accents (switch in the top bar, or the device setting) */
-:root[data-theme="dark"]{--bg:#050d22;--panel:#0c1a3d;--soft:#081430;--ink:#eef3ff;--fg:#c3cde3;--muted:#8d99b5;--line:#1c2b52;--nav-bg:rgba(5,13,34,.86);--btn2-border:#2a3b66;--accent-text:#00c2fb;color-scheme:dark}
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#050d22;--panel:#0c1a3d;--soft:#081430;--ink:#eef3ff;--fg:#c3cde3;--muted:#8d99b5;--line:#1c2b52;--nav-bg:rgba(5,13,34,.86);--btn2-border:#2a3b66;--accent-text:#00c2fb;color-scheme:dark}}
+/* Qlarity modern performance marketing palette: vibrant coral #ff4d2d · electric blue #3b82f6 · cyan #06b6d4 · emerald #10b981 */
+:root{
+  --coral:#ff4d2d;--coral-hover:#e63e1f;--coral-soft:#fff1ee;--coral-line:rgba(255,77,45,.25);
+  --blue:#3b82f6;--blue-soft:#eff6ff;--blue-line:#bfdbfe;
+  --cyan:#06b6d4;--cyan-soft:#ecfeff;
+  --emerald:#10b981;--emerald-soft:#ecfdf5;--emerald-line:rgba(16,185,129,.25);
+  --bg:#f4f6fa;--panel:#ffffff;--soft:#f8fafc;--ink:#0f172a;--fg:#334155;--muted:#64748b;--line:#e2e8f0;--line-soft:#edf2f7;
+  --nav-bg:rgba(255,255,255,.92);--btn2-border:#e2e8f0;--accent-text:#ff4d2d;color-scheme:light;
+  --grad:linear-gradient(135deg,var(--coral),#ff7a59);
+  --r:20px;--r-sm:10px;--card-pad:24px;--icon:44px;--btn-h:48px;--gap:20px;
+  --shadow:0 4px 20px -2px rgba(15,23,42,.04),0 1px 3px rgba(15,23,42,.02);
+  --shadow-lg:0 14px 40px -4px rgba(15,23,42,.08),0 2px 8px rgba(15,23,42,.03);
+}
+/* dark theme: deep slate canvas, glowing coral and electric blue */
+:root[data-theme="dark"]{
+  --bg:#0b0f19;--panel:#121826;--soft:#182032;--ink:#f8fafc;--fg:#cbd5e1;--muted:#94a3b8;--line:rgba(255,255,255,.08);--line-soft:rgba(255,255,255,.04);
+  --coral:#ff5a3b;--coral-hover:#ff7054;--coral-soft:rgba(255,77,45,.15);--coral-line:rgba(255,77,45,.3);
+  --blue:#60a5fa;--blue-soft:rgba(59,130,246,.15);--blue-line:rgba(59,130,246,.3);
+  --cyan:#22d3ee;--cyan-soft:rgba(6,182,212,.15);
+  --emerald:#34d399;--emerald-soft:rgba(16,185,129,.15);--emerald-line:rgba(16,185,129,.3);
+  --nav-bg:rgba(11,15,25,.92);--btn2-border:rgba(255,255,255,.12);--accent-text:#ff5a3b;color-scheme:dark;
+  --shadow:0 4px 20px -2px rgba(0,0,0,.4);
+  --shadow-lg:0 14px 40px -4px rgba(0,0,0,.6);
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0b0f19;--panel:#121826;--soft:#182032;--ink:#f8fafc;--fg:#cbd5e1;--muted:#94a3b8;--line:rgba(255,255,255,.08);--line-soft:rgba(255,255,255,.04);
+  --coral:#ff5a3b;--coral-hover:#ff7054;--coral-soft:rgba(255,77,45,.15);--coral-line:rgba(255,77,45,.3);
+  --blue:#60a5fa;--blue-soft:rgba(59,130,246,.15);--blue-line:rgba(59,130,246,.3);
+  --cyan:#22d3ee;--cyan-soft:rgba(6,182,212,.15);
+  --emerald:#34d399;--emerald-soft:rgba(16,185,129,.15);--emerald-line:rgba(16,185,129,.3);
+  --nav-bg:rgba(11,15,25,.92);--btn2-border:rgba(255,255,255,.12);--accent-text:#ff5a3b;color-scheme:dark;
+  --shadow:0 4px 20px -2px rgba(0,0,0,.4);
+  --shadow-lg:0 14px 40px -4px rgba(0,0,0,.6);
+}}
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
-body{margin:0;background:var(--bg);color:var(--fg);font:17px/1.55 Inter,system-ui,-apple-system,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.55 Inter,system-ui,-apple-system,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased}
 a{color:inherit}
 p{margin:0}
-.wrap{max-width:1240px;margin:0 auto;padding:0 24px}
+.wrap{max-width:1320px;margin:0 auto;padding:0 24px}
 .skip{position:absolute;left:-999px}.skip:focus{left:16px;top:12px;z-index:99;background:var(--panel);padding:8px 12px;border-radius:8px}
-:focus-visible{outline:2px solid var(--blue);outline-offset:3px}
-/* buttons: one primary style, one secondary style, one height */
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;height:var(--btn-h);padding:0 24px;border-radius:10px;font:600 15.5px/1 Inter,sans-serif;text-decoration:none;border:1.5px solid transparent;white-space:nowrap;transition:transform .15s,box-shadow .15s,background-color .15s,border-color .15s,color .15s}
-.btn.primary{color:#fff;background:var(--blue);box-shadow:0 10px 22px rgba(0,93,245,.26)}
-.btn.primary:hover{transform:translateY(-1px);background:#0052da}
-.btn.secondary{color:var(--ink);background:var(--panel);border-color:var(--btn2-border)}
-.btn.secondary:hover{border-color:var(--accent-text);color:var(--accent-text)}
-.dark .btn.secondary{color:#fff;background:transparent;border-color:rgba(255,255,255,.45)}
+:focus-visible{outline:2px solid var(--coral);outline-offset:3px}
+/* buttons: signature pill buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;height:var(--btn-h);padding:0 26px;border-radius:999px;font:600 15px/1 Inter,sans-serif;text-decoration:none;border:1.5px solid transparent;white-space:nowrap;transition:transform .18s,box-shadow .18s,background-color .18s,border-color .18s,color .18s}
+.btn.primary{color:#fff;background:var(--coral);box-shadow:0 8px 24px rgba(255,77,45,.32)}
+.btn.primary:hover{transform:translateY(-1.5px);background:var(--coral-hover);box-shadow:0 12px 30px rgba(255,77,45,.42)}
+.btn.secondary{color:var(--ink);background:var(--panel);border-color:var(--btn2-border);box-shadow:0 1px 2px rgba(0,0,0,.03)}
+.btn.secondary:hover{border-color:var(--coral);color:var(--coral);transform:translateY(-1px)}
+.dark .btn.secondary{color:#fff;background:transparent;border-color:rgba(255,255,255,.35)}
 .dark .btn.secondary:hover{border-color:#fff;color:#fff}
-.btn.sm{--btn-h:42px;height:42px;padding:0 18px;font-size:14.5px}
-.btn svg{width:18px;height:18px}
+.btn.sm{--btn-h:42px;height:42px;padding:0 20px;font-size:14px}
+.btn svg{width:17px;height:17px}
 .actions{display:flex;flex-wrap:wrap;gap:12px}
 /* nav */
-.nav{position:sticky;top:0;z-index:50;background:var(--nav-bg);backdrop-filter:saturate(1.4) blur(12px);border-bottom:1px solid transparent;transition:border-color .2s}
-.nav.scrolled{border-bottom-color:var(--line)}
+.nav{position:sticky;top:0;z-index:50;background:var(--nav-bg);backdrop-filter:saturate(1.4) blur(14px);border-bottom:1px solid transparent;transition:border-color .2s,box-shadow .2s}
+.nav.scrolled{border-bottom-color:var(--line);box-shadow:0 1px 3px rgba(0,0,0,.02)}
 .nav .wrap{display:flex;align-items:center;gap:28px;height:72px}
 .logo img{display:block;height:34px;width:auto}
 .logo .dk{display:none}
 :root[data-theme="dark"] .logo .lt{display:none} :root[data-theme="dark"] .logo .dk{display:block}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .logo .lt{display:none} :root:not([data-theme="light"]) .logo .dk{display:block}}
-.theme-btn{width:42px;height:42px;display:grid;place-items:center;border:1.5px solid var(--btn2-border);border-radius:10px;background:var(--panel);color:var(--ink);cursor:pointer;transition:border-color .15s,color .15s}
-.theme-btn:hover{border-color:var(--accent-text);color:var(--accent-text)}
-.theme-btn svg{width:19px;height:19px}
-.nav nav{display:flex;gap:28px;margin:0 auto;font-size:15px;font-weight:500;color:var(--ink)}
-.nav nav a{text-decoration:none;opacity:.85}.nav nav a:hover{opacity:1;color:var(--blue)}
+.theme-btn{width:40px;height:40px;display:grid;place-items:center;border:1.5px solid var(--btn2-border);border-radius:12px;background:var(--panel);color:var(--ink);cursor:pointer;transition:border-color .15s,color .15s,transform .15s}
+.theme-btn:hover{border-color:var(--coral);color:var(--coral);transform:translateY(-1px)}
+.theme-btn svg{width:18px;height:18px}
+.nav nav{display:flex;gap:28px;margin:0 auto;font-size:14.5px;font-weight:500;color:var(--ink)}
+.nav nav a{text-decoration:none;opacity:.85;transition:color .15s,opacity .15s}.nav nav a:hover{opacity:1;color:var(--coral)}
 .nav .actions{gap:10px}
-/* type scale (guidelines: hero 48–56 / 34–40, sections 30–36, body 16–18) */
-.eyebrow{margin-bottom:14px;font:700 13px/1 Inter;letter-spacing:.12em;text-transform:uppercase;color:var(--accent-text)}
-.dark .eyebrow{color:var(--cyan)}
-h1{margin:0 0 20px;font:800 clamp(36px,4.6vw,56px)/1.06 "Inter Tight",Inter,sans-serif;letter-spacing:-.03em;color:var(--ink);max-width:620px}
-h1 span{background:linear-gradient(90deg,var(--blue),var(--cyan));-webkit-background-clip:text;background-clip:text;color:transparent}
+/* typography */
+.eyebrow{display:inline-flex;align-items:center;gap:7px;padding:6px 14px;border-radius:999px;background:var(--coral-soft);border:1px solid var(--coral-line);color:var(--coral);font:700 12px/1 Inter;letter-spacing:.08em;text-transform:uppercase;margin-bottom:16px}
+.dark .eyebrow{background:var(--coral-soft);color:var(--coral)}
+h1{margin:0 0 20px;font:800 clamp(36px,4.4vw,56px)/1.06 "Inter Tight",Inter,sans-serif;letter-spacing:-.03em;color:var(--ink);max-width:640px}
+h1 span{background:linear-gradient(135deg,var(--coral) 0%,#ff7a59 50%,var(--blue) 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
 h2{margin:0;font:750 clamp(28px,3vw,36px)/1.15 "Inter Tight",Inter,sans-serif;letter-spacing:-.022em;color:var(--ink)}
 .dark h2{color:#fff}
-h3{margin:0 0 6px;font:650 18px/1.3 "Inter Tight",Inter,sans-serif;color:var(--ink);letter-spacing:-.01em}
-.intro{max-width:620px;margin-top:14px;font-size:18px;color:var(--fg)}
+h3{margin:0 0 6px;font:650 17.5px/1.3 "Inter Tight",Inter,sans-serif;color:var(--ink);letter-spacing:-.01em}
+.intro{max-width:620px;margin-top:14px;font-size:17.5px;color:var(--fg);line-height:1.5}
 .dark .intro{color:rgba(255,255,255,.8)}
 .head{margin-bottom:28px}
-/* sections: 64 px desktop rhythm */
-section{padding:64px 0}
+/* sections */
+section{padding:72px 0}
 .soft{background:var(--soft)}
-.dark{background:radial-gradient(900px 420px at 85% 0%,rgba(0,194,251,.16),transparent 70%),linear-gradient(160deg,var(--navy),var(--navy-2) 60%,#082a6b);color:#fff}
+.dark{background:radial-gradient(900px 420px at 85% 0%,rgba(255,77,45,.14),transparent 70%),linear-gradient(160deg,#0a1124,#0f1b36 60%,#09152e);color:#fff}
 /* hero */
-.hero{padding:48px 0 56px;background:radial-gradient(680px 380px at 90% 20%,rgba(0,194,251,.13),transparent 70%),radial-gradient(600px 320px at 5% 0%,rgba(0,93,245,.07),transparent 70%),var(--bg)}
-.hero .wrap{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.08fr);gap:56px;align-items:center}
-.hero .lede{font-size:clamp(17px,1.5vw,19px);max-width:540px;margin-bottom:30px}
-.trust{display:flex;flex-wrap:wrap;gap:10px 20px;margin-top:22px;font-size:14px;color:var(--muted)}
+.hero{padding:54px 0 68px;background:radial-gradient(800px 440px at 85% 15%,rgba(255,77,45,.08),transparent 70%),radial-gradient(650px 360px at 10% 0%,rgba(59,130,246,.06),transparent 70%),var(--bg)}
+.hero .wrap{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.4fr);gap:48px;align-items:center}
+.hero .lede{font-size:clamp(17px,1.4vw,19px);max-width:540px;margin-bottom:30px;color:var(--fg);line-height:1.5}
+.trust{display:flex;flex-wrap:wrap;gap:10px 20px;margin-top:24px;font-size:13.5px;color:var(--muted)}
 .trust span{display:inline-flex;align-items:center;gap:7px}
-.trust svg{width:17px;height:17px;color:var(--blue)}
-.works{margin-top:28px;padding-top:20px;border-top:1px solid var(--line);font-size:13.5px;color:var(--muted)}
+.trust svg{width:16px;height:16px;color:var(--coral)}
+.works{margin-top:28px;padding-top:20px;border-top:1px solid var(--line);font-size:13px;color:var(--muted)}
 .works b{color:var(--ink);font-weight:600}
-/* dashboard preview (styled like the product; sample data) */
-.device{margin:0;border-radius:22px;padding:10px;background:linear-gradient(160deg,#0a1f4d,var(--navy));box-shadow:0 30px 70px -20px rgba(2,20,52,.45)}
-.screen,.chat{--ink:#021434;--fg:#3a4660;--muted:#667089;--line:#e3eaf5;--soft:#f3f8ff;color:#3a4660}
-.screen{display:grid;grid-template-columns:120px minmax(0,1fr);border-radius:14px;overflow:hidden;background:#fff}
-.side{background:var(--navy);padding:14px 10px;display:grid;align-content:start;gap:3px}
-.side img{height:18px;width:auto;margin:2px 4px 12px}
-.side i{display:block;font-style:normal;font-size:10.5px;color:rgba(255,255,255,.62);padding:6px 8px;border-radius:6px}
-.side i.on{background:rgba(0,194,251,.16);color:#fff}
-.main{padding:14px 16px 14px;min-width:0}
-.mhead{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:10px}
-.mhead b{font:700 14px/1.2 Inter;color:var(--ink)}
-.mhead span{display:flex;gap:6px}
-.mhead small{font-size:10px;color:var(--muted);border:1px solid var(--line);padding:3px 7px;border-radius:6px;white-space:nowrap}
-.mhead .tag{background:var(--soft);color:var(--blue);border-color:transparent;font-weight:600}
-.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
-.kpi{border:1px solid var(--line);border-radius:10px;padding:9px 10px;min-width:0}
-.kpi small{display:block;font-size:9.5px;color:var(--muted)}
-.kpi strong{display:block;font:700 15px/1.25 "Inter Tight",Inter;color:var(--ink);margin-top:2px;white-space:nowrap}
-.kpi em{font-style:normal;font-size:9px;color:var(--blue)}
-.kpi.hl{background:linear-gradient(135deg,rgba(0,194,251,.10),rgba(0,93,245,.10));border-color:rgba(0,93,245,.25)}
-.mtable{width:100%;margin-top:8px;border:1px solid var(--line);border-radius:10px;border-collapse:separate;border-spacing:0;font-size:10.5px;overflow:hidden}
-.mtable th{font-weight:600;color:var(--muted);text-align:right;padding:7px 9px;background:var(--soft)}
-.mtable td{padding:7px 9px;text-align:right;border-top:1px solid var(--line);font-variant-numeric:tabular-nums;white-space:nowrap}
-.mtable th:first-child,.mtable td:first-child{text-align:left}
-.mtable td b{color:var(--ink)}
-.chart{margin-top:8px;border:1px solid var(--line);border-radius:10px;padding:9px 10px}
-.chart small{display:block;font-size:9.5px;font-weight:600;color:var(--ink);margin-bottom:6px}
-.chart svg{display:block;width:100%;height:70px}
-.mnote{margin-top:8px;font-size:10px;color:var(--muted)}
-/* cards: one padding, one icon size, one radius */
+
+/* ================= Modern Mockup Browser Device (screenshot replica) ================= */
+.device{margin:0;border-radius:24px;background:#ffffff;border:1px solid rgba(226,232,240,.9);box-shadow:0 30px 80px -20px rgba(15,23,42,.14),0 0 0 1px rgba(0,0,0,.03);overflow:hidden;padding:0}
+:root[data-theme="dark"] .device{background:#121826;border-color:rgba(255,255,255,.09);box-shadow:0 30px 80px -20px rgba(0,0,0,.6)}
+.device-bar{display:flex;align-items:center;gap:12px;padding:10px 16px;background:#f8fafc;border-bottom:1px solid var(--line);font-size:12px}
+:root[data-theme="dark"] .device-bar{background:#161d2d;border-color:rgba(255,255,255,.07)}
+.device-dots{display:flex;gap:6px}
+.d-dot{width:10px;height:10px;border-radius:50%}
+.d-dot.red{background:#ff5f56}.d-dot.yellow{background:#ffbd2e}.d-dot.green{background:#27c93f}
+.device-nav{display:flex;gap:8px;color:var(--muted);font-weight:700;font-size:11px;margin-left:4px}
+.device-url{flex:1;max-width:320px;margin:0 auto;background:#ffffff;border:1px solid var(--line);border-radius:999px;padding:4px 14px;display:flex;align-items:center;gap:7px;color:var(--muted);font-size:11.5px}
+:root[data-theme="dark"] .device-url{background:#121826;border-color:rgba(255,255,255,.08);color:#94a3b8}
+.device-url svg{width:12px;height:12px;color:var(--coral)}
+
+/* screen layout: 3 columns */
+.screen{display:grid;grid-template-columns:130px minmax(0,1fr) 200px;background:#f4f6fa;min-height:510px;font-size:12px;color:var(--fg)}
+:root[data-theme="dark"] .screen{background:#0e1320}
+
+/* 1. left sidebar */
+.d-side{background:#ffffff;border-right:1px solid var(--line);padding:14px 10px;display:flex;flex-direction:column;gap:5px}
+:root[data-theme="dark"] .d-side{background:#121826;border-color:rgba(255,255,255,.07)}
+.d-logo{padding:2px 8px 10px;display:flex;align-items:center;color:var(--coral)}
+.d-logo svg{width:22px;height:22px}
+.d-nav-item{display:flex;align-items:center;gap:9px;padding:7px 10px;border-radius:9px;color:var(--muted);font-size:11.5px;font-weight:500;white-space:nowrap}
+.d-nav-item svg{width:14px;height:14px;flex-shrink:0}
+.d-nav-item.active{background:#181b22;color:#ffffff;font-weight:600;box-shadow:0 3px 10px rgba(24,27,34,.16)}
+.d-nav-item.active svg{color:#ffffff}
+:root[data-theme="dark"] .d-nav-item.active{background:#262d3d}
+.d-nav-item.parent{justify-content:space-between}
+.d-nav-item .chevron{font-size:9px;opacity:.7}
+.d-nav-sub{padding-left:26px;display:grid;gap:4px;font-size:10.5px;color:var(--muted);margin-bottom:4px}
+.d-nav-sub span{cursor:pointer;opacity:.85}
+
+/* 2. center area */
+.d-center{padding:14px 14px;display:grid;gap:12px;align-content:start;min-width:0}
+.d-top-strip{display:flex;gap:12px;align-items:center;flex-wrap:nowrap;overflow-x:auto}
+.d-search{display:flex;align-items:center;gap:6px;background:#ffffff;border:1px solid var(--line);border-radius:999px;padding:5px 12px;font-size:11px;color:var(--muted);width:110px;flex-shrink:0}
+:root[data-theme="dark"] .d-search{background:#121826;border-color:rgba(255,255,255,.08)}
+.d-search svg{width:12px;height:12px}
+.d-ticker{display:flex;gap:14px;align-items:center;flex-wrap:nowrap;overflow-x:auto}
+.d-tick{display:flex;flex-direction:column;gap:1px;white-space:nowrap}
+.d-tick .k{font-size:10px;color:var(--muted);font-weight:500}
+.d-tick .v{font-size:12.5px;font-weight:700;color:var(--ink);display:flex;align-items:baseline;gap:4px}
+.d-tick em{font-style:normal;font-size:10px;font-weight:600;padding:1px 5px;border-radius:999px}
+.d-tick em.up{color:var(--emerald);background:var(--emerald-soft)}
+.d-tick em.down{color:#ef4444;background:#fef2f2}
+.d-tick small{color:var(--muted);font-size:10px;font-weight:500}
+
+/* cards */
+.d-card{background:#ffffff;border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);padding:14px}
+:root[data-theme="dark"] .d-card{background:#121826;border-color:rgba(255,255,255,.08)}
+.d-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;font-size:12px}
+.d-title{display:flex;align-items:center;gap:6px}
+.d-title b{font-weight:700;color:var(--ink);font-size:13px}
+.d-head .dots{color:var(--muted);cursor:pointer;letter-spacing:1px}
+.d-period{font-size:10px;color:var(--muted);border:1px solid var(--line);padding:2px 7px;border-radius:999px}
+.d-series-tog{display:flex;gap:10px;font-size:10.5px;font-weight:500}
+.d-series-tog .coral{color:var(--coral)} .d-series-tog .blue{color:var(--blue)} .d-series-tog .cyan{color:var(--cyan)}
+
+/* trends chart */
+.d-chart-box{position:relative;margin-top:4px}
+.d-chart-box svg{width:100%;height:110px;display:block}
+.d-tooltip{position:absolute;right:18%;top:8px;background:#ffffff;border:1px solid var(--line);border-radius:10px;padding:6px 10px;box-shadow:0 8px 24px rgba(0,0,0,.08);font-size:10px;display:grid;gap:2px;z-index:2}
+:root[data-theme="dark"] .d-tooltip{background:#182032;border-color:rgba(255,255,255,.1)}
+.d-tooltip i.dot{display:inline-block;width:6px;height:6px;border-radius:50%;margin-right:4px}
+.d-tooltip i.dot.coral{background:var(--coral)}.d-tooltip i.dot.blue{background:var(--blue)}.d-tooltip i.dot.cyan{background:var(--cyan)}
+
+/* lead quality table */
+.d-leads-card{padding:12px}
+.d-pills-bar{display:flex;gap:6px;margin-bottom:10px;overflow-x:auto}
+.pill-tab{padding:3px 9px;border-radius:999px;font-size:10.5px;color:var(--muted);background:var(--soft);cursor:pointer;white-space:nowrap;font-weight:500}
+.pill-tab.on{background:#181b22;color:#ffffff;font-weight:600}
+:root[data-theme="dark"] .pill-tab.on{background:#262d3d}
+.d-table{width:100%;border-collapse:collapse;font-size:10.5px}
+.d-table th{color:var(--muted);text-align:left;font-weight:600;padding:5px 6px;border-bottom:1px solid var(--line);text-transform:uppercase;font-size:9.5px;letter-spacing:.04em}
+.d-table td{padding:5px 6px;border-bottom:1px solid var(--line-soft);white-space:nowrap}
+.badge{display:inline-block;padding:2px 6px;border-radius:5px;font-size:9.5px;font-weight:600;text-transform:uppercase}
+.badge.review{background:var(--coral-soft);color:var(--coral);border:1px solid var(--coral-line)}
+.badge.good{background:var(--emerald-soft);color:var(--emerald);border:1px solid var(--emerald-line)}
+.badge.neutral{background:var(--soft);color:var(--muted);border:1px solid var(--line)}
+
+/* expanded lead card */
+.d-expanded-lead{background:#ffffff;border:1px solid var(--line);border-top:3px solid var(--coral);border-radius:12px;padding:10px 12px;margin-top:8px;display:grid;grid-template-columns:1fr auto;gap:12px;box-shadow:0 3px 12px rgba(0,0,0,.03)}
+:root[data-theme="dark"] .d-expanded-lead{background:#161d2d;border-color:rgba(255,255,255,.08);border-top-color:var(--coral)}
+.lead-info{display:grid;gap:6px}
+.lead-top{font-size:11px;color:var(--ink);display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.lead-top small{color:var(--muted);font-size:10px}
+.lead-meta{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:3px 10px;font-size:10px;color:var(--muted)}
+.lead-meta b{color:var(--ink)}
+.lead-meta .tag{font-style:normal;background:var(--blue-soft);color:var(--blue);padding:1px 5px;border-radius:4px;font-size:9px;font-weight:600}
+.lead-acts{display:flex;gap:6px;margin-top:4px}
+.d-btn{border:0;padding:5px 12px;border-radius:7px;font-size:10.5px;font-weight:600;cursor:pointer;white-space:nowrap}
+.d-btn.coral{background:var(--coral);color:#ffffff;box-shadow:0 2px 8px rgba(255,77,45,.28)}
+.d-btn.soft{background:var(--coral-soft);color:var(--coral);border:1px solid var(--coral-line)}
+.d-btn.ghost{background:transparent;border:1px solid var(--line);color:var(--muted)}
+.lead-score{display:grid;place-items:center}
+.score-circle{position:relative;width:52px;height:52px}
+.score-circle svg{width:100%;height:100%;transform:rotate(-90deg)}
+.score-text{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1}
+.score-text strong{font-size:14px;color:var(--ink);font-weight:800}
+.score-text small{font-size:8px;color:var(--coral);font-weight:700;text-transform:uppercase}
+
+/* 3. right widgets */
+.d-right{padding:14px 12px 14px 0;display:grid;gap:12px;align-content:start}
+.d-widget{padding:12px}
+.d-w-kpi{margin-bottom:8px}
+.d-w-kpi small{font-size:9.5px;color:var(--muted);display:block}
+.d-w-kpi strong{font-size:15px;color:var(--ink);font-weight:800;display:flex;align-items:baseline;gap:5px}
+.d-w-kpi em{font-style:normal;font-size:10px;font-weight:700;color:var(--emerald);background:var(--emerald-soft);padding:1px 5px;border-radius:999px}
+.d-w-mid{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}
+.d-w-sub small{font-size:9px;color:var(--muted);display:block}
+.d-w-sub strong{font-size:13px;color:var(--ink);font-weight:700;display:flex;align-items:baseline;gap:4px}
+.d-w-sub em{font-style:normal;font-size:9.5px;color:var(--emerald)}
+.d-donut svg{width:36px;height:36px;display:block}
+.d-w-stats{display:grid;gap:3px;font-size:10px;color:var(--muted);border-top:1px solid var(--line-soft);padding-top:6px}
+.d-w-stats div{display:flex;justify-content:space-between}
+.d-w-stats b{color:var(--ink);font-weight:600}
+.d-w-stats small.down{color:#ef4444;font-size:9px;font-weight:600}
+.d-w-stats small.up{color:var(--emerald);font-size:9px;font-weight:600}
+.d-posts-sec{margin-top:8px;border-top:1px solid var(--line-soft);padding-top:6px}
+.d-posts-sec small{font-size:9.5px;font-weight:700;color:var(--ink);display:block;margin-bottom:4px}
+.d-posts-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px}
+.d-post{height:34px;border-radius:6px;background:linear-gradient(135deg,#3b82f6,#8b5cf6);display:flex;align-items:flex-end;padding:2px;color:#fff;font-size:8px;font-weight:600}
+.d-post.p1{background:linear-gradient(135deg,#10b981,#3b82f6)}
+.d-post.p2{background:linear-gradient(135deg,#f59e0b,#ff4d2d)}
+.d-post.p3{background:linear-gradient(135deg,#ec4899,#8b5cf6)}
+.d-post.p4{background:linear-gradient(135deg,#06b6d4,#3b82f6)}
+
+/* X.com bars chart */
+.d-bars-chart{display:flex;align-items:flex-end;justify-content:space-between;gap:4px;height:70px;margin-bottom:8px;padding-top:10px}
+.bar-col{display:flex;flex-direction:column;align-items:center;gap:3px;flex:1}
+.b-fill{width:100%;max-width:12px;background:var(--blue);border-radius:999px;transition:height .3s}
+.bar-col small{font-size:9px;color:var(--muted)}
+
+/* cards: modern rounded 20px style */
 .grid{display:grid;gap:var(--gap)}
 .cols-3{grid-template-columns:repeat(3,minmax(0,1fr))}
 .cols-4{grid-template-columns:repeat(4,minmax(0,1fr))}
-.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:var(--card-pad);height:100%}
-.ic{width:var(--icon);height:var(--icon);border-radius:12px;display:grid;place-items:center;margin-bottom:16px;color:#fff;background:var(--grad);box-shadow:0 8px 18px rgba(0,93,245,.2)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:var(--card-pad);height:100%;box-shadow:var(--shadow);transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease}
+.card:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg);border-color:var(--coral-line)}
+.ic{width:var(--icon);height:var(--icon);border-radius:14px;display:grid;place-items:center;margin-bottom:16px;color:#fff;background:linear-gradient(135deg,var(--coral),#ff7a59);box-shadow:0 8px 20px rgba(255,77,45,.25)}
 .ic svg{width:22px;height:22px}
-.card p{font-size:16px;line-height:1.5}
-.step .n{display:block;margin-bottom:12px;font:800 15px/1 "Inter Tight",Inter;color:var(--blue);letter-spacing:.04em}
+.card p{font-size:15px;line-height:1.55;color:var(--fg)}
+.step .n{display:block;margin-bottom:12px;font:800 16px/1 "Inter Tight",Inter;color:var(--coral);letter-spacing:.04em}
 .feature{transition:border-color .15s,transform .15s}
 .feature:hover{border-color:rgba(0,93,245,.35);transform:translateY(-2px)}
 /* AI */
@@ -180,6 +313,8 @@ footer .bottom{margin-top:36px;padding-top:20px;border-top:1px solid rgba(255,25
   .hero .wrap,.ai{grid-template-columns:minmax(0,1fr);gap:44px}
   .cols-3,.cols-4{grid-template-columns:repeat(2,minmax(0,1fr))}
   .nav nav{display:none}.nav .wrap{justify-content:space-between}
+  .screen{grid-template-columns:130px minmax(0,1fr)}
+  .d-right{display:none}
 }
 /* mobile: one column, tighter rhythm */
 @media (max-width:640px){
@@ -189,9 +324,8 @@ footer .bottom{margin-top:36px;padding-top:20px;border-top:1px solid rgba(255,25
   .cols-3,.cols-4{grid-template-columns:minmax(0,1fr)}
   :root{--card-pad:20px}
   .head{margin-bottom:20px}
-  .screen{grid-template-columns:minmax(0,1fr)}.side{display:none}
-  .kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .mtable th:nth-child(3),.mtable td:nth-child(3){display:none}
+  .screen{grid-template-columns:minmax(0,1fr)}
+  .d-side,.d-right{display:none}
   .nav .btn.secondary{display:none}
   .final .box{padding:48px 20px}
 }
@@ -230,32 +364,310 @@ footer .bottom{margin-top:36px;padding-top:20px;border-top:1px solid rgba(255,25
       </div>
     </div>
 
-    <figure class="device" aria-label="Qlarity dashboard preview with sample data">
-      <div class="screen">
-        <div class="side" aria-hidden="true"><img src="brand/qlarity-logo-dark.png" alt="" width="620" height="200"><i class="on">Overview</i><i>Trends</i><i>Campaigns</i><i>Reports</i><i>Lead status</i><i>Attribution</i><i>TAT &amp; calls</i><i>Settings</i></div>
-        <div class="main">
-          <div class="mhead"><b>Overview</b><span><small>1 – 31 Oct · All brands</small><small class="tag">Sample data</small></span></div>
-          <div class="kpis">
-            <div class="kpi"><small>Amount spent</small><strong>₹12,48,320</strong></div>
-            <div class="kpi"><small>Leads</small><strong>3,842</strong><em>CPL ₹325</em></div>
-            <div class="kpi"><small>Qualified leads</small><strong>1,286</strong><em>33% of leads</em></div>
-            <div class="kpi hl"><small>CPQL</small><strong>₹971</strong></div>
-          </div>
-          <table class="mtable">
-            <thead><tr><th scope="col">Brand</th><th scope="col">Spend</th><th scope="col">Leads</th><th scope="col">Qualified</th><th scope="col">CPQL</th></tr></thead>
-            <tbody>
-              <tr><td><b>Brand A</b></td><td>₹6,74,520</td><td>2,068</td><td>730</td><td><b>₹924</b></td></tr>
-              <tr><td><b>Brand B</b></td><td>₹3,98,960</td><td>1,232</td><td>402</td><td><b>₹992</b></td></tr>
-              <tr><td><b>Brand C</b></td><td>₹1,74,840</td><td>542</td><td>154</td><td><b>₹1,135</b></td></tr>
-            </tbody>
-          </table>
-          <div class="chart"><small>Leads and qualified leads by week</small>
-            <svg viewBox="0 0 220 70" preserveAspectRatio="none" aria-hidden="true">
-              <g fill="#00c2fb" opacity=".35"><rect x="6" y="22" width="12" height="48"/><rect x="34" y="14" width="12" height="56"/><rect x="62" y="26" width="12" height="44"/><rect x="90" y="10" width="12" height="60"/><rect x="118" y="18" width="12" height="52"/><rect x="146" y="8" width="12" height="62"/><rect x="174" y="16" width="12" height="54"/><rect x="202" y="6" width="12" height="64"/></g>
-              <g fill="#005df5"><rect x="6" y="52" width="12" height="18"/><rect x="34" y="46" width="12" height="24"/><rect x="62" y="54" width="12" height="16"/><rect x="90" y="42" width="12" height="28"/><rect x="118" y="48" width="12" height="22"/><rect x="146" y="38" width="12" height="32"/><rect x="174" y="44" width="12" height="26"/><rect x="202" y="34" width="12" height="36"/></g>
-            </svg></div>
-          <p class="mnote">Preview with sample numbers. Your dashboard shows your own data.</p>
+    <figure class="device" aria-label="Qlarity AI Performance Marketing Dashboard">
+      <div class="device-bar">
+        <div class="device-dots">
+          <span class="d-dot red"></span>
+          <span class="d-dot yellow"></span>
+          <span class="d-dot green"></span>
         </div>
+        <div class="device-nav">&lt; &gt;</div>
+        <div class="device-url">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          <span>https://getqlarity.online/app</span>
+        </div>
+      </div>
+      <div class="screen">
+        <!-- 1. Left Sidebar -->
+        <aside class="d-side" aria-label="Dashboard navigation">
+          <div class="d-logo">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+          </div>
+          <div class="d-nav-item active">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+            <span>Realtime Overview</span>
+          </div>
+          <div class="d-nav-item parent">
+            <span style="display:flex;align-items:center;gap:9px">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              <span>SEO</span>
+            </span>
+            <span class="chevron">▾</span>
+          </div>
+          <div class="d-nav-item parent">
+            <span style="display:flex;align-items:center;gap:9px">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+              <span>Paid Ads</span>
+            </span>
+            <span class="chevron">▾</span>
+          </div>
+          <div class="d-nav-item parent">
+            <span style="display:flex;align-items:center;gap:9px">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+              <span>Social Media</span>
+            </span>
+            <span class="chevron">▾</span>
+          </div>
+          <div class="d-nav-item parent">
+            <span style="display:flex;align-items:center;gap:9px">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+              <span>Data Sources</span>
+            </span>
+            <span class="chevron">▾</span>
+          </div>
+          <div class="d-nav-sub">
+            <span>Google Analytics</span>
+            <span>Google Ads</span>
+            <span>Meta Ads</span>
+            <span>Social Platforms</span>
+          </div>
+          <div class="d-nav-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+            <span>Reports</span>
+          </div>
+          <div class="d-nav-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            <span>Settings</span>
+          </div>
+        </aside>
+
+        <!-- 2. Center Area -->
+        <div class="d-center">
+          <!-- Top Strip: Search + KPI Tickers -->
+          <div class="d-top-strip">
+            <div class="d-search">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              <span>Search...</span>
+            </div>
+            <div class="d-ticker">
+              <div class="d-tick">
+                <span class="k">Traffic</span>
+                <span class="v">982 <em class="up">+5%</em></span>
+              </div>
+              <div class="d-tick">
+                <span class="k">ROI</span>
+                <span class="v">+15% <em class="up">+3%</em></span>
+              </div>
+              <div class="d-tick">
+                <span class="k">Conversions</span>
+                <span class="v">473 <em class="up">+9%</em></span>
+              </div>
+              <div class="d-tick">
+                <span class="k">Expenses</span>
+                <span class="v">$884 <em class="down">-2%</em></span>
+              </div>
+              <div class="d-tick">
+                <span class="k">CTR</span>
+                <span class="v">2.5% <small class="down">-0.2%</small></span>
+              </div>
+              <div class="d-tick">
+                <span class="k">CPA</span>
+                <span class="v">$5.41 <small class="up">-$0.34</small></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Trends Multi-Series Chart Card -->
+          <div class="d-card">
+            <div class="d-head">
+              <div class="d-title">
+                <b>Trends</b>
+                <span class="dots">···</span>
+                <div class="d-series-tog" style="margin-left:10px">
+                  <span class="coral">● Traffic</span>
+                  <span class="blue">● ROI</span>
+                  <span class="cyan">● Conversions</span>
+                </div>
+              </div>
+              <span class="d-period">3M ▾</span>
+            </div>
+            <div class="d-chart-box">
+              <svg viewBox="0 0 460 110" preserveAspectRatio="none" aria-hidden="true">
+                <!-- Grid Lines -->
+                <line x1="0" y1="20" x2="460" y2="20" stroke="rgba(226,232,240,0.6)" stroke-dasharray="3,3"/>
+                <line x1="0" y1="50" x2="460" y2="50" stroke="rgba(226,232,240,0.6)" stroke-dasharray="3,3"/>
+                <line x1="0" y1="80" x2="460" y2="80" stroke="rgba(226,232,240,0.6)" stroke-dasharray="3,3"/>
+                <!-- Cyan series (Conversions) -->
+                <path d="M 0,85 C 40,82 70,68 110,65 C 150,62 170,72 210,58 C 250,44 280,55 330,48 C 370,42 410,50 460,35" fill="none" stroke="#06b6d4" stroke-width="2"/>
+                <!-- Blue series (ROI) -->
+                <path d="M 0,72 C 30,75 60,60 90,62 C 130,64 160,50 200,45 C 240,40 280,48 320,38 C 360,28 400,34 460,22" fill="none" stroke="#3b82f6" stroke-width="2"/>
+                <!-- Coral primary series (Traffic) -->
+                <path d="M 0,65 C 30,60 50,78 80,68 C 110,58 130,85 160,78 C 190,70 210,88 240,62 C 270,36 300,52 330,42 C 360,32 400,50 460,30" fill="none" stroke="#ff4d2d" stroke-width="2.4"/>
+                <!-- Vertical marker indicator at day 25 -->
+                <line x1="330" y1="10" x2="330" y2="92" stroke="#ff4d2d" stroke-dasharray="3,3" stroke-width="1.2"/>
+                <circle cx="330" cy="42" r="3.5" fill="#ff4d2d"/>
+                <rect x="322" y="93" width="16" height="15" rx="4" fill="#ff4d2d"/>
+                <text x="330" y="104" fill="#fff" font-size="9" font-weight="700" text-anchor="middle" font-family="Inter,sans-serif">25</text>
+              </svg>
+              <!-- Floating Tooltip -->
+              <div class="d-tooltip">
+                <div><i class="dot coral"></i> Traffic: <b>+3.2%</b></div>
+                <div><i class="dot blue"></i> ROI: <b>+4.1%</b></div>
+                <div><i class="dot cyan"></i> Conv.: <b>-2.7%</b></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Lead Quality Table Card -->
+          <div class="d-card d-leads-card">
+            <div class="d-pills-bar">
+              <span class="pill-tab on">Lead Quality</span>
+              <span class="pill-tab">Day on Day</span>
+              <span class="pill-tab">Week on Week</span>
+              <span class="pill-tab">SQR</span>
+              <span class="pill-tab">Keyword Performance</span>
+              <span class="pill-tab">Country</span>
+            </div>
+            <table class="d-table">
+              <thead>
+                <tr>
+                  <th scope="col">Date</th>
+                  <th scope="col">Company</th>
+                  <th scope="col">Email</th>
+                  <th scope="col">UTM</th>
+                  <th scope="col">Lead Quality</th>
+                  <th scope="col">Country</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>● Today, 14:12</td>
+                  <td>–</td>
+                  <td>contact@helpdesk.com</td>
+                  <td><a href="#solution" style="color:var(--muted)">link</a></td>
+                  <td><span class="badge review">Needs Review</span></td>
+                  <td>USA</td>
+                </tr>
+                <tr>
+                  <td>● Today, 8:34</td>
+                  <td><b>Innovate.co</b></td>
+                  <td>s.chen@innovate.co</td>
+                  <td><a href="#solution" style="color:var(--muted)">link</a></td>
+                  <td><span class="badge review">Needs Review</span></td>
+                  <td>Canada</td>
+                </tr>
+                <tr>
+                  <td>Aug 4, 17:57</td>
+                  <td><b>Webmail</b></td>
+                  <td>maria.g@webmail.net</td>
+                  <td><a href="#solution" style="color:var(--muted)">link</a></td>
+                  <td><span class="badge good">Good</span></td>
+                  <td>Germany</td>
+                </tr>
+                <tr>
+                  <td>Aug 4, 13:40</td>
+                  <td>–</td>
+                  <td>john.doe@startup.org</td>
+                  <td><a href="#solution" style="color:var(--muted)">link</a></td>
+                  <td><span class="badge good">Good</span></td>
+                  <td>Australia</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <!-- Expanded Lead Card -->
+            <div class="d-expanded-lead">
+              <div class="lead-info">
+                <div class="lead-top">
+                  <b>Aug 3, 10:22</b> · <b>Designhub</b> · contact@designhub.io · <span class="badge review">Needs Review</span> · <small>UK</small>
+                </div>
+                <div class="lead-meta">
+                  <div>Services: <span class="tag">UI/UX Design</span> <span class="tag">Web Dev</span></div>
+                  <div>Note (Aug 3, 15:17) ✏️</div>
+                  <div>Source: <b>Google Ads (Summer Sale)</b></div>
+                  <div>Potential Revenue: <b>$1,500</b></div>
+                  <div>Lead Score: <b>85 (High Potential)</b></div>
+                  <div><small style="color:var(--muted)">⚡ Auto-attributed via Qlarity</small></div>
+                </div>
+                <div class="lead-acts">
+                  <a href="/app" class="d-btn coral">View Campaign ↗</a>
+                  <a href="/app" class="d-btn soft">Assign to Team 👥</a>
+                  <button type="button" class="d-btn ghost" style="margin-left:auto">Archive Lead 🗑</button>
+                </div>
+              </div>
+              <div class="lead-score">
+                <div class="score-circle">
+                  <svg viewBox="0 0 36 36">
+                    <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#e2e8f0" stroke-width="3"/>
+                    <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#ff4d2d" stroke-width="3" stroke-dasharray="85, 100"/>
+                  </svg>
+                  <div class="score-text">
+                    <strong>85</strong>
+                    <small>AI Score</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. Right Widgets -->
+        <aside class="d-right" aria-label="Social media analytics">
+          <!-- Instagram Card -->
+          <div class="d-card d-widget">
+            <div class="d-head">
+              <div class="d-title"><b>Instagram</b> <span class="dots">···</span></div>
+              <span class="d-period">7D ▾</span>
+            </div>
+            <div class="d-w-kpi">
+              <small>Followers</small>
+              <strong>135,145 <em>+16</em></strong>
+            </div>
+            <div class="d-w-mid">
+              <div class="d-w-sub">
+                <small>Interactions</small>
+                <strong>1,356 <em>+7</em></strong>
+              </div>
+              <div class="d-donut">
+                <svg viewBox="0 0 36 36">
+                  <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#e2e8f0" stroke-width="3.5"/>
+                  <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#ff4d2d" stroke-width="3.5" stroke-dasharray="68, 100"/>
+                </svg>
+              </div>
+            </div>
+            <div class="d-w-stats">
+              <div><span>Likes</span> <b>697</b></div>
+              <div><span>Comments</span> <b>22</b></div>
+              <div><span>Saves</span> <b>566</b></div>
+              <div><span>Shares</span> <b>71</b></div>
+            </div>
+            <div class="d-posts-sec">
+              <small>Top Posts</small>
+              <div class="d-posts-grid">
+                <div class="d-post p1">JUL 30</div>
+                <div class="d-post p2">AUG 1</div>
+                <div class="d-post p3">JUL 31</div>
+                <div class="d-post p4">AUG 3</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- X.com Card -->
+          <div class="d-card d-widget">
+            <div class="d-head">
+              <div class="d-title"><b>X.com</b> <span class="dots">···</span></div>
+              <span class="d-period">7D ▾</span>
+            </div>
+            <div class="d-w-kpi">
+              <small>Followers</small>
+              <strong>45,015 <em>+7</em></strong>
+            </div>
+            <div class="d-bars-chart">
+              <div class="bar-col"><div class="b-fill" style="height:35px"></div><small>27</small></div>
+              <div class="bar-col"><div class="b-fill" style="height:15px"></div><small>28</small></div>
+              <div class="bar-col"><div class="b-fill" style="height:25px"></div><small>29</small></div>
+              <div class="bar-col"><div class="b-fill" style="height:30px"></div><small>30</small></div>
+              <div class="bar-col"><div class="b-fill" style="height:55px"></div><small>31</small></div>
+              <div class="bar-col"><div class="b-fill" style="height:20px"></div><small>1</small></div>
+              <div class="bar-col"><div class="b-fill" style="height:38px"></div><small>2</small></div>
+            </div>
+            <div class="d-w-stats">
+              <div><span>Impressions</span> <b>933 <small class="down">-57%</small></b></div>
+              <div><span>Engagement Rate</span> <b>15.8% <small class="up">+82%</small></b></div>
+              <div><span>Engagement</span> <b>148 <small class="up">+22%</small></b></div>
+            </div>
+          </div>
+        </aside>
       </div>
     </figure>
   </div>
