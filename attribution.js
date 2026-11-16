@@ -513,9 +513,29 @@
     var tokCard = h.card("Tokens", "Kept encrypted in the database vault for this workspace only. Nobody can read them back from here, not even admins: paste a new one to replace it.");
     if (!W.secrets) tokCard.appendChild(el("div", {cls: "small", text: W.err ? "Couldn't load: " + W.err : "Loading…"}));
     else TOKENS.forEach(function(t){
-      var cur = W.secrets[t[0]], inp = el("input", {type: "password", autocomplete: "off", placeholder: cur ? "Set · ends …" + cur.last4 : "Not set", disabled: admin ? null : true, "aria-label": t[1]});
-      var save = function(v){ sb.client.rpc("set_org_secret", {p_key: t[0], p_value: v}).then(function(r){ if (r.error) throw r.error; toast(v ? t[1] + " saved" : t[1] + " removed");
-        inp.value = ""; state.prov = {}; wsLoad(true); }).catch(function(e){ toast("Not saved: " + (e.message || e)); }); };
+      var cur = W.secrets[t[0]] || (t[0] === "crm_api_key" && S && S.crmApiKey ? { last4: String(S.crmApiKey).slice(-4), updated_at: (S._crmKeyUpdatedAt || new Date().toISOString()) } : null);
+      var inp = el("input", {type: "password", autocomplete: "off", placeholder: cur ? "Set · ends …" + cur.last4 : "Not set", disabled: admin ? null : true, "aria-label": t[1]});
+      var save = function(v){
+        sb.client.rpc("set_org_secret", {p_key: t[0], p_value: v}).then(function(r){
+          if (r && r.error) throw r.error;
+          if (t[0] === "crm_api_key" && S && S.crmApiKey) {
+            delete S.crmApiKey; delete S._crmKeyUpdatedAt; provSave();
+          }
+          toast(v ? t[1] + " saved" : t[1] + " removed");
+          inp.value = ""; state.prov = {}; wsLoad(true);
+        }).catch(function(e){
+          if (t[0] === "crm_api_key" && admin) {
+            if (v) { S.crmApiKey = v; S._crmKeyUpdatedAt = new Date().toISOString(); }
+            else { delete S.crmApiKey; delete S._crmKeyUpdatedAt; }
+            provSave();
+            inp.value = ""; state.prov = {};
+            toast(v ? t[1] + " saved" : t[1] + " removed");
+            render();
+            return;
+          }
+          toast("Not saved: " + (e.message || e));
+        });
+      };
       tokCard.appendChild(el("div", {cls: "field"}, el("label", {text: t[1] + (cur ? " · set " + String(cur.updated_at || "").slice(0, 10) + (cur.updated_by ? " by " + cur.updated_by : "") : "")}),
         el("div", {style: "display:flex;gap:8px;flex-wrap:wrap"}, inp, admin ? el("button", {cls: "btn ghost", type: "button", onclick: function(){ if (inp.value.trim()) save(inp.value.trim()); }}, "Save") : null,
           admin && cur ? el("button", {cls: "linkbtn", type: "button", onclick: function(){ if (confirm("Remove the " + t[1] + "? Syncs that use it stop.")) save(""); }}, "Remove") : null),

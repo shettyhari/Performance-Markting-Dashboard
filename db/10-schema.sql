@@ -90,7 +90,7 @@ create table if not exists public.org_settings (
 -- per-workspace tokens (Meta, Conversions API, audiences, Google): the value is encrypted in vault.secrets; this row only says it exists
 create table if not exists public.org_secrets (
   org_id     uuid not null default private.current_org() references public.organizations (id) on delete cascade,
-  key        text not null check (key in ('meta_access_token', 'meta_capi_token', 'meta_audience_token', 'google_refresh_token', 'google_login_customer_id', 'ai_anthropic_key', 'ai_openai_key', 'ai_gemini_key', 'ai_compatible_key')),
+  key        text not null check (key in ('meta_access_token', 'meta_capi_token', 'meta_audience_token', 'google_refresh_token', 'google_login_customer_id', 'crm_api_key', 'ai_anthropic_key', 'ai_openai_key', 'ai_gemini_key', 'ai_compatible_key')),
   vault_id   uuid not null,
   last4      text not null default '',
   updated_by text,
@@ -99,7 +99,7 @@ create table if not exists public.org_secrets (
 );
 
 alter table public.org_secrets drop constraint if exists org_secrets_key_check;
-alter table public.org_secrets add constraint org_secrets_key_check check (key in ('meta_access_token', 'meta_capi_token', 'meta_audience_token', 'google_refresh_token', 'google_login_customer_id', 'ai_anthropic_key', 'ai_openai_key', 'ai_gemini_key', 'ai_compatible_key'));
+alter table public.org_secrets add constraint org_secrets_key_check check (key in ('meta_access_token', 'meta_capi_token', 'meta_audience_token', 'google_refresh_token', 'google_login_customer_id', 'crm_api_key', 'ai_anthropic_key', 'ai_openai_key', 'ai_gemini_key', 'ai_compatible_key'));
 
 -- Ask Qlarity per workspace (owners only): which provider and model answer. The provider's key is in org_secrets (ai_<provider>_key).
 -- Separate from org_settings on purpose: editors can change settings, and a custom address there could send the key elsewhere.

@@ -202,12 +202,16 @@ async function orgSettings(fresh) {
   return S;
 }
 const settingsUpdatedAt = () => { const c = ctx(); return c ? c.settingsAt : null; };
-const ENV_FALLBACK = { meta_access_token: "META_ACCESS_TOKEN", meta_capi_token: "META_CAPI_TOKEN", meta_audience_token: "META_AUDIENCE_TOKEN", google_refresh_token: "GOOGLE_ADS_REFRESH_TOKEN", google_login_customer_id: "GOOGLE_ADS_LOGIN_CUSTOMER_ID" };
+const ENV_FALLBACK = { meta_access_token: "META_ACCESS_TOKEN", meta_capi_token: "META_CAPI_TOKEN", meta_audience_token: "META_AUDIENCE_TOKEN", google_refresh_token: "GOOGLE_ADS_REFRESH_TOKEN", google_login_customer_id: "GOOGLE_ADS_LOGIN_CUSTOMER_ID", crm_api_key: "CRM_API_KEY" };
 async function orgSecret(key) {
   const c = ctx(); if (!c || !c.org) return "";
   if (key in c.secrets) return c.secrets[key];
   let v = "";
   try { v = (await raw("rpc/get_org_secret", { method: "POST", body: JSON.stringify({ p_org: c.org.id, p_key: key }) })) || ""; } catch (e) { v = ""; }
+  if (!v && key === "crm_api_key") {
+    const S = await orgSettings();
+    if (S && S.crmApiKey) v = S.crmApiKey;
+  }
   if (!v && process.env.APP_SINGLE_ORG === "1" && ENV_FALLBACK[key]) v = process.env[ENV_FALLBACK[key]] || "";   // one-company deployments may keep env tokens
   c.secrets[key] = String(v || "");
   return c.secrets[key];

@@ -77,13 +77,16 @@ create table if not exists public.org_settings (
 -- per-workspace tokens (Meta, Conversions API, audiences, Google): the value is in Supabase Vault; this row only says it exists
 create table if not exists public.org_secrets (
   org_id     uuid not null default private.current_org() references public.organizations (id) on delete cascade,
-  key        text not null check (key in ('meta_access_token', 'meta_capi_token', 'meta_audience_token', 'google_refresh_token', 'google_login_customer_id')),
+  key        text not null check (key in ('meta_access_token', 'meta_capi_token', 'meta_audience_token', 'google_refresh_token', 'google_login_customer_id', 'crm_api_key')),
   vault_id   uuid not null,
   last4      text not null default '',
   updated_by text,
   updated_at timestamptz not null default now(),
   primary key (org_id, key)
 );
+
+alter table public.org_secrets drop constraint if exists org_secrets_key_check;
+alter table public.org_secrets add constraint org_secrets_key_check check (key in ('meta_access_token', 'meta_capi_token', 'meta_audience_token', 'google_refresh_token', 'google_login_customer_id', 'crm_api_key'));
 
 -- machine keys: CRM push (n8n / webhooks) and API (MCP server, Chrome extension). Only a sha256 hash is stored.
 create table if not exists public.org_api_keys (
