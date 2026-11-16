@@ -464,7 +464,8 @@
     ["meta_capi_token", "Meta Conversions API token (optional)", "Events Manager › your dataset › Settings › Conversions API › Generate access token. Without it, the Meta token above is used."],
     ["meta_audience_token", "Meta audience token (optional)", "Needs ads_management, for Meta audiences. Without it, the Meta token above is used."],
     ["google_refresh_token", "Google Ads refresh token (optional)", "From the site's Google OAuth client (ask whoever runs the site for the client id), scope adwords."],
-    ["google_login_customer_id", "Google Ads manager (MCC) id (optional)", "Digits only, when your accounts sit under a manager account."]];
+    ["google_login_customer_id", "Google Ads manager (MCC) id (optional)", "Digits only, when your accounts sit under a manager account."],
+    ["crm_api_key", "CRM API key / token (optional)", "API key or access token from your CRM (TeleCRM, HubSpot, Zoho, LeadSquared, Salesforce, etc.) for direct integrations."]];
   var W = {secrets: null, keys: null, newKey: null, busy: false};
   function wsLoad(force){
     if (W.busy || (!force && W.secrets)) return; W.busy = true;
@@ -613,7 +614,7 @@
   }
 
   /* ---------- register ---------- */
-  SET_TABS.unshift(["workspace", "Workspace", "Your workspace's name, logo, currency, time zone and CRM, the tokens it uses for Meta and Google, and API keys."]);
+  SET_TABS.unshift(["workspace", "Workspace", "Your workspace's name, logo, currency, time zone and CRM, the tokens it uses for Meta, Google and CRM, and API keys."]);
   EXTRA_SET.workspace = setWorkspace;
   PAGE_INFO.attribution = ["Attribution", "Which channels and campaigns really produce leads, qualified leads and sales, under the attribution model you pick."];
   PAGE_INFO.journeys = ["Lead journeys", "Every touch of one lead, from the first click to the CRM, and what was sent to Meta."];

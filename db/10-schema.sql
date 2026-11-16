@@ -507,7 +507,7 @@ declare o uuid := private.current_org(); v uuid; nm text; val text := btrim(coal
 begin
   if o is null or coalesce(private.org_role(o), '') <> 'admin' then raise exception 'Only workspace admins can change tokens.'; end if;
   if p_key like 'ai\_%' and not private.is_owner(o) then raise exception 'Only the workspace owner can change AI keys.'; end if;
-  if p_key not in ('meta_access_token', 'meta_capi_token', 'meta_audience_token', 'google_refresh_token', 'google_login_customer_id', 'ai_anthropic_key', 'ai_openai_key', 'ai_gemini_key', 'ai_compatible_key') then raise exception 'Unknown token %', p_key; end if;
+  if p_key not in ('meta_access_token', 'meta_capi_token', 'meta_audience_token', 'google_refresh_token', 'google_login_customer_id', 'crm_api_key', 'ai_anthropic_key', 'ai_openai_key', 'ai_gemini_key', 'ai_compatible_key') then raise exception 'Unknown token %', p_key; end if;
   select vault_id into v from public.org_secrets where org_id = o and key = p_key;
   if val = '' then
     if v is not null then delete from vault.secrets where id = v; delete from public.org_secrets where org_id = o and key = p_key; end if;
