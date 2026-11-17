@@ -1965,11 +1965,11 @@ var OBJECTIVES = {
   }
 };
 function getActiveObjective(){
-  if (state.objective) return state.objective;
   if (state.brand && state.brand !== "All" && state.settings && state.settings.brandObjectives && state.settings.brandObjectives[state.brand]){
     return state.settings.brandObjectives[state.brand];
   }
   if (state.settings && state.settings.objective) return state.settings.objective;
+  if (state.objective) return state.objective;
   return "leads";
 }
 function setActiveObjective(obj){
@@ -5333,23 +5333,7 @@ function viewOverview(){
   var rb = reconBadge(); if (rb) sec.appendChild(rb);
   var zlb = zeroLeadBanner(); if (zlb) sec.appendChild(zlb);
   sec.appendChild(gaSnapshot(T, prevTotals()));
-  var obj = getActiveObjective(), objMeta = OBJECTIVES[obj] || OBJECTIVES.leads;
-  var objBanner = el("div", {cls: "obj-active-banner", style: "display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;padding:10px 14px;background:var(--band);border-left:4px solid " + objMeta.color + ";border-radius:var(--r-sm,4px);margin-bottom:12px"},
-    el("div", {style: "display:flex;align-items:center;gap:10px"},
-      el("span", {style: "font-size:20px"}, objMeta.icon),
-      el("div", null,
-        el("strong", {style: "font-size:13px;color:var(--ink)"}, objMeta.fullName + " Focus View"),
-        el("span", {cls: "small", style: "display:block;color:var(--muted)"}, objMeta.tagline)
-      )
-    ),
-    el("div", {style: "display:flex;gap:6px;align-items:center;flex-wrap:wrap"},
-      el("span", {cls: "small", style: "color:var(--muted);font-weight:500"}, "Objective:"),
-      el("button", {cls: "btn ghost btn-sm" + (obj === "leads" ? " active" : ""), type: "button", style: obj === "leads" ? "font-weight:bold;border-color:var(--accent)" : "", onclick: function(){ setActiveObjective("leads"); }}, "🎯 Leads"),
-      el("button", {cls: "btn ghost btn-sm" + (obj === "sales" ? " active" : ""), type: "button", style: obj === "sales" ? "font-weight:bold;border-color:var(--accent)" : "", onclick: function(){ setActiveObjective("sales"); }}, "🛒 Sales"),
-      el("button", {cls: "btn ghost btn-sm" + (obj === "awareness" ? " active" : ""), type: "button", style: obj === "awareness" ? "font-weight:bold;border-color:var(--accent)" : "", onclick: function(){ setActiveObjective("awareness"); }}, "📢 Awareness")
-    )
-  );
-  sec.appendChild(objBanner);
+  var obj = getActiveObjective();
 
   var grp = function(title, cards){ return el("div", {cls: "kpi-group"}, el("div", {cls: "eyebrow", text: title}), el("div", {cls: "kpis"}, cards)); };
 
@@ -5685,17 +5669,6 @@ function renderHeader(){
     chips.appendChild(el("label", {cls: "brand-pick plat-pick"}, el("span", {cls: "bp-dot", style: "background:" + (isGoogle() ? "#1a73e8" : "#0866ff"), "aria-hidden": "true"}), el("span", {cls: "bp-lbl", text: "Platform"}), psel)); }
   chips.appendChild(el("label", {cls: "brand-pick"}, el("span", {cls: "bp-dot", style: "background:" + (state.brand === "All" ? "linear-gradient(135deg,#1e3a8a,#7c3aed)" : brandColor(state.brand)), "aria-hidden": "true"}),
     el("span", {cls: "bp-lbl", text: "Brand"}), bsel));
-  var curObj = getActiveObjective();
-  var osel = el("select", {id: "obj-select", "aria-label": "Business objective"}, [
-    el("option", {value: "leads", selected: curObj === "leads" ? true : null, text: "🎯 Leads (CPL & QL)"}),
-    el("option", {value: "sales", selected: curObj === "sales" ? true : null, text: "🛒 Sales (ROAS & Revenue)"}),
-    el("option", {value: "awareness", selected: curObj === "awareness" ? true : null, text: "📢 Awareness (Reach & CPM)"})
-  ]);
-  osel.addEventListener("change", function(){ setActiveObjective(osel.value); });
-  var curObjMeta = OBJECTIVES[curObj] || OBJECTIVES.leads;
-  chips.appendChild(el("label", {cls: "brand-pick obj-pick", title: "Business objective: " + curObjMeta.fullName + " — " + curObjMeta.tagline},
-    el("span", {cls: "bp-dot", style: "background:" + curObjMeta.color, "aria-hidden": "true"}),
-    el("span", {cls: "bp-lbl", text: "Goal"}), osel));
   document.body.classList.toggle("plat-google", isGoogle());
   document.getElementById("btn-xlsx").hidden = !state.caps.downloads;
   document.getElementById("save-wrap").hidden = sb.cfg ? !(state.raw && state.source !== "db" && (sbCanWrite() || sb.status === "signedout")) : !(state.raw && (teamCanWrite() || team.status === "locked"));
