@@ -165,8 +165,20 @@ section.panel{display:grid;gap:22px;min-width:0}
 @media (min-width:1100px){.kpi-group .kpis{grid-template-columns:repeat(6,minmax(0,1fr))}}
 .kpi-group{display:grid;gap:8px;min-width:0}
 .col-tools{display:grid;gap:10px;justify-items:start}
-.col-panel{border:1px solid var(--ink);background:var(--panel);padding:14px;display:grid;gap:12px;width:100%}
+.col-panel{border:1px solid var(--ink);background:var(--panel);padding:14px;display:grid;gap:12px;width:100%;border-radius:var(--r-sm,6px);margin-bottom:8px}
 .col-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,220px),1fr));gap:8px 18px}
+.tbl-action-bar{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;padding:8px 12px;margin-bottom:6px;background:var(--band);border:1px solid var(--line);border-radius:var(--r-sm,6px)}
+.tbl-meta{display:flex;align-items:center;gap:10px}
+.tbl-title{font-weight:600;font-size:13px;color:var(--ink)}
+.tbl-count{font-size:12px;color:var(--muted)}
+.tbl-actions{display:flex;align-items:center;gap:8px}
+.btn-tbl-tool{font-size:12px;padding:4px 10px;height:28px;line-height:18px;display:inline-flex;align-items:center;gap:5px}
+.col-presets{display:flex;gap:6px;flex-wrap:wrap;padding-bottom:10px;border-bottom:1px solid var(--line);margin-bottom:10px}
+.col-preset-btn{font-size:11px;padding:3px 8px;border-radius:4px}
+.obj-card{transition:all .15s ease}
+.obj-card:hover{border-color:var(--ink)!important}
+.obj-card.selected{border-color:var(--accent)!important;box-shadow:0 0 0 2px var(--accent-soft)}
+.obj-pick select{font-weight:500}
 .toggle.locked{color:var(--muted)}
 td.name.tree-name{min-width:380px;max-width:560px}
 .tree-cell{display:flex;align-items:baseline;gap:6px;min-width:0}
@@ -1285,6 +1297,8 @@ function pickMapped(v, mk, day, campDay, alloc){
 }
 
 var DEFAULT_SETTINGS = {
+  objective: "leads",
+  brandObjectives: {},
   brands: [],
   keywords: [], campaignPrefixes: [], workHours: {start: 10, end: 21, days: [1, 2, 3, 4, 5, 6]},
   slaMin: 30, diffAlert: 0.10, slaTarget: 0.8, platform: "Meta Ads",
@@ -1512,13 +1526,18 @@ function deriveSales(o){
   o.wonN = won; o.saleRate = WON_ON && o.crm ? won / o.crm : null; o.cps = WON_ON && isNum(o.spend) && won > 0 ? o.spend / won : null;
   o.estRev = WON_ON && VAL_ON ? (won === 0 ? 0 : (o.revMiss ? null : o.rev)) : null;
   o.estRoas = isNum(o.estRev) && isNum(o.spend) && o.spend > 0 ? o.estRev / o.spend : null;
+  o.aov = isNum(o.estRev) && isNum(won) && won > 0 ? o.estRev / won : null;
 }
 function derive(o){
   deriveSales(o);
   o.qlRate = o.crm ? o.ql / o.crm : null;
   o.ctr = isNum(o.imp) && o.imp > 0 && isNum(o.clk) ? o.clk / o.imp : null;
   o.cpc = isNum(o.spend) && isNum(o.clk) && o.clk > 0 ? o.spend / o.clk : null;
+  o.cpm = isNum(o.spend) && isNum(o.imp) && o.imp > 0 ? (o.spend / o.imp) * 1000 : null;
   o.reachV = isNum(o.reach) && o.reachRows === 1 ? o.reach : null;
+  var rch = isNum(o.reachV) ? o.reachV : (isNum(o.reach) && o.reach > 0 ? o.reach : null);
+  o.frequency = isNum(o.imp) && isNum(rch) && rch > 0 ? o.imp / rch : null;
+  o.cpmr = isNum(o.spend) && isNum(rch) && rch > 0 ? (o.spend / rch) * 1000 : null;
   o.tatMed = median(o.tats); o.whAvg = o.whs && o.whs.length ? o.wsum / o.whs.length : null; o.whMed = median(o.whs);
   o.pendAgeO = o.pend > 0 ? o.pendO / o.pend : null; o.pendAgeW = o.pend > 0 ? o.pendW / o.pend : null;
   if (o.uiExcluded){ o.diff = null; o.pct = null; o.cpl = null; o.cpql = isNum(o.spend) && o.ql > 0 ? o.spend / o.ql : null;
@@ -1834,6 +1853,8 @@ function lsKey(){ return LS_KEY + (typeof sb !== "undefined" && sb && sb.org ? "
 function loadSettings(){ var s = null; try { s = JSON.parse(localStorage.getItem(lsKey()) || "null"); } catch (e) {}
   var d = clone(DEFAULT_SETTINGS); if (!s) return d;
   for (var k in d) if (k in s) d[k] = s[k];
+  if (s.objective) d.objective = s.objective;
+  if (s.brandObjectives) d.brandObjectives = s.brandObjectives;
   d.cols.meta = Object.assign(clone(DEFAULT_SETTINGS.cols.meta), (s.cols || {}).meta || {}); d.cols.crm = Object.assign(clone(DEFAULT_SETTINGS.cols.crm), (s.cols || {}).crm || {});
   return d; }
 function storeSettings(noShare){ var ok = true; try { localStorage.setItem(lsKey(), JSON.stringify(state.settings)); } catch (e) { ok = false; } if (!noShare && typeof dbSettingsChanged === "function") dbSettingsChanged(); return ok; }
@@ -1853,7 +1874,7 @@ function fDur(v){ if (!isNum(v)) return "N/A"; if (v < 59.95) return v.toFixed(1
 function fMin(v){ return fDur(v); }
 function fShortINR(v){ if (!isNum(v)) return "N/A"; var a = Math.abs(v); if (CUR !== "₹") return fINR(v); if (a >= 1e7) return "₹" + (v / 1e7).toFixed(2) + " Cr"; if (a >= 1e5) return "₹" + (v / 1e5).toFixed(2) + " L"; return fINR(v); }
 function fINR2(v){ return isNum(v) ? (v < 0 ? "-" : "") + CUR + Math.abs(v).toLocaleString("en-IN", {minimumFractionDigits: 2, maximumFractionDigits: 2}) : "N/A"; }
-var FMT = {rpct2: function(v){ return isNum(v) ? (v * 100).toFixed(2) + "%" : "—"; }, rint: function(v){ return isNum(v) ? fInt(v) : "—"; }, rinr: function(v){ return isNum(v) ? fINR(v) : "—"; }, rpct: function(v){ return isNum(v) ? Math.round(v * 100) + "%" : "—"; }, dt: function(v){ return isNum(v) ? fTime(v) : "—"; }, inr2: fINR2, int: fInt, inr: fINR, pct: fPct, min: fDur, text: function(v){ return v == null ? "" : String(v); }};
+var FMT = {rpct2: function(v){ return isNum(v) ? (v * 100).toFixed(2) + "%" : "—"; }, rint: function(v){ return isNum(v) ? fInt(v) : "—"; }, rinr: function(v){ return isNum(v) ? fINR(v) : "—"; }, rpct: function(v){ return isNum(v) ? Math.round(v * 100) + "%" : "—"; }, dt: function(v){ return isNum(v) ? fTime(v) : "—"; }, inr2: fINR2, int: fInt, inr: fINR, pct: fPct, min: fDur, text: function(v){ return v == null ? "" : String(v); }, pct2Dec: function(v){ return isNum(v) ? Number(v).toFixed(2) : (v == null ? "—" : String(v)); }};
 
 /* ================= DOM helpers ================= */
 function el(tag, attrs){ var e = document.createElement(tag); if (attrs) for (var k in attrs){ var v = attrs[k];
@@ -1910,19 +1931,212 @@ function tatCols(){ var R = state.R;
     {k: "pendAgeW", label: "Not Contacted: avg wait (working hrs)", t: "min", def: false},
     {k: "sla", label: "SLA % (≤ " + R.slaMin + " min)", t: "pct", flag: function(r){ return isNum(r.sla) && r.sla < R.slaTarget ? "warn" : null; }}];
 }
-/* sales columns: shown once at least one status is ticked as Sale; revenue columns once a deal value is set */
-function salesCols(){ var R = state.R || {};
-  return [{k: "wonN", label: "Sales", t: "int", def: !!R.wonOn}, {k: "saleRate", label: "Sale rate", t: "pct", def: false}, {k: "cps", label: "Cost per sale", t: "inr", def: !!R.wonOn},
-    {k: "estRev", label: "Est. revenue", t: "inr", def: !!R.valOn}, {k: "estRoas", label: "Est. ROAS", t: "text", def: !!R.valOn, get: function(r){ return isNum(r.estRoas) ? r.estRoas.toFixed(2) + "×" : "N/A"; }}]; }
-function mediaCols(){ return [
+/* ================= business objectives & goal-tailored views ================= */
+var OBJECTIVES = {
+  leads: {
+    id: "leads",
+    label: "Leads",
+    fullName: "Lead Generation",
+    icon: "🎯",
+    color: "#2563eb",
+    tagline: "Prioritizes CPL, Qualified Leads (QL), CPQL, Lead Difference & Speed to Lead (TAT/SLA).",
+    leadCol: "crm",
+    desc: "Best for B2B, real estate, education, healthcare & high-touch consultation services."
+  },
+  sales: {
+    id: "sales",
+    label: "Sales & ROAS",
+    fullName: "Sales & E-Commerce",
+    icon: "🛒",
+    color: "#059669",
+    tagline: "Prioritizes Closed Sales / Orders, Conversion Rate, CPA (Cost/Sale), Attributed Revenue & ROAS.",
+    leadCol: "wonN",
+    desc: "Best for D2C brands, e-commerce stores, retail, paid products & immediate purchases."
+  },
+  awareness: {
+    id: "awareness",
+    label: "Brand Awareness",
+    fullName: "Reach & Visibility",
+    icon: "📢",
+    color: "#7c3aed",
+    tagline: "Prioritizes Unique Reach, Impressions, CPM, Ad Frequency, Cost per 1k Reached & CTR.",
+    leadCol: "reachV",
+    desc: "Best for brand launches, FMCG, video campaigns, event awareness & market saturation."
+  }
+};
+function getActiveObjective(){
+  if (state.objective) return state.objective;
+  if (state.brand && state.brand !== "All" && state.settings && state.settings.brandObjectives && state.settings.brandObjectives[state.brand]){
+    return state.settings.brandObjectives[state.brand];
+  }
+  if (state.settings && state.settings.objective) return state.settings.objective;
+  return "leads";
+}
+function setActiveObjective(obj){
+  if (!OBJECTIVES[obj]) obj = "leads";
+  state.objective = obj;
+  if (state.settings){
+    state.settings.objective = obj;
+    storeSettings();
+    if (typeof provSave === "function") provSave();
+    else if (typeof sbCanWrite === "function" && sbCanWrite() && typeof saveSettingsOnline === "function") saveSettingsOnline(true);
+  }
+  render();
+  toast("Switched view to " + OBJECTIVES[obj].fullName + " objective (" + OBJECTIVES[obj].icon + ")");
+}
+
+/* ================= customize columns ================= */
+var COLS_KEY = "lp-lead-dash-cols";
+var ID_KEYS = {brand: 1, campaign: 1, adset: 1, ad: 1, owner: 1, id: 1, period: 1, inc: 1, tree: 1, status: 1};
+/* ---------- personal view settings, per login (never shared): table columns + campaigns left out / kept in ----------
+   Kept in this browser per login, and in the workspace database (user_prefs, each person can only read / write their own row) so they follow you to other devices. */
+var MY_KEY = "lp-my-prefs";
+function myKey(){ return MY_KEY + ":" + (typeof sb !== "undefined" && sb.email ? sb.email : "local"); }
+function myPrefs(){
+  if (!state.my || state.my._for !== myKey()){ var p = {}; try { p = JSON.parse(localStorage.getItem(myKey()) || "{}") || {}; } catch (e) { p = {}; }
+    if (!p.cols){ try { var old = JSON.parse(localStorage.getItem(COLS_KEY) || "null"); if (old && myKey() !== MY_KEY + ":local") p.cols = old; } catch (e) {} }   /* first time: keep the columns this browser had */
+    p._for = myKey(); state.my = p; state.colPrefs = null; }
+  return state.my; }
+function saveMyPrefs(){
+  var p = myPrefs(), c = Object.assign({}, p); delete c._for;
+  try { localStorage.setItem(myKey(), JSON.stringify(c)); } catch (e) {}
+  if (typeof sb !== "undefined" && sb.cfg && sb.status === "ready" && sb.email){ clearTimeout(saveMyPrefs._t); var email = sb.email;
+    saveMyPrefs._t = setTimeout(function(){ sb.client.from("user_prefs").upsert({org_id: sb.org.id, email: email, prefs: c, updated_at: new Date().toISOString()}, {onConflict: "org_id,email"})
+      .then(function(r){ if (r && r.error && !/user_prefs|schema cache|does not exist/i.test(r.error.message)) toast("Your view settings were kept on this device only: " + r.error.message); }); }, 700); } }
+/* after sign-in: the copy saved online wins (other device); otherwise this device's copy is saved online */
+function myLoadOnline(){
+  if (!sb.cfg || sb.status !== "ready" || !sb.email) return Promise.resolve();
+  var key = myKey();
+  return sb.client.from("user_prefs").select("prefs").eq("email", sb.email).maybeSingle().then(function(r){
+    if (r.error || myKey() !== key) return;
+    if (r.data && r.data.prefs){ var p = Object.assign({}, r.data.prefs, {_for: key}); state.my = p; state.colPrefs = null; try { var c = Object.assign({}, p); delete c._for; localStorage.setItem(key, JSON.stringify(c)); } catch (e) {} if (state.raw) recompute(); else render(); }
+    else { var m = myPrefs(); if (m.cols || m.camps) saveMyPrefs(); } }).catch(function(){});
+}
+function colPrefs(){ var m = myPrefs(); if (!state.colPrefs) state.colPrefs = m.cols || (m.cols = {}); return state.colPrefs; }
+function saveColPrefs(){ myPrefs().cols = state.colPrefs || {}; saveMyPrefs(); }
+/* campaigns left out / kept in: your own list once you change it, otherwise the team default */
+function myCamps(){ var m = myPrefs(), S = state.settings || {}; return m.camps || {ex: (S.excludedCampaigns || []).slice(), inc: (S.includedCampaigns || []).slice(), team: true}; }
+function colLocked(c){ return !!(c.lock || ID_KEYS[c.k]); }
+/* columns to show for a table: saved choice, or each column's default */
+function visibleCols(id, cols){
+  var p = colPrefs()[id];
+  return cols.filter(function(c){
+    if (colLocked(c)) return true;
+    if (p && p.known && p.known.indexOf(c.k) >= 0) return p.visible.indexOf(c.k) >= 0;
+    return c.def !== false; });
+}
+function applyColPreset(id, fullCols, presetName, checkboxes){
+  if (presetName === "all"){
+    checkboxes.forEach(function(cb){ if (!cb.disabled) cb.checked = true; });
+    return;
+  }
+  var set = {};
+  if (presetName === "leads"){
+    var keys = ["brand", "campaign", "adset", "ad", "tree", "status", "crm", "ui", "diff", "pct", "cpl", "ql", "qlRate", "cpql", "spend", "clk", "ctr", "cpc", "tat", "tatMed", "whAvg", "pend", "sla", "remarks", "owner", "id", "created", "firstCall"];
+    keys.forEach(function(k){ set[k] = 1; });
+  } else if (presetName === "sales"){
+    var keys = ["brand", "campaign", "adset", "ad", "tree", "status", "spend", "wonN", "saleRate", "cps", "estRev", "estRoas", "aov", "cpl", "clk", "ctr", "cpc", "imp", "crm", "ql", "remarks", "owner"];
+    keys.forEach(function(k){ set[k] = 1; });
+  } else if (presetName === "awareness"){
+    var keys = ["brand", "campaign", "adset", "ad", "tree", "status", "spend", "imp", "reachV", "frequency", "cpm", "cpmr", "clk", "ctr", "cpc", "ui", "cpl", "remarks"];
+    keys.forEach(function(k){ set[k] = 1; });
+  }
+  checkboxes.forEach(function(cb){
+    if (cb.disabled) return;
+    cb.checked = !!set[cb.value];
+  });
+}
+function renderColPanel(id, cols, activeCols){
+  var shown = {}; activeCols.forEach(function(c){ shown[c.k] = 1; });
+  var grid = el("div", {cls: "col-grid"}, cols.map(function(c){
+    var locked = colLocked(c);
+    return el("label", {cls: "toggle" + (locked ? " locked" : "")},
+      el("input", {type: "checkbox", value: c.k, checked: shown[c.k] ? true : null, disabled: locked ? true : null}),
+      el("span", {text: c.label + (locked ? " (always shown)" : "")}));
+  }));
+  var cbs = function(){ return grid.querySelectorAll("input"); };
+  var panel = el("div", {cls: "col-panel", role: "group", "aria-label": "Choose columns"});
+  var presets = el("div", {cls: "col-presets"},
+    el("span", {cls: "small", style: "font-weight:600;display:flex;align-items:center;color:var(--muted);margin-right:4px", text: "Presets:"}),
+    el("button", {cls: "btn ghost btn-sm col-preset-btn", type: "button", onclick: function(){ applyColPreset(id, cols, "leads", cbs()); }}, "🎯 Leads Preset"),
+    el("button", {cls: "btn ghost btn-sm col-preset-btn", type: "button", onclick: function(){ applyColPreset(id, cols, "sales", cbs()); }}, "🛒 Sales Preset"),
+    el("button", {cls: "btn ghost btn-sm col-preset-btn", type: "button", onclick: function(){ applyColPreset(id, cols, "awareness", cbs()); }}, "📢 Awareness Preset"),
+    el("button", {cls: "btn ghost btn-sm col-preset-btn", type: "button", onclick: function(){ applyColPreset(id, cols, "all", cbs()); }}, "Select All")
+  );
+  panel.appendChild(presets);
+  panel.appendChild(grid);
+  panel.appendChild(el("div", {cls: "actions"},
+    el("button", {cls: "btn", type: "button", onclick: function(){
+      var visible = [].slice.call(grid.querySelectorAll("input")).filter(function(i){ return i.checked; }).map(function(i){ return i.value; });
+      colPrefs()[id] = {visible: visible, known: cols.map(function(c){ return c.k; })};
+      saveColPrefs(); state.colPick = null; render(); toast("Columns updated");
+    }}, "Apply"),
+    el("button", {cls: "btn ghost", type: "button", onclick: function(){
+      delete colPrefs()[id]; saveColPrefs(); state.colPick = null; render(); toast("Default columns restored");
+    }}, "Reset to default"),
+    el("button", {cls: "btn ghost", type: "button", onclick: function(){ state.colPick = null; render(); }}, "Cancel"),
+    el("span", {cls: "small", text: "Saved in this browser. Excel downloads use these columns."})
+  ));
+  return panel;
+}
+function colTools(id, cols){
+  return el("div", {cls: "col-tools-placeholder", style: "display:none"});
+}
+
+/* sales columns: shown once at least one status is ticked as Sale, deal value set, or when Sales objective is active */
+function salesCols(){
+  var R = state.R || {}, obj = getActiveObjective(), isSales = obj === "sales" || !!R.wonOn;
+  return [
+    {k: "wonN", label: "Sales", t: "int", def: isSales},
+    {k: "saleRate", label: "Sale rate", t: "pct", def: isSales},
+    {k: "cps", label: "Cost per sale", t: "inr", def: isSales},
+    {k: "estRev", label: "Est. revenue", t: "inr", def: isSales || !!R.valOn},
+    {k: "estRoas", label: "Est. ROAS", t: "text", def: isSales || !!R.valOn, get: function(r){ return isNum(r.estRoas) ? r.estRoas.toFixed(2) + "×" : "N/A"; }}
+  ];
+}
+function mediaCols(){
+  var obj = getActiveObjective();
+  return [
     {k: "spend", label: "Amount spent", t: "inr"},
-    {k: "imp", label: "Impressions", t: "int"},
-    {k: "reachV", label: "Reach", t: "int", def: false},
+    {k: "imp", label: "Impressions", t: "int", def: obj === "awareness" || obj === "sales" || undefined},
+    {k: "reachV", label: "Reach", t: "int", def: obj === "awareness"},
+    {k: "frequency", label: "Frequency", t: "pct2Dec", get: function(r){ return isNum(r.frequency) ? r.frequency.toFixed(2) : (isNum(r.imp) && isNum(r.reach) && r.reach > 0 ? (r.imp / r.reach).toFixed(2) : (isNum(r.imp) && isNum(r.reachV) && r.reachV > 0 ? (r.imp / r.reachV).toFixed(2) : null)); }, def: obj === "awareness"},
+    {k: "cpm", label: "CPM", t: "inr2", get: function(r){ return isNum(r.cpm) ? r.cpm : (isNum(r.spend) && isNum(r.imp) && r.imp > 0 ? (r.spend / r.imp) * 1000 : null); }, def: obj === "awareness"},
     {k: "clk", label: "Clicks", t: "int"},
     {k: "ctr", label: "CTR", t: "pct"},
-    {k: "cpc", label: "CPC", t: "inr2"}]; }
+    {k: "cpc", label: "CPC", t: "inr2"}
+  ];
+}
 function metricCols(level){
-  var R = state.R;
+  var R = state.R, obj = getActiveObjective();
+  if (obj === "sales"){
+    return salesCols().concat([
+      {k: "crm", label: "Leads in CRM", t: "int", def: false},
+      {k: "ui", label: "Leads in UI", t: "int", def: false, render: function(r){ return r.uiExcluded ? el("span", {cls: "pill mut", title: "Meta results aren't leads; not counted. Spend is still counted.", text: "Excluded"}) : document.createTextNode(fInt(r.ui)); }},
+      {k: "diff", label: "Lead difference (UI − CRM)", t: "int", def: false},
+      {k: "pct", label: "Difference %", t: "pct", def: false, flag: function(r){ return isNum(r.pct) && Math.abs(r.pct) > R.diffAlert ? "bad" : null; }},
+      {k: "platform", label: "Ad platform", t: "text", get: function(r){ return r.nocamp ? "—" : R.platform; }, nosort: true, def: false},
+      {k: "cpl", label: "CPL", t: "inr"},
+      {k: "ql", label: "Qualified leads", t: "int", def: false},
+      {k: "qlRate", label: "QL rate", t: "pct", def: false},
+      {k: "cpql", label: "CPQL", t: "inr", def: false}
+    ]).concat(mediaCols()).concat(pickedCols()).concat(tatCols())
+      .concat([{k: "remarks", label: "Remarks", t: "text", cls: "remarks", get: function(r){ return remarks(r, level); }, nosort: true, totalText: ""}]);
+  }
+  if (obj === "awareness"){
+    return mediaCols().concat([
+      {k: "ui", label: "Leads / Results in UI", t: "int"},
+      {k: "cpl", label: "Cost per Result (CPL)", t: "inr"},
+      {k: "crm", label: "Leads in CRM", t: "int", def: false},
+      {k: "diff", label: "Lead difference (UI − CRM)", t: "int", def: false},
+      {k: "pct", label: "Difference %", t: "pct", def: false, flag: function(r){ return isNum(r.pct) && Math.abs(r.pct) > R.diffAlert ? "bad" : null; }},
+      {k: "platform", label: "Ad platform", t: "text", get: function(r){ return r.nocamp ? "—" : R.platform; }, nosort: true, def: false},
+      {k: "ql", label: "Qualified leads", t: "int", def: false},
+      {k: "qlRate", label: "QL rate", t: "pct", def: false},
+      {k: "cpql", label: "CPQL", t: "inr", def: false}
+    ]).concat(salesCols()).concat(pickedCols()).concat(tatCols())
+      .concat([{k: "remarks", label: "Remarks", t: "text", cls: "remarks", get: function(r){ return remarks(r, level); }, nosort: true, totalText: ""}]);
+  }
   return [
     {k: "crm", label: "Leads in CRM", t: "int"},
     {k: "ui", label: "Leads in UI", t: "int", render: function(r){ return r.uiExcluded ? el("span", {cls: "pill mut", title: "Meta results aren't leads; not counted. Spend is still counted.", text: "Excluded"}) : document.createTextNode(fInt(r.ui)); }},
@@ -1971,8 +2185,25 @@ function budgetCols(){
     {k: "budUsed", label: "Budget used", t: "pct", get: function(r){ var d = bb(r); return isNum(d) && d > 0 && D.days && isNum(r.spend) ? r.spend / (d * D.days) : null; },
       flag: function(r){ var d = bb(r); if (!isNum(d) || !d || !D.days || !isNum(r.spend)) return null; var u = r.spend / (d * D.days); return u > 1.05 ? "bad" : null; }}];
 }
-function brandCols(){ var R = state.R;
+function brandCols(){
+  var R = state.R, obj = getActiveObjective();
   var mc = mediaCols(); if (!isGoogle()) mc.splice(1, 0, budgetCols()[0], budgetCols()[1], budgetCols()[2]);
+  if (obj === "sales"){
+    return [{k: "brand", label: "Brand", t: "text", cls: "name", lock: true}]
+      .concat(salesCols()).concat(mc).concat([
+        {k: "cpl", label: "CPL", t: "inr"}, {k: "ui", label: "Leads in UI", t: "int"}, {k: "crm", label: "Leads in CRM", t: "int"},
+        {k: "ql", label: "Qualified leads", t: "int"}, {k: "qlRate", label: "QL rate", t: "pct"}, {k: "cpql", label: "CPQL", t: "inr"},
+        {k: "noCamp", label: "CRM leads with no campaign", t: "int", def: false}
+      ]).concat(tatCols());
+  }
+  if (obj === "awareness"){
+    return [{k: "brand", label: "Brand", t: "text", cls: "name", lock: true}]
+      .concat(mc).concat([
+        {k: "ui", label: "Results in UI", t: "int"}, {k: "cpl", label: "Cost per Result", t: "inr"},
+        {k: "crm", label: "Leads in CRM", t: "int", def: false}, {k: "ql", label: "Qualified leads", t: "int", def: false},
+        {k: "noCamp", label: "CRM leads with no campaign", t: "int", def: false}
+      ]).concat(salesCols()).concat(tatCols());
+  }
   return [{k: "brand", label: "Brand", t: "text", cls: "name", lock: true}].concat(mc).concat([
     {k: "ui", label: "Leads in UI", t: "int"}, {k: "crm", label: "Leads in CRM", t: "int"},
     {k: "diff", label: "Difference (UI − CRM)", t: "int"}, {k: "pct", label: "Difference %", t: "pct", flag: function(r){ return isNum(r.pct) && Math.abs(r.pct) > R.diffAlert ? "bad" : null; }},
@@ -1980,7 +2211,126 @@ function brandCols(){ var R = state.R;
     {k: "noCamp", label: "CRM leads with no campaign", t: "int"}])).concat(tatCols());
 }
 
-/* ================= generic table ================= */
+/* ================= export single table to Excel with branding & objective ================= */
+function exportSingleTableToExcel(id, title, cols, rows, total){
+  if (!rows || !rows.length){ toast("No rows to export for this filter."); return; }
+  var obj = getActiveObjective(), objMeta = OBJECTIVES[obj] || OBJECTIVES.leads;
+  var bName = state.brand === "All" ? "All Brands" : state.brand;
+  var company = orgName();
+  var rangeStr = rangeText(false);
+  var now = new Date();
+  var sub = company + " · " + bName + " · " + objMeta.fullName + " · " + rangeStr + " · Exported " + now.toLocaleString("en-IN", {dateStyle: "medium", timeStyle: "short"});
+  var cleanTitle = (title || id || "Report").replace(/[·\/\\:*?"<>|]+/g, "-").replace(/\s+/g, " ").trim();
+  var filename = (company + "_" + bName + "_" + cleanTitle + "_" + objMeta.label).replace(/[^A-Za-z0-9_\-]+/g, "_") + ".xlsx";
+
+  var visCols = visibleCols(id, cols);
+  if (!visCols || !visCols.length) visCols = cols;
+
+  var spec = {
+    name: cleanTitle.slice(0, 31),
+    title: cleanTitle.toUpperCase() + " — " + bName,
+    sub: sub,
+    cols: visCols,
+    rows: rows,
+    total: total,
+    autoFilter: true
+  };
+
+  toast("Generating Excel report…");
+  loadExcelJS().then(function(ExcelJS){
+    var wb = new ExcelJS.Workbook();
+    wb.creator = company;
+    wb.lastModifiedBy = company;
+    wb.created = now;
+    wb.modified = now;
+    var ws = wb.addWorksheet(spec.name);
+    ws.views = [{state: "frozen", ySplit: 5}];
+    
+    ws.getCell(1, 1).value = company.toUpperCase();
+    ws.getCell(1, 1).font = {bold: true, size: 14, color: {argb: "FF1E3A8A"}};
+    
+    ws.getCell(2, 1).value = spec.title;
+    ws.getCell(2, 1).font = {bold: true, size: 12, color: {argb: XL.ink}};
+    
+    ws.getCell(3, 1).value = "Business Objective: " + objMeta.fullName + " (" + objMeta.icon + ")  |  Brand: " + bName + "  |  Period: " + rangeStr;
+    ws.getCell(3, 1).font = {size: 10, italic: true, color: {argb: XL.sub}};
+    
+    ws.getCell(4, 1).value = "Generated: " + now.toLocaleString("en-IN") + "  |  Total Rows: " + rows.length;
+    ws.getCell(4, 1).font = {size: 9, color: {argb: XL.faint}};
+
+    var o = typeof sb !== "undefined" && sb.org ? sb.org : {};
+    if (o && o.logo && typeof wb.addImage === "function"){
+      try {
+        var commaIdx = o.logo.indexOf(",");
+        var rawB64 = commaIdx >= 0 ? o.logo.slice(commaIdx + 1) : o.logo;
+        var imageId = wb.addImage({base64: rawB64, extension: "png"});
+        ws.addImage(imageId, {tl: {col: 0, row: 0}, ext: {width: 130, height: 38}});
+        ws.getRow(1).height = 36;
+      } catch (e){ console.warn("Could not embed logo image in Excel:", e); }
+    }
+
+    var widths = [];
+    xlTable(ws, 6, xlCols(visCols), rows, {total: total, autoFilter: true}, widths);
+    widths.forEach(function(w, i){ ws.getColumn(i + 1).width = Math.max(w || 12, 12); });
+
+    return wb.xlsx.writeBuffer();
+  }).catch(function(err){
+    console.warn("ExcelJS fallback to XLSX:", err);
+    var aoa = [
+      [company.toUpperCase()],
+      [spec.title],
+      ["Business Objective: " + objMeta.fullName + " | Brand: " + bName + " | Period: " + rangeStr],
+      ["Generated: " + now.toLocaleString("en-IN") + " | Total Rows: " + rows.length],
+      []
+    ];
+    var cCols = xlCols(visCols);
+    var hrow = aoa.length;
+    aoa.push(cCols.map(function(c){ return c.label; }));
+    var fmts = [], widths = [];
+    rows.concat(total ? [total] : []).forEach(function(r, ri){
+      var isT = total && ri === rows.length;
+      aoa.push(cCols.map(function(c, i){
+        var v = c.k === "remarks" && isT ? "" : xlVal(c, r);
+        if (isT && i === 0) v = v || "TOTAL";
+        var val = c.t === "dt" ? (isNum(v) ? v / 864e5 + 25569 : "") : xlCellVal(c, v);
+        if (c.t !== "text") fmts.push([aoa.length, i, c.t]);
+        return val;
+      }));
+    });
+    var wb = XLSX.utils.book_new();
+    var ws = XLSX.utils.aoa_to_sheet(aoa, {cellDates: true});
+    fmts.forEach(function(f){
+      var a = XLSX.utils.encode_cell({r: f[0], c: f[1]}), cell = ws[a];
+      if (cell && (cell.t === "n" || cell.t === "d")) cell.z = xlNumFmt(f[2]);
+    });
+    cCols.forEach(function(c, i){
+      widths[i] = Math.max(c.label.length + 3, c.w || (c.t === "text" ? 22 : 13));
+    });
+    ws["!cols"] = widths.map(function(w){ return {wch: w}; });
+    if (rows.length) {
+      ws["!autofilter"] = {ref: XLSX.utils.encode_range({s: {r: hrow, c: 0}, e: {r: hrow + rows.length, c: cCols.length - 1}})};
+    }
+    XLSX.utils.book_append_sheet(wb, ws, spec.name);
+    return XLSX.write(wb, {bookType: "xlsx", type: "array"});
+  }).then(function(buf){
+    var dl = state.caps && state.caps.downloads;
+    if (dl && dl.save) {
+      return dl.save({filename: filename, data: new Uint8Array(buf)});
+    }
+    var blob = new Blob([buf], {type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"});
+    var u = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    a.href = u; a.download = filename;
+    document.body.appendChild(a); a.click();
+    setTimeout(function(){ document.body.removeChild(a); URL.revokeObjectURL(u); }, 1000);
+  }).then(function(){
+    toast("📥 Exported " + cleanTitle + " to Excel");
+  }).catch(function(e){
+    toast("Export failed: " + (e.message || e));
+  });
+}
+
+/* ================= generic table with Action Bar & Column Customizer ================= */
 function table(id, cols, rows, opts){
   opts = opts || {};
   var srt = state.sort[id], data = rows.slice();
@@ -1989,7 +2339,12 @@ function table(id, cols, rows, opts){
       data.sort(function(a, b){ var x = gv(a), y = gv(b), nx = isNum(x), ny = isNum(y);
         if (nx && ny) return srt.dir * (x - y); if (nx) return -1; if (ny) return 1; return srt.dir * String(x || "").localeCompare(String(y || "")); }); } }
   var lim = state.limit[id] || 300, shown = data.slice(0, lim);
-  var thead = el("thead", null, el("tr", null, cols.map(function(c){
+  
+  var fullCols = opts.allCols || cols;
+  var activeCols = !opts.noTools ? visibleCols(id, fullCols) : cols;
+  if (!activeCols || !activeCols.length) activeCols = cols;
+
+  var thead = el("thead", null, el("tr", null, activeCols.map(function(c){
     var isNumCol = c.t !== "text", s = srt && srt.k === c.k ? (srt.dir > 0 ? "↑" : "↓") : "";
     return el("th", {cls: isNumCol ? "r" : "", scope: "col", "aria-sort": srt && srt.k === c.k ? (srt.dir > 0 ? "ascending" : "descending") : null,
       onclick: c.nosort ? null : function(){ var cur = state.sort[id];
@@ -1998,7 +2353,7 @@ function table(id, cols, rows, opts){
   var tb = el("tbody");
   function rowEl(r, isTotal, prev){
     var tr = el("tr", {cls: isTotal ? "total" : ((opts.brandRule && prev && prev.brand !== r.brand && !srt ? "brand-start" : "") + (opts.rowCls ? " " + (opts.rowCls(r) || "") : "")).trim()});
-    cols.forEach(function(c){
+    activeCols.forEach(function(c){
       var v = c.get ? c.get(r, isTotal) : r[c.k], txt = isTotal && c.totalText !== undefined ? c.totalText : (FMT[c.t] || FMT.text)(v);
       var fl = !isTotal && c.flag ? c.flag(r) : null;
       var cls = [c.t !== "text" ? "r num nowrap" : "", c.cls || "", (v === null || v === undefined || txt === "N/A") && c.t !== "text" ? "na" : "", fl ? "flag-" + fl : ""].join(" ").trim();
@@ -2007,7 +2362,34 @@ function table(id, cols, rows, opts){
   if (opts.total && !opts.totalBottom) tb.appendChild(rowEl(opts.total, true));
   shown.forEach(function(r, i){ tb.appendChild(rowEl(r, false, i ? shown[i - 1] : null)); });
   if (opts.total && opts.totalBottom){ var trB = rowEl(opts.total, true); trB.classList.add("total-bottom"); tb.appendChild(trB); }
-  var wrap = el("div", null, el("div", {cls: "tbl-wrap"}, el("table", {cls: opts.stickyFirst ? "sticky-1" : null}, thead, tb)));
+  
+  var wrap = el("div", {cls: "table-container", style: "display:grid;gap:6px"});
+
+  if (!opts.noTools){
+    var choosable = fullCols.filter(function(c){ return !colLocked(c); });
+    var visChoosable = activeCols.filter(function(c){ return !colLocked(c); });
+    var open = state.colPick === id;
+    var bar = el("div", {cls: "tbl-action-bar"},
+      el("div", {cls: "tbl-meta"},
+        opts.title ? el("span", {cls: "tbl-title", text: opts.title}) : null,
+        el("span", {cls: "tbl-count", text: fInt(data.length) + " row" + (data.length === 1 ? "" : "s") + (opts.total ? " + total" : "")})
+      ),
+      el("div", {cls: "tbl-actions"},
+        choosable.length ? el("button", {cls: "btn ghost btn-sm btn-tbl-tool", type: "button", "aria-expanded": open ? "true" : "false", onclick: function(){
+          state.colPick = open ? null : id; render();
+        }}, "⚙ Columns (" + visChoosable.length + "/" + choosable.length + ")") : null,
+        el("button", {cls: "btn ghost btn-sm btn-tbl-tool", type: "button", title: "Export this report to Excel with branding", onclick: function(){
+          exportSingleTableToExcel(id, opts.title || id, fullCols, data, opts.total);
+        }}, "📥 Export to Excel")
+      )
+    );
+    wrap.appendChild(bar);
+    if (open && choosable.length){
+      wrap.appendChild(renderColPanel(id, fullCols, activeCols));
+    }
+  }
+
+  wrap.appendChild(el("div", {cls: "tbl-wrap"}, el("table", {cls: opts.stickyFirst ? "sticky-1" : null}, thead, tb)));
   if (!data.length) wrap.appendChild(el("div", {cls: "empty", text: opts.empty || "Nothing to show for this filter."}));
   if (data.length > lim) wrap.appendChild(el("div", {cls: "more"}, el("button", {cls: "btn ghost", type: "button", onclick: function(){ state.limit[id] = lim + 500; render(); }},
     "Show " + Math.min(500, data.length - lim) + " more of " + (data.length - lim).toLocaleString("en-IN"))));
@@ -2018,69 +2400,6 @@ function searchBox(id, ph){
   inp.addEventListener("input", function(){ state.q[id] = inp.value; clearTimeout(searchBox._t); searchBox._t = setTimeout(function(){ render(); var x = document.getElementById("q-" + id); if (x){ x.focus(); x.setSelectionRange(x.value.length, x.value.length); } }, 180); });
   return inp; }
 function matchQ(id, r, fields){ var q = (state.q[id] || "").trim().toLowerCase(); if (!q) return true; return fields.some(function(f){ return String(r[f] || "").toLowerCase().indexOf(q) >= 0; }); }
-
-/* ================= customize columns ================= */
-var COLS_KEY = "lp-lead-dash-cols";
-var ID_KEYS = {brand: 1, campaign: 1, adset: 1, ad: 1, owner: 1, id: 1, period: 1, inc: 1, tree: 1, status: 1};
-/* ---------- personal view settings, per login (never shared): table columns + campaigns left out / kept in ----------
-   Kept in this browser per login, and in the workspace database (user_prefs, each person can only read / write their own row) so they follow you to other devices. */
-var MY_KEY = "lp-my-prefs";
-function myKey(){ return MY_KEY + ":" + (typeof sb !== "undefined" && sb.email ? sb.email : "local"); }
-function myPrefs(){
-  if (!state.my || state.my._for !== myKey()){ var p = {}; try { p = JSON.parse(localStorage.getItem(myKey()) || "{}") || {}; } catch (e) { p = {}; }
-    if (!p.cols){ try { var old = JSON.parse(localStorage.getItem(COLS_KEY) || "null"); if (old && myKey() !== MY_KEY + ":local") p.cols = old; } catch (e) {} }   /* first time: keep the columns this browser had */
-    p._for = myKey(); state.my = p; state.colPrefs = null; }
-  return state.my; }
-function saveMyPrefs(){
-  var p = myPrefs(), c = Object.assign({}, p); delete c._for;
-  try { localStorage.setItem(myKey(), JSON.stringify(c)); } catch (e) {}
-  if (typeof sb !== "undefined" && sb.cfg && sb.status === "ready" && sb.email){ clearTimeout(saveMyPrefs._t); var email = sb.email;
-    saveMyPrefs._t = setTimeout(function(){ sb.client.from("user_prefs").upsert({org_id: sb.org.id, email: email, prefs: c, updated_at: new Date().toISOString()}, {onConflict: "org_id,email"})
-      .then(function(r){ if (r && r.error && !/user_prefs|schema cache|does not exist/i.test(r.error.message)) toast("Your view settings were kept on this device only: " + r.error.message); }); }, 700); } }
-/* after sign-in: the copy saved online wins (other device); otherwise this device's copy is saved online */
-function myLoadOnline(){
-  if (!sb.cfg || sb.status !== "ready" || !sb.email) return Promise.resolve();
-  var key = myKey();
-  return sb.client.from("user_prefs").select("prefs").eq("email", sb.email).maybeSingle().then(function(r){
-    if (r.error || myKey() !== key) return;
-    if (r.data && r.data.prefs){ var p = Object.assign({}, r.data.prefs, {_for: key}); state.my = p; state.colPrefs = null; try { var c = Object.assign({}, p); delete c._for; localStorage.setItem(key, JSON.stringify(c)); } catch (e) {} if (state.raw) recompute(); else render(); }
-    else { var m = myPrefs(); if (m.cols || m.camps) saveMyPrefs(); } }).catch(function(){});
-}
-function colPrefs(){ var m = myPrefs(); if (!state.colPrefs) state.colPrefs = m.cols || (m.cols = {}); return state.colPrefs; }
-function saveColPrefs(){ myPrefs().cols = state.colPrefs || {}; saveMyPrefs(); }
-/* campaigns left out / kept in: your own list once you change it, otherwise the team default */
-function myCamps(){ var m = myPrefs(), S = state.settings || {}; return m.camps || {ex: (S.excludedCampaigns || []).slice(), inc: (S.includedCampaigns || []).slice(), team: true}; }
-function colLocked(c){ return !!(c.lock || ID_KEYS[c.k]); }
-/* columns to show for a table: saved choice, or each column's default */
-function visibleCols(id, cols){
-  var p = colPrefs()[id];
-  return cols.filter(function(c){
-    if (colLocked(c)) return true;
-    if (p && p.known && p.known.indexOf(c.k) >= 0) return p.visible.indexOf(c.k) >= 0;
-    return c.def !== false; });
-}
-function colTools(id, cols){
-  var vis = visibleCols(id, cols), open = state.colPick === id, wrap = el("div", {cls: "col-tools"});
-  var choosable = cols.filter(function(c){ return !colLocked(c); });
-  wrap.appendChild(el("button", {cls: "linkbtn", type: "button", "aria-expanded": open ? "true" : "false", onclick: function(){ state.colPick = open ? null : id; render(); }},
-    "Customize columns (" + vis.filter(function(c){ return !colLocked(c); }).length + " of " + choosable.length + ")"));
-  if (!open) return wrap;
-  var shown = {}; vis.forEach(function(c){ shown[c.k] = 1; });
-  var grid = el("div", {cls: "col-grid"}, cols.map(function(c){
-    var locked = colLocked(c);
-    return el("label", {cls: "toggle" + (locked ? " locked" : "")}, el("input", {type: "checkbox", value: c.k, checked: shown[c.k] ? true : null, disabled: locked ? true : null}),
-      el("span", {text: c.label + (locked ? " (always shown)" : "")})); }));
-  var panel = el("div", {cls: "col-panel", role: "group", "aria-label": "Choose columns"}, grid,
-    el("div", {cls: "actions"},
-      el("button", {cls: "btn", type: "button", onclick: function(){
-        var visible = [].slice.call(grid.querySelectorAll("input")).filter(function(i){ return i.checked; }).map(function(i){ return i.value; });
-        colPrefs()[id] = {visible: visible, known: cols.map(function(c){ return c.k; })}; saveColPrefs(); state.colPick = null; render(); toast("Columns updated"); }}, "Apply"),
-      el("button", {cls: "btn ghost", type: "button", onclick: function(){ delete colPrefs()[id]; saveColPrefs(); state.colPick = null; render(); toast("Default columns restored"); }}, "Reset to default"),
-      el("button", {cls: "btn ghost", type: "button", onclick: function(){ state.colPick = null; render(); }}, "Cancel"),
-      el("span", {cls: "small", text: "Saved in this browser. Excel downloads use these columns unless you tick Export all columns."})));
-  wrap.appendChild(panel);
-  return wrap;
-}
 
 /* ================= campaign → ad set → ad hierarchy ================= */
 function sortRowsFor(id, cols, rows){
@@ -4434,7 +4753,7 @@ var SET_TABS = [["connections", "Data connections", "Where the dashboard gets Me
   ["advanced", "Advanced", "Rarely needed: report date overrides, lead-source filter and export column names."]];
 function setDraft(){ var S = state.settings;
   if (state.setDraft && state.setDraft.base !== S && !state.setDraft.dirty) state.setDraft = null;   /* settings reloaded (e.g. from the workspace database) */
-  if (!state.setDraft) state.setDraft = {base: S, brands: S.brands.slice(), keywords: S.keywords.map(function(k){ return [k[0], k[1]]; }), inputs: {}, dirty: false, rep: JSON.parse(JSON.stringify(repS(S)))};
+  if (!state.setDraft) state.setDraft = {base: S, brands: S.brands.slice(), keywords: S.keywords.map(function(k){ return [k[0], k[1]]; }), brandObjectives: Object.assign({}, S.brandObjectives || {}), inputs: {}, dirty: false, rep: JSON.parse(JSON.stringify(repS(S)))};
   return state.setDraft; }
 function setDirty(){ var D = setDraft(); if (!D.dirty){ D.dirty = true; var bar = document.getElementById("set-bar"); if (bar) bar.classList.add("dirty"); var m = document.getElementById("set-bar-msg"); if (m) m.textContent = "You have unsaved changes"; } }
 function viewSettings(){
@@ -4476,14 +4795,36 @@ function viewSettings(){
     var bl = el("div", {cls: "row-list"});
     D.brands.forEach(function(b, i){
       var inp = el("input", {type: "text", value: b, "aria-label": "Brand " + (i + 1)}); inp.addEventListener("input", function(){ D.brands[i] = inp.value; setDirty(); });
-      bl.appendChild(el("div", {cls: "row-item"}, el("span", {cls: "row-n", text: String(i + 1)}), inp,
+      var bObj = (D.brandObjectives && D.brandObjectives[b]) || S.objective || "leads";
+      var objSel = el("select", {cls: "compact", "aria-label": "Objective for " + b}, [
+        el("option", {value: "leads", selected: bObj === "leads" ? true : null, text: "🎯 Leads"}),
+        el("option", {value: "sales", selected: bObj === "sales" ? true : null, text: "🛒 Sales"}),
+        el("option", {value: "awareness", selected: bObj === "awareness" ? true : null, text: "📢 Awareness"})
+      ]);
+      objSel.addEventListener("change", function(){
+        D.brandObjectives = D.brandObjectives || {};
+        D.brandObjectives[b] = objSel.value;
+        setDirty();
+      });
+      bl.appendChild(el("div", {cls: "row-item", style: "display:flex;align-items:center;gap:8px"}, el("span", {cls: "row-n", text: String(i + 1)}), inp, objSel,
         iconBtn("↑", "Move up", function(){ mv(D.brands, i, -1); }, i === 0), iconBtn("↓", "Move down", function(){ mv(D.brands, i, 1); }, i === D.brands.length - 1),
-        iconBtn("✕", "Remove " + (b || "brand"), function(){ D.brands.splice(i, 1); setDirty(); render(); }))); });
+        iconBtn("✕", "Remove " + (b || "brand"), function(){ D.brands.splice(i, 1); if (D.brandObjectives) delete D.brandObjectives[b]; setDirty(); render(); }))); });
     var nb = el("input", {type: "text", placeholder: "New brand name", "aria-label": "New brand name"});
-    var addB = function(){ var x = nb.value.trim(); if (!x) return; D.brands.push(x); setDirty(); render(); };
+    var nbObj = el("select", {"aria-label": "New brand objective"}, [
+      el("option", {value: "leads", text: "🎯 Leads"}),
+      el("option", {value: "sales", text: "🛒 Sales"}),
+      el("option", {value: "awareness", text: "📢 Awareness"})
+    ]);
+    var addB = function(){
+      var x = nb.value.trim(); if (!x) return;
+      D.brands.push(x);
+      D.brandObjectives = D.brandObjectives || {};
+      D.brandObjectives[x] = nbObj.value;
+      setDirty(); render();
+    };
     nb.addEventListener("keydown", function(e){ if (e.key === "Enter"){ e.preventDefault(); addB(); } });
-    body.appendChild(card("Brands in your reports", "The order here is the order brands appear in tables and the brand dropdown.", bl,
-      el("div", {cls: "row-add"}, nb, el("button", {cls: "btn ghost", type: "button", onclick: addB}, "+ Add brand")),
+    body.appendChild(card("Brands in your reports", "The order here is the order brands appear in tables and the brand dropdown. Set each brand's primary objective to tailor its view.", bl,
+      el("div", {cls: "row-add", style: "display:flex;gap:8px;align-items:center;flex-wrap:wrap"}, nb, nbObj, el("button", {cls: "btn ghost", type: "button", onclick: addB}, "+ Add brand")),
       tog("s-other", "Also show leads and campaigns that don't belong to these brands", S.showOther, "They appear as “Unmapped” or “No campaign”.")));
     /* brand rules: if campaign name contains X → brand */
     var brandOpts = D.brands.filter(function(x){ return x.trim(); });
@@ -4637,6 +4978,7 @@ function applySettings(){
   if (has("s-plat")) S.platform = String(get("s-plat")).trim() || "Meta Ads";
   S.brands = D.brands.map(function(x){ return x.trim(); }).filter(Boolean);
   S.keywords = D.keywords.map(function(k){ return [String(k[0]).trim(), String(k[1]).trim()]; }).filter(function(k){ return k[0] && k[1]; });
+  if (D.brandObjectives) S.brandObjectives = Object.assign({}, D.brandObjectives);
   if (has("s-other")) S.showOther = !!get("s-other");
   if (has("s-autoex")) S.autoExcludeNonLead = !!get("s-autoex");
   if (has("s-excl")){ var newEx = lines("s-excl"), C0 = myCamps(); if (JSON.stringify(newEx) !== JSON.stringify(C0.ex || [])){ myPrefs().camps = {ex: newEx, inc: (C0.inc || []).slice()}; saveMyPrefs(); } }
@@ -4991,36 +5333,97 @@ function viewOverview(){
   var rb = reconBadge(); if (rb) sec.appendChild(rb);
   var zlb = zeroLeadBanner(); if (zlb) sec.appendChild(zlb);
   sec.appendChild(gaSnapshot(T, prevTotals()));
+  var obj = getActiveObjective(), objMeta = OBJECTIVES[obj] || OBJECTIVES.leads;
+  var objBanner = el("div", {cls: "obj-active-banner", style: "display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;padding:10px 14px;background:var(--band);border-left:4px solid " + objMeta.color + ";border-radius:var(--r-sm,4px);margin-bottom:12px"},
+    el("div", {style: "display:flex;align-items:center;gap:10px"},
+      el("span", {style: "font-size:20px"}, objMeta.icon),
+      el("div", null,
+        el("strong", {style: "font-size:13px;color:var(--ink)"}, objMeta.fullName + " Focus View"),
+        el("span", {cls: "small", style: "display:block;color:var(--muted)"}, objMeta.tagline)
+      )
+    ),
+    el("div", {style: "display:flex;gap:6px;align-items:center;flex-wrap:wrap"},
+      el("span", {cls: "small", style: "color:var(--muted);font-weight:500"}, "Objective:"),
+      el("button", {cls: "btn ghost btn-sm" + (obj === "leads" ? " active" : ""), type: "button", style: obj === "leads" ? "font-weight:bold;border-color:var(--accent)" : "", onclick: function(){ setActiveObjective("leads"); }}, "🎯 Leads"),
+      el("button", {cls: "btn ghost btn-sm" + (obj === "sales" ? " active" : ""), type: "button", style: obj === "sales" ? "font-weight:bold;border-color:var(--accent)" : "", onclick: function(){ setActiveObjective("sales"); }}, "🛒 Sales"),
+      el("button", {cls: "btn ghost btn-sm" + (obj === "awareness" ? " active" : ""), type: "button", style: obj === "awareness" ? "font-weight:bold;border-color:var(--accent)" : "", onclick: function(){ setActiveObjective("awareness"); }}, "📢 Awareness")
+    )
+  );
+  sec.appendChild(objBanner);
+
   var grp = function(title, cards){ return el("div", {cls: "kpi-group"}, el("div", {cls: "eyebrow", text: title}), el("div", {cls: "kpis"}, cards)); };
-  sec.appendChild(grp("Media", [
-    kpi("Amount spent", fShortINR(T.spend), rows.length + " ad rows"),
-    kpi("Impressions", fInt(T.imp), R.hasCtr ? "Meta" : "Not in the Meta export"),
-    kpi("Reach", isNum(T.reachV) ? fInt(T.reachV) : "N/A", isNum(T.reachV) ? "Meta" : "Reach can't be added across rows; see Meta"),
-    kpi("Clicks", fInt(T.clk), R.clicksCol || "Link clicks"),
-    kpi("CTR", fPct(T.ctr), "Clicks ÷ impressions"),
-    kpi("CPC", fINR2(T.cpc), "Spend ÷ clicks")]));
-  sec.appendChild(grp("Leads", [
-    kpi("Leads in UI", fInt(T.ui), "Meta " + (R.resultsCol || "Results")),
-    kpi("Leads in CRM", fInt(T.crm), (function(){ var dn = (R.dupList || []).filter(function(d){ return brandOK(d.brand); }).length; return dn ? (R.dupExcluded ? "Unique leads · " + fInt(dn) + " duplicates left out" : "Includes " + fInt(dn) + " duplicate leads") : "CRM"; })()),
-    (function(){ var noC = rows.reduce(function(n, a){ return n + (a.nocamp ? a.crm : 0); }, 0), mp = rows.reduce(function(n, a){ return n + (a.mapped ? a.crm : 0); }, 0);
-      var k = kpi("Matched to a campaign", T.crm ? fPct((T.crm - noC) / T.crm) : "N/A", fInt(noC) + " with no campaign" + (mp ? " · " + fInt(mp) + " mapped in Settings" : ""), noC > 0 && T.crm && noC / T.crm > 0.1 ? "warn" : "");
-      k.title = "Share of CRM leads that are linked to a Meta campaign. WhatsApp / website leads that The CRM saved without a campaign lower this until you map them under Settings › Leads without a campaign."; return k; })(),
-    kpi("Lead difference", isNum(T.pct) ? fPct(T.pct) : "N/A", isNum(T.diff) ? (T.diff > 0 ? T.diff + " missing in CRM" : (-T.diff) + " extra in CRM") : "", isNum(T.pct) && Math.abs(T.pct) > R.diffAlert ? "bad" : ""),
-    kpi("CPL", fINR(T.cpl), "Spend ÷ UI leads"),
-    kpi("Qualified leads", fInt(T.ql), isNum(T.crm) && T.crm ? fPct(T.ql / T.crm) + " of CRM leads" : ""),
-    kpi("CPQL", fINR(T.cpql), "Spend ÷ QLs")]));
-  sec.appendChild(grp("Speed to lead", [
-    kpi("Overall TAT", fMin(T.tat), "avg · median " + fMin(T.tatMed) + " · " + T.called + " contacted", isNum(T.tat) && T.tat > R.slaMin ? "bad" : ""),
-    kpi("Working-hrs TAT", fMin(T.whAvg), "avg · median " + fMin(T.whMed) + " · " + whText()),
-    kpi("Not Contacted", fInt(T.pend), T.pend ? "waiting " + fMin(T.pendAgeO) + " avg · " + fMin(T.pendAgeW) + " in working hrs" : "none waiting", T.pend ? "warn" : ""),
-    kpi("SLA ≤ " + R.slaMin + " min", fPct(T.sla), T.win + " of " + T.elig + " leads (overall TAT)", isNum(T.sla) ? (T.sla < R.slaTarget ? "warn" : "good") : "")]));
-  if (WON_ON){
-    sec.appendChild(grp("Sales & Revenue", [
-      kpi("Sales (Won)", fInt(T.won), "Won leads in CRM"),
-      kpi("Lead-to-Sale", isNum(T.saleRate) ? fPct(T.saleRate) : "N/A", "Sales ÷ CRM leads"),
-      kpi("Cost per Sale", isNum(T.cps) ? fINR(T.cps) : "N/A", "Spend ÷ sales"),
-      kpi("Est. Revenue", isNum(T.estRev) ? fINR(T.estRev) : (VAL_ON ? "N/A (check brand value)" : "Set in Settings › Attribution"), isNum(T.estRev) ? "Sales × avg deal value" : "Estimate"),
-      kpi("Est. ROAS", isNum(T.estRoas) ? T.estRoas.toFixed(2) + "×" : "N/A", "Est. revenue ÷ spend")]));
+
+  var grpMedia = function(){
+    return grp("Media & Advertising Delivery", [
+      kpi("Amount spent", fShortINR(T.spend), rows.length + " ad rows"),
+      kpi("Impressions", fInt(T.imp), R.hasCtr ? "Meta" : "Not in Meta export"),
+      kpi("Reach", isNum(T.reachV) ? fInt(T.reachV) : (isNum(T.reach) ? fInt(T.reach) : "N/A"), "Unique audience reach"),
+      kpi("Clicks", fInt(T.clk), R.clicksCol || "Link clicks"),
+      kpi("CTR", fPct(T.ctr), "Clicks ÷ impressions"),
+      kpi("CPC", fINR2(T.cpc), "Spend ÷ clicks")]);
+  };
+
+  var grpLeads = function(){
+    return grp("Lead Generation & Acquisition", [
+      kpi("Leads in UI", fInt(T.ui), "Meta " + (R.resultsCol || "Results")),
+      kpi("Leads in CRM", fInt(T.crm), (function(){ var dn = (R.dupList || []).filter(function(d){ return brandOK(d.brand); }).length; return dn ? (R.dupExcluded ? "Unique leads · " + fInt(dn) + " duplicates left out" : "Includes " + fInt(dn) + " duplicate leads") : "CRM"; })()),
+      (function(){ var noC = rows.reduce(function(n, a){ return n + (a.nocamp ? a.crm : 0); }, 0), mp = rows.reduce(function(n, a){ return n + (a.mapped ? a.crm : 0); }, 0);
+        var k = kpi("Matched to campaign", T.crm ? fPct((T.crm - noC) / T.crm) : "N/A", fInt(noC) + " no campaign" + (mp ? " · " + fInt(mp) + " mapped" : ""), noC > 0 && T.crm && noC / T.crm > 0.1 ? "warn" : "");
+        k.title = "Share of CRM leads that are linked to a Meta campaign."; return k; })(),
+      kpi("Lead difference", isNum(T.pct) ? fPct(T.pct) : "N/A", isNum(T.diff) ? (T.diff > 0 ? T.diff + " missing in CRM" : (-T.diff) + " extra in CRM") : "", isNum(T.pct) && Math.abs(T.pct) > R.diffAlert ? "bad" : ""),
+      kpi("CPL", fINR(T.cpl), "Spend ÷ UI leads"),
+      kpi("Qualified leads", fInt(T.ql), isNum(T.crm) && T.crm ? fPct(T.ql / T.crm) + " of CRM leads" : ""),
+      kpi("CPQL", fINR(T.cpql), "Spend ÷ QLs")]);
+  };
+
+  var grpSpeed = function(){
+    return grp("Speed to Lead & Sales SLA", [
+      kpi("Overall TAT", fMin(T.tat), "avg · median " + fMin(T.tatMed) + " · " + T.called + " contacted", isNum(T.tat) && T.tat > R.slaMin ? "bad" : ""),
+      kpi("Working-hrs TAT", fMin(T.whAvg), "avg · median " + fMin(T.whMed) + " · " + whText()),
+      kpi("Not Contacted", fInt(T.pend), T.pend ? "waiting " + fMin(T.pendAgeO) + " avg · " + fMin(T.pendAgeW) + " in working hrs" : "none waiting", T.pend ? "warn" : ""),
+      kpi("SLA ≤ " + R.slaMin + " min", fPct(T.sla), T.win + " of " + T.elig + " leads (overall TAT)", isNum(T.sla) ? (T.sla < R.slaTarget ? "warn" : "good") : "")]);
+  };
+
+  var grpSales = function(){
+    var aov = isNum(T.estRev) && isNum(T.won) && T.won > 0 ? T.estRev / T.won : null;
+    return grp("Sales, Revenue & ROAS", [
+      kpi("Sales / Orders", fInt(T.won || 0), "Won deals / purchases"),
+      kpi("Conversion Rate", isNum(T.saleRate) ? fPct(T.saleRate) : "N/A", "Sales ÷ leads"),
+      kpi("Cost per Sale (CPA)", isNum(T.cps) ? fINR(T.cps) : "N/A", "Spend ÷ sales"),
+      kpi("Est. Revenue", isNum(T.estRev) ? fINR(T.estRev) : (VAL_ON ? "N/A (check value)" : "Set in Settings › Attribution"), isNum(T.estRev) ? "Sales × avg deal value" : "Estimate"),
+      kpi("Blended ROAS", isNum(T.estRoas) ? T.estRoas.toFixed(2) + "×" : "N/A", "Revenue ÷ spend", isNum(T.estRoas) ? (T.estRoas >= 3 ? "good" : (T.estRoas < 1.5 ? "warn" : null)) : null),
+      kpi("Average Order (AOV)", isNum(aov) ? fINR(aov) : "N/A", "Revenue ÷ sales")]);
+  };
+
+  var grpAwareness = function(){
+    var rch = isNum(T.reachV) ? T.reachV : (isNum(T.reach) ? T.reach : null);
+    var freq = isNum(T.frequency) ? T.frequency : (isNum(T.imp) && isNum(rch) && rch > 0 ? T.imp / rch : null);
+    var cpm = isNum(T.cpm) ? T.cpm : (isNum(T.spend) && isNum(T.imp) && T.imp > 0 ? (T.spend / T.imp) * 1000 : null);
+    var cpmr = isNum(T.cpmr) ? T.cpmr : (isNum(T.spend) && isNum(rch) && rch > 0 ? (T.spend / rch) * 1000 : null);
+    return grp("Brand Reach & Saturation", [
+      kpi("Unique Reach", isNum(rch) ? fInt(rch) : "N/A", "Unique audience reached"),
+      kpi("Total Impressions", fInt(T.imp), "Views served across placements"),
+      kpi("Blended CPM", isNum(cpm) ? fINR2(cpm) : "N/A", "Cost per 1k impressions"),
+      kpi("Ad Frequency", isNum(freq) ? freq.toFixed(2) + "×" : "N/A", "Avg views per person reached"),
+      kpi("Cost per 1k Reached", isNum(cpmr) ? fINR2(cpmr) : "N/A", "Spend ÷ reach × 1,000"),
+      kpi("Amount Spent", fShortINR(T.spend), rows.length + " ad rows")]);
+  };
+
+  if (obj === "sales"){
+    sec.appendChild(grpSales());
+    sec.appendChild(grpMedia());
+    sec.appendChild(grpLeads());
+    if (T.called > 0 || T.pend > 0) sec.appendChild(grpSpeed());
+  } else if (obj === "awareness"){
+    sec.appendChild(grpAwareness());
+    sec.appendChild(grpMedia());
+    sec.appendChild(grpLeads());
+  } else {
+    // leads
+    sec.appendChild(grpLeads());
+    sec.appendChild(grpSpeed());
+    sec.appendChild(grpMedia());
+    if (WON_ON || isNum(T.won)) sec.appendChild(grpSales());
   }
   sec.appendChild(renderFunnel(T));
   /* performance marketing hub quick strip */
@@ -5046,7 +5449,7 @@ function viewOverview(){
   loadBudgets(); var bbx = budgetByBrand(); if (bbx) bt._budDaily = br.reduce(function(s0, b){ return s0 + (bbx.daily[b.brand] || 0); }, 0);
   var BS = state.budgets, bD = budgetDays();
   sec.appendChild(colTools("brands", brandCols()));
-  sec.appendChild(table("brands", visibleCols("brands", brandCols()), br, {total: state.brand === "All" ? bt : null, stickyFirst: true}));
+  sec.appendChild(table("brands", visibleCols("brands", brandCols()), br, {title: state.brand === "All" ? "Brand Summary" : state.brand + " Summary", allCols: brandCols(), total: state.brand === "All" ? bt : null, stickyFirst: true}));
   if (sb.cfg && !isGoogle()) sec.appendChild(el("div", {cls: "small budget-note"}, el("span", {text: BS && BS.loading && !BS.camps ? "Loading budgets from Meta… " : BS && BS.err ? "Couldn't read budgets from Meta: " + BS.err + " " : BS && BS.camps ?
     "Daily budget = today's budgets of active campaigns, live from Meta (" + new Date(BS.at).toLocaleTimeString("en-IN", {hour: "numeric", minute: "2-digit"}) + "). " + bD.label + " = daily budget × " + (bD.days || "?") + " day" + (bD.days === 1 ? "" : "s") + ". Budget used = amount spent ÷ that budget. Past budget changes aren't known, so for older dates it's an estimate. " : ""}),
     BS && !BS.loading ? el("button", {cls: "linkbtn", type: "button", onclick: function(){ loadBudgets(true); render(); }}, "Refresh budgets") : null));
@@ -5067,7 +5470,7 @@ function viewOverview(){
       el("span", {cls: "note", text: "Campaigns you mapped no-campaign CRM leads to (Settings › Leads without a campaign). Leads in CRM includes the mapped leads, so UI vs CRM, CPQL and TAT compare like for like."}),
       el("button", {cls: "linkbtn", type: "button", onclick: function(){ state.tab = "settings"; state.setTab = "brands"; render(); var e = document.getElementById("srcmap"); if (e) e.scrollIntoView({block: "start"}); }}, "Edit mapping")));
     sec.appendChild(colTools("mapped", mcols));
-    sec.appendChild(table("mapped", visibleCols("mapped", mcols), mrows, {total: mrows.length > 1 ? mt : null}));
+    sec.appendChild(table("mapped", visibleCols("mapped", mcols), mrows, {title: "Mapped Campaigns", allCols: mcols, total: mrows.length > 1 ? mt : null}));
   }
   /* lead status breakdown for the selected brand(s) */
   var sn = {}; br.forEach(function(b){ for (var k in b.statusN) sn[k] = (sn[k] || 0) + b.statusN[k]; });
@@ -5075,7 +5478,7 @@ function viewOverview(){
   var srows = Object.keys(sn).map(function(k){ return {status: k, n: sn[k], share: T.crm ? sn[k] / T.crm : null, ql: qlOf(k) ? "QL" : "Not QL"}; }).sort(function(x, y){ return y.n - x.n; });
   sec.appendChild(el("div", {cls: "sec-head"}, el("h2", {text: "Lead status breakdown"}), el("span", {cls: "note", text: "CRM status of the leads above. QL is decided on the QL statuses tab."})));
   sec.appendChild(table("statusmix", [{k: "status", label: "Lead status", t: "text", cls: "name"}, {k: "n", label: "Leads", t: "int"}, {k: "share", label: "Share", t: "pct"},
-    {k: "ql", label: "Counts as", t: "text", render: function(r){ return el("span", {cls: "pill " + (r.ql === "QL" ? "good" : "mut"), text: r.ql}); }}], srows, {empty: "No CRM leads for this filter."}));
+    {k: "ql", label: "Counts as", t: "text", render: function(r){ return el("span", {cls: "pill " + (r.ql === "QL" ? "good" : "mut"), text: r.ql}); }}], srows, {title: "Lead Status Breakdown", empty: "No CRM leads for this filter."}));
   return sec;
 }
 function renderFunnel(T){
@@ -5282,6 +5685,17 @@ function renderHeader(){
     chips.appendChild(el("label", {cls: "brand-pick plat-pick"}, el("span", {cls: "bp-dot", style: "background:" + (isGoogle() ? "#1a73e8" : "#0866ff"), "aria-hidden": "true"}), el("span", {cls: "bp-lbl", text: "Platform"}), psel)); }
   chips.appendChild(el("label", {cls: "brand-pick"}, el("span", {cls: "bp-dot", style: "background:" + (state.brand === "All" ? "linear-gradient(135deg,#1e3a8a,#7c3aed)" : brandColor(state.brand)), "aria-hidden": "true"}),
     el("span", {cls: "bp-lbl", text: "Brand"}), bsel));
+  var curObj = getActiveObjective();
+  var osel = el("select", {id: "obj-select", "aria-label": "Business objective"}, [
+    el("option", {value: "leads", selected: curObj === "leads" ? true : null, text: "🎯 Leads (CPL & QL)"}),
+    el("option", {value: "sales", selected: curObj === "sales" ? true : null, text: "🛒 Sales (ROAS & Revenue)"}),
+    el("option", {value: "awareness", selected: curObj === "awareness" ? true : null, text: "📢 Awareness (Reach & CPM)"})
+  ]);
+  osel.addEventListener("change", function(){ setActiveObjective(osel.value); });
+  var curObjMeta = OBJECTIVES[curObj] || OBJECTIVES.leads;
+  chips.appendChild(el("label", {cls: "brand-pick obj-pick", title: "Business objective: " + curObjMeta.fullName + " — " + curObjMeta.tagline},
+    el("span", {cls: "bp-dot", style: "background:" + curObjMeta.color, "aria-hidden": "true"}),
+    el("span", {cls: "bp-lbl", text: "Goal"}), osel));
   document.body.classList.toggle("plat-google", isGoogle());
   document.getElementById("btn-xlsx").hidden = !state.caps.downloads;
   document.getElementById("save-wrap").hidden = sb.cfg ? !(state.raw && state.source !== "db" && (sbCanWrite() || sb.status === "signedout")) : !(state.raw && (teamCanWrite() || team.status === "locked"));
@@ -5475,11 +5889,19 @@ var CRMS = ["TeleCRM", "Zoho CRM", "HubSpot", "Salesforce", "LeadSquared", "Pipe
 function orgFields(o, ids){
   o = o || {};
   var name = el("input", {type: "text", id: ids + "-name", maxlength: "80", value: o.name || "", placeholder: "Company or brand group", required: true});
+  var curObj = o.objective || (state && state.settings && state.settings.objective) || "leads";
+  var obj = el("select", {id: ids + "-obj"}, [
+    el("option", {value: "leads", selected: curObj === "leads" ? true : null, text: "🎯 Lead Generation (CPL, Qualified Leads, CPQL, Speed-to-lead)"}),
+    el("option", {value: "sales", selected: curObj === "sales" ? true : null, text: "🛒 Sales & E-Commerce (Revenue, ROAS, Purchases, CPA, AOV)"}),
+    el("option", {value: "awareness", selected: curObj === "awareness" ? true : null, text: "📢 Brand Awareness (Reach, Impressions, CPM, Frequency, CTR)"})
+  ]);
   var cur = el("select", {id: ids + "-cur"}, CURRENCIES.map(function(c){ return el("option", {value: c, selected: (o.currency || "INR") === c ? true : null, text: c}); }));
   var tz = el("select", {id: ids + "-tz"}, TIMEZONES.map(function(t){ return el("option", {value: String(t[0]), selected: Number(o.tz_offset_min === undefined ? 330 : o.tz_offset_min) === t[0] ? true : null, text: t[1]}); }));
   var crm = el("input", {type: "text", id: ids + "-crm", maxlength: "40", value: o.crm_name || "", placeholder: "e.g. TeleCRM", list: ids + "-crms"});
-  return {name: name, cur: cur, tz: tz, crm: crm, nodes: [
+  return {name: name, cur: cur, tz: tz, crm: crm, obj: obj, nodes: [
     el("div", {cls: "field"}, el("label", {"for": ids + "-name", text: "Workspace name"}), name),
+    el("div", {cls: "field"}, el("label", {"for": ids + "-obj", text: "Primary business objective"}), obj,
+      el("span", {cls: "small", text: "Customizes your dashboard KPIs, default column views, and report structure."})),
     el("div", {cls: "field"}, el("label", {"for": ids + "-cur", text: "Currency"}), cur),
     el("div", {cls: "field"}, el("label", {"for": ids + "-tz", text: "Time zone (days, TAT and reports follow it)"}), tz),
     el("div", {cls: "field"}, el("label", {"for": ids + "-crm", text: "Your CRM"}), crm, el("datalist", {id: ids + "-crms"}, CRMS.map(function(c){ return el("option", {value: c}); })))]};
@@ -5512,16 +5934,60 @@ function workspaceWizard(){
   box.appendChild(el("div", {cls: "login-head"}, brandHead(), el("h2", {text: had ? "New workspace" : "Set up your workspace"})));
   box.appendChild(el("div", {cls: "small", text: "A workspace holds one company's ad accounts, CRM leads, settings and team. You'll be its admin. Joining an existing team instead? Ask its admin to invite " + sb.email + ", then sign in again."}));
   var F = orgFields({}, "wz");
+
+  var objChoice = "leads";
+  var objCards = el("div", {cls: "obj-card-grid", style: "display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-bottom:6px"});
+  var cardMeta = [
+    {id: "leads", icon: "🎯", title: "Lead Generation", sub: "CPL, Qualified Leads, CPQL, SLA & Response Speed", badge: "Services / B2B / Real Estate"},
+    {id: "sales", icon: "🛒", title: "Sales & E-Commerce", sub: "Orders, CPA, Blended ROAS, Revenue & AOV", badge: "D2C / E-com / Subscriptions"},
+    {id: "awareness", icon: "📢", title: "Brand Awareness", sub: "Unique Reach, Impressions, CPM, Frequency & CTR", badge: "Launches / FMCG / Events"}
+  ];
+  cardMeta.forEach(function(cm){
+    var isSel = cm.id === "leads";
+    var cEl = el("div", {
+      cls: "obj-card" + (isSel ? " selected" : ""),
+      style: "cursor:pointer;border:2px solid " + (isSel ? "var(--accent)" : "var(--line)") + ";border-radius:var(--r,8px);padding:12px;background:var(--panel);transition:all .15s",
+      onclick: function(){
+        objChoice = cm.id;
+        if (F.obj) F.obj.value = cm.id;
+        objCards.querySelectorAll(".obj-card").forEach(function(card, idx){
+          var sel = cardMeta[idx].id === cm.id;
+          card.classList.toggle("selected", sel);
+          card.style.borderColor = sel ? "var(--accent)" : "var(--line)";
+          card.style.boxShadow = sel ? "0 0 0 2px var(--accent-soft, rgba(37,99,235,0.2))" : "none";
+        });
+      }
+    },
+      el("div", {style: "font-size:24px;margin-bottom:4px"}, cm.icon),
+      el("strong", {style: "display:block;font-size:14px;color:var(--ink)"}, cm.title),
+      el("span", {cls: "small", style: "display:block;color:var(--muted);margin-top:4px"}, cm.sub),
+      el("span", {cls: "pill mut", style: "display:inline-block;font-size:10px;margin-top:8px"}, cm.badge)
+    );
+    objCards.appendChild(cEl);
+  });
+
   var brands = el("textarea", {id: "wz-brands", rows: 3, placeholder: "One brand per line (optional — you can add them later in Settings)"});
   var go = el("button", {cls: "btn", type: "submit"}, "Create workspace");
-  var form = el("form", {style: "display:grid;gap:12px"}, F.nodes, el("div", {cls: "field"}, el("label", {"for": "wz-brands", text: "Brands"}), brands), go);
+  var form = el("form", {style: "display:grid;gap:12px"},
+    el("div", {cls: "field"}, el("label", {text: "What is your primary marketing goal?"}), objCards),
+    F.nodes,
+    el("div", {cls: "field"}, el("label", {"for": "wz-brands", text: "Brands"}), brands),
+    go
+  );
   form.addEventListener("submit", function(e){ e.preventDefault(); var n = F.name.value.trim(); if (!n){ F.name.focus(); return; }
+    var selectedObj = F.obj ? F.obj.value : (objChoice || "leads");
     go.disabled = true; go.textContent = "Creating…";
     sb.client.rpc("create_organization", {p_name: n, p_currency: F.cur.value, p_tz_offset_min: Number(F.tz.value), p_crm_name: F.crm.value.trim() || "CRM",
       p_brands: brands.value.split(/\n+/).map(function(x){ return x.trim(); }).filter(Boolean)})
       .then(function(r){ if (r.error) throw r.error; var id = r.data; return sbLoadOrgs().then(function(list){ sb.creatingOrg = false;
-        sb.org = null; sbUseOrg(list.filter(function(x){ return x.id === id; })[0] || list[0]); state.source = "none"; state.raw = null; state.R = null; state.settings = loadSettings(); myLoadOnline();
-        state.tab = "settings"; state.setTab = "workspace"; render(); dbOpen(true).catch(function(){}); toast("Workspace “" + n + "” is ready. Next: connect Meta and your CRM in Settings."); }); })
+        sb.org = null; sbUseOrg(list.filter(function(x){ return x.id === id; })[0] || list[0]); state.source = "none"; state.raw = null; state.R = null;
+        state.settings = loadSettings();
+        state.settings.objective = selectedObj;
+        state.objective = selectedObj;
+        storeSettings();
+        if (typeof provSave === "function") provSave();
+        myLoadOnline();
+        state.tab = "settings"; state.setTab = "workspace"; render(); dbOpen(true).catch(function(){}); toast("Workspace “" + n + "” created with " + (OBJECTIVES[selectedObj] ? OBJECTIVES[selectedObj].fullName : selectedObj) + " objective!"); }); })
       .catch(function(er){ go.disabled = false; go.textContent = "Create workspace"; sb.msg = {kind: "err", text: er.message || String(er)}; renderLogin(); }); });
   box.appendChild(form);
   if (sb.msg) box.appendChild(el("div", {cls: "msg " + sb.msg.kind, role: "alert", text: sb.msg.text}));
@@ -6030,12 +6496,13 @@ function xlCols(cols){
 function xlVal(c, r){ return c.get ? c.get(r) : r[c.k]; }
 var XL = {ink: "FF111111", headFg: "FFFFFFFF", sub: "FF686868", faint: "FF9A9A9A", line: "FFDDDDDD", zebra: "FFF7F7F5", total: "FFECECE8",
   bad: "FFB42318", badBg: "FFFBE7E5", warn: "FF8A5D0B", warnBg: "FFFBF1DD", good: "FF1F7A4A", goodBg: "FFE6F2EB"};
-function xlNumFmt(t){ var c = (CUR || "₹").trim(); if (t === "rint") return "#,##0"; if (t === "rinr") return "#,##0"; if (t === "rpct") return "0%"; if (t === "rpct2") return "0.00%"; return t === "inr2" ? '"' + c + '"#,##0.00' : t === "inr" ? '"' + c + '"#,##0' : t === "int" ? "#,##0" : t === "pct" ? "0.0%" : t === "min" ? "0.0" : t === "dt" ? "dd-mmm-yyyy hh:mm" : null; }
+function xlNumFmt(t){ var c = (CUR || "₹").trim(); if (t === "rint") return "#,##0"; if (t === "rinr") return "#,##0"; if (t === "rpct") return "0%"; if (t === "rpct2") return "0.00%"; if (t === "pct2Dec") return "0.00"; return t === "inr2" ? '"' + c + '"#,##0.00' : t === "inr" ? '"' + c + '"#,##0' : t === "int" ? "#,##0" : t === "pct" ? "0.0%" : t === "min" ? "0.0" : t === "dt" ? "dd-mmm-yyyy hh:mm" : null; }
 function xlSolid(argb){ return {type: "pattern", pattern: "solid", fgColor: {argb: argb}}; }
 function xlCellVal(c, v){
   if (c.t === "text") return v == null ? "" : String(v);
   if (c.t === "rint" || c.t === "rinr" || c.t === "rpct" || c.t === "rpct2") return isNum(v) ? (c.t === "rpct" ? Math.round(v * 10000) / 10000 : c.t === "rpct2" ? Math.round(v * 1000000) / 1000000 : Math.round(v)) : "—";
   if (c.t === "dt") return isNum(v) ? new Date(v) : "";
+  if (c.t === "pct2Dec") return isNum(v) ? Math.round(v * 100) / 100 : "N/A";
   if (!isNum(v)) return "N/A";
   return c.t === "pct" ? Math.round(v * 10000) / 10000 : Math.round(v * 100) / 100;
 }

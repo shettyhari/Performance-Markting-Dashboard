@@ -487,7 +487,7 @@
     if (!sb.org){ wrap.appendChild(el("p", {cls: "small", text: "Sign in to a workspace first."})); return wrap; }
     wsLoad();
     /* identity */
-    var F = orgFields(o, "ws"); [F.name, F.cur, F.tz, F.crm].forEach(function(n){ n.disabled = !admin; });
+    var F = orgFields(o, "ws"); [F.name, F.cur, F.tz, F.crm, F.obj].forEach(function(n){ if (n) n.disabled = !admin; });
     var logo = o.logo || null, prev = el("img", {alt: "", src: logo || null, hidden: logo ? null : true, style: "max-height:48px;max-width:200px;border:1px solid var(--line);padding:4px;background:#fff"});
     var file = el("input", {type: "file", accept: "image/png,image/jpeg,image/svg+xml,image/webp", disabled: admin ? null : true, "aria-label": "Logo"});
     file.addEventListener("change", function(){ if (!file.files[0]) return; resizeLogo(file.files[0]).then(function(d){ logo = d; prev.src = d; prev.hidden = false; }).catch(function(e){ toast(e.message); }); });
@@ -504,6 +504,10 @@
         var n = F.name.value.trim(); if (!n){ toast("Give the workspace a name."); return; }
         sb.client.from("organizations").update({name: n, currency: F.cur.value, tz_offset_min: Number(F.tz.value), crm_name: F.crm.value.trim() || "CRM", logo: logo}).eq("id", sb.org.id)
           .then(function(r){ if (r.error) throw r.error;
+            if (F.obj) {
+              state.settings.objective = F.obj.value;
+              state.objective = F.obj.value;
+            }
             state.settings.campaignPrefixes = pfx.value.split(/\n+/).map(function(x){ return x.trim(); }).filter(Boolean);
             state.settings.phoneCountryCode = cc.value.replace(/\D+/g, ""); provSave();
             return sbLoadOrgs(); })
