@@ -69,7 +69,7 @@ test("machine keys: a push key opens only its workspace; an API key isn't accept
 });
 test("CRM push with workspace A's key writes only to workspace A", async () => {
   global.fetch = fake(); calls = [];
-  const H = require("../api/crm-push"), out = {};
+  const H = require("../api/crm"), out = {};
   const res = { statusCode: 0, setHeader() {}, end(b) { out.status = this.statusCode; out.body = JSON.parse(b); } };
   await H({ method: "POST", headers: { "x-push-key": KEY_A }, body: [{ "Lead id": "L1", "Created On": "2026-10-01 10:00:00", Status: "New" }], query: {} }, res);
   assert.strictEqual(out.status, 200, JSON.stringify(out.body));

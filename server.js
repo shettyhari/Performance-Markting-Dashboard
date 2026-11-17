@@ -57,13 +57,18 @@ const server = http.createServer((req, res) => {
   // Handle API routes
   if (pathname.startsWith("/api/")) {
     const parts = pathname.slice(5).split("/");
-    const endpoint = parts[0];
+    let endpoint = parts[0];
+    const query = Object.assign({}, parsed.query || {});
+    if (endpoint === "crm-push") { endpoint = "crm"; if (!query.op) query.op = "push"; }
+    else if (endpoint === "crm-cron") { endpoint = "crm"; if (!query.op) query.op = "cron"; }
+    else if (endpoint === "google-cron") { endpoint = "google"; if (!query.op) query.op = "cron"; }
+    else if (endpoint === "meta-cron") { endpoint = "meta"; if (!query.op) query.op = "cron"; }
     const apiFile = path.join(__dirname, "api", endpoint + ".js");
     if (fs.existsSync(apiFile)) {
       let bodyData = "";
       req.on("data", (chunk) => { bodyData += chunk; });
       req.on("end", async () => {
-        req.query = parsed.query || {};
+        req.query = query;
         if (bodyData) {
           try { req.body = JSON.parse(bodyData); } catch (e) { req.body = bodyData; }
         } else {

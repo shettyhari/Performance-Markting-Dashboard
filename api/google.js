@@ -2,14 +2,33 @@
 //   GET /api/google?op=status                       (any member)
 //   GET /api/google?op=accounts                     (admin / editor: every account the workspace's Google login can reach, direct or through a manager / MCC)
 //   GET /api/google?op=sync[&from=YYYY-MM-DD&to=…]  (admin / editor: "Sync now" — same as the 30-minute auto-sync)
+//   POST /api/google?op=cron&org=<id>               (workspace cron schedule from ec2/fanout.sh)
 // Platform env: GOOGLE_ADS_CLIENT_ID / SECRET (one OAuth client). Per workspace: refresh token (+ optional manager id) in Settings › Data connections.
 const D = require("./_db");
 const G = require("./_gadslib");
 const { syncGoogle, syncGoogleOfflineConversions } = require("./_gadsync");
+const { isDueToSync } = require("./_crmlib");
 
 module.exports = D.logged("google", async function handler(req, res) {
   try {
     const op = String((req.query && req.query.op) || "status");
+
+    // Scheduled Cron
+    if (op === "cron") {
+      if (!(await D.cronAllowed(req))) return D.send(res, 401, { error: "Not allowed" });
+      const org = await D.orgById(req.query && req.query.org);
+      if (!org) return D.send(res, 404, { error: "Unknown workspace" });
+      return await D.withOrg(org, async () => {
+        if (!(await G.configured())) return D.send(res, 200, { skipped: "Google Ads isn't connected for this workspace." });
+        const S = await D.orgSettings();
+        if (!S.googleAutoSync) return D.send(res, 200, { skipped: "Google auto-sync is off (Settings › Data connections)." });
+        const due = await isDueToSync(S, "google");
+        if (!due.due) return D.send(res, 200, { skipped: due.reason });
+        const out = await syncGoogle(S, D.sbFetch, { budgetMs: 50000 });
+        return D.send(res, out.errors && out.errors.length && !out.done ? 502 : 200, out);
+      });
+    }
+
     const me = await D.auth(req);
     if (me.error) return D.send(res, me.status, { error: me.error });
     return await D.withOrg(me.org, async () => {

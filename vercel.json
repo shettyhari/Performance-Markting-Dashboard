@@ -6,22 +6,10 @@
     "api/meta.js": {
       "maxDuration": 60
     },
-    "api/meta-cron.js": {
-      "maxDuration": 60
-    },
-    "api/crm-push.js": {
-      "maxDuration": 60
-    },
     "api/crm.js": {
       "maxDuration": 60
     },
-    "api/crm-cron.js": {
-      "maxDuration": 60
-    },
     "api/google.js": {
-      "maxDuration": 60
-    },
-    "api/google-cron.js": {
       "maxDuration": 60
     },
     "api/alerts.js": {
@@ -47,6 +35,22 @@
     {
       "source": "/app",
       "destination": "/app.html"
+    },
+    {
+      "source": "/api/crm-push",
+      "destination": "/api/crm?op=push"
+    },
+    {
+      "source": "/api/crm-cron",
+      "destination": "/api/crm?op=cron"
+    },
+    {
+      "source": "/api/google-cron",
+      "destination": "/api/google?op=cron"
+    },
+    {
+      "source": "/api/meta-cron",
+      "destination": "/api/meta?op=cron"
     },
     {
       "source": "/api/mcp",
