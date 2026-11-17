@@ -4272,9 +4272,14 @@ function crmPanel(){
 
   // Key input
   var keyInp = el("input", {type: "password", placeholder: isKeySet ? "Key is set · paste new key to replace" : "Paste your CRM API key / access token", autocomplete: "off", disabled: canRun ? null : true, "aria-label": "CRM API Key"});
+  // Enterprise ID input (for TeleCRM)
+  var entInp = el("input", {type: "text", placeholder: "Enterprise ID (TeleCRM › Settings › Website & API)", value: S.crmEnterpriseId || "", disabled: canRun ? null : true, "aria-label": "TeleCRM Enterprise ID"});
+  entInp.addEventListener("change", function(){ S.crmEnterpriseId = entInp.value.trim(); provSave(); toast("Enterprise ID saved"); });
+
   var saveKeyBtn = el("button", {cls: "btn ghost", type: "button", disabled: canRun ? null : true, onclick: function(){
     var val = keyInp.value.trim();
     if (!val){ toast("Paste a CRM API key first"); return; }
+    if (entInp && entInp.value) { S.crmEnterpriseId = entInp.value.trim(); }
     sb.client.rpc("set_org_secret", {p_key: "crm_api_key", p_value: val}).then(function(r){
       if (r && r.error) throw r.error;
       if (S.crmApiKey) { delete S.crmApiKey; delete S._crmKeyUpdatedAt; }
@@ -4294,16 +4299,12 @@ function crmPanel(){
     });
   }}, "Save & sync key");
 
-  // Enterprise ID input (for TeleCRM)
-  var entInp = el("input", {type: "text", placeholder: "e.g. Enterprise ID from TeleCRM › Settings › Website & API", value: S.crmEnterpriseId || "", disabled: canRun ? null : true, "aria-label": "TeleCRM Enterprise ID"});
-  entInp.addEventListener("change", function(){ S.crmEnterpriseId = entInp.value.trim(); provSave(); toast("Enterprise ID saved"); });
-
   var cgGrid = el("div", {style: "display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin:10px 0"},
     el("label", {cls: "field rep-field"}, el("span", {cls: "small", text: "CRM Provider"}), provSel),
     el("label", {cls: "field rep-field"}, el("span", {cls: "small", text: "CRM Enterprise / Account ID"}, entInp)),
     el("label", {cls: "field rep-field"}, el("span", {cls: "small", text: "CRM API Key / Token"}), el("div", {style: "display:flex;gap:8px"}, keyInp, saveKeyBtn)));
   cg.appendChild(cgGrid);
-  cg.appendChild(el("span", {cls: "small", text: "TeleCRM users: find your Enterprise ID and API token in TeleCRM › Settings › Website & API."}));
+  cg.appendChild(el("span", {cls: "small", text: "TeleCRM: In TeleCRM › Integrations › Website/API, copy your token under 'Sync APIs' (do NOT use Async APIs). Your Enterprise ID is found in Settings › Website & API."}));
   box.appendChild(cg);
 
   /* Auto-sync and Schedule settings group */

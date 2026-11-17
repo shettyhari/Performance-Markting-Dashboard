@@ -77,53 +77,91 @@ function classify(status, S) {
   return false;
 }
 
+function formatCrmApiError(status, errTxt, provider = "TeleCRM") {
+  let detail = "";
+  try {
+    const b = JSON.parse(errTxt);
+    detail = (b && typeof b.message === "string" ? b.message : "") ||
+             (b && b.error && typeof b.error === "string" ? b.error : "") ||
+             (b && b.error && typeof b.error.message === "string" ? b.error.message : "") ||
+             (b && typeof b.msg === "string" ? b.msg : "") ||
+             (b ? JSON.stringify(b) : "");
+  } catch (e) {
+    detail = String(errTxt || "").slice(0, 200);
+  }
+
+  let msg = provider + " API error (" + status + ")" + (detail ? ": " + detail : "");
+  if (status === 401 && provider.toLowerCase().indexOf("telecrm") >= 0) {
+    msg += " — Unauthorized. In TeleCRM, please verify: 1) You copied the token from 'Integrations › Website/API › Sync APIs' (do NOT use Async APIs). 2) Your Enterprise ID matches your TeleCRM account. 3) The token is active and not expired.";
+  }
+  return msg;
+}
+
 /* Fetch leads directly from CRM APIs (TeleCRM, HubSpot, Zoho, LeadSquared, Custom) */
 async function fetchCrmLeads(S, apiKey, options = {}) {
   const prov = String(S.crmProvider || S.crm_name || "TeleCRM").toLowerCase();
   const limit = options.limit || 500;
+  const cleanKey = String(apiKey || "").trim().replace(/^Bearer\s+/i, "");
 
   if (S.crmEndpointUrl) {
     const r = await fetch(S.crmEndpointUrl, {
       method: "GET",
-      headers: { Authorization: "Bearer " + apiKey, Accept: "application/json" }
+      headers: { Authorization: "Bearer " + cleanKey, Accept: "application/json" }
     });
-    if (!r.ok) throw new Error("Custom CRM API returned " + r.status + " " + r.statusText);
+    if (!r.ok) {
+      const errTxt = await r.text();
+      throw new Error(formatCrmApiError(r.status, errTxt, "Custom CRM"));
+    }
     const body = await r.json();
     return Array.isArray(body) ? body : body.leads || body.data || [];
   }
 
   if (prov.indexOf("telecrm") >= 0 || prov === "crm") {
-    let entId = S.crmEnterpriseId || S.crmEnterprise || (S.crmConfig && S.crmConfig.enterpriseId) || "";
+    let entId = clean(S.crmEnterpriseId || S.crmEnterprise || (S.crmConfig && S.crmConfig.enterpriseId) || "");
     if (!entId) {
       // Try to discover enterprise ID using user token
       try {
-        const me = await fetch("https://api.telecrm.in/enterprise", { headers: { Authorization: "Bearer " + apiKey } });
+        const me = await fetch("https://api.telecrm.in/enterprise", { headers: { Authorization: "Bearer " + cleanKey } });
         if (me.ok) {
           const d = await me.json();
-          entId = (d && (d.id || d.enterpriseId || d.enterprise_id)) || "";
+          entId = clean((d && (d.id || d.enterpriseId || d.enterprise_id)) || "");
         }
       } catch (e) {}
     }
     if (!entId) {
-      throw new Error("TeleCRM Enterprise ID is required (Settings › Data connections › CRM Enterprise ID; found in TeleCRM › Settings › Website & API).");
+      throw new Error("TeleCRM Enterprise ID is required. Please enter it in Settings › Data connections › CRM Leads (found in TeleCRM › Settings › Website & API).");
     }
 
-    // Call TeleCRM search API
-    const url = "https://next.telecrm.in/autoupdate/v2/enterprise/" + encodeURIComponent(entId) + "/lead/search";
-    const res = await fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", Authorization: "Bearer " + apiKey },
-      body: JSON.stringify({ fields: ["*"], limit: limit, sort: { created_at: -1 } })
-    });
-    if (!res.ok) {
-      const errTxt = await res.text();
-      let errMsg = "TeleCRM API error (" + res.status + ")";
-      try { const b = JSON.parse(errTxt); if (b.message || b.error) errMsg += ": " + (b.message || b.error); } catch (e) { errMsg += ": " + errTxt.slice(0, 100); }
-      throw new Error(errMsg);
+    // Call TeleCRM search API with pagination
+    const pageSize = 100;
+    const target = Math.min(Math.max(limit || 100, 10), 1000);
+    const allLeads = [];
+
+    for (let skip = 0; skip < target; skip += pageSize) {
+      const pageLimit = Math.min(pageSize, target - skip);
+      const url = "https://next.telecrm.in/autoupdate/v2/enterprise/" + encodeURIComponent(entId) + "/lead/search?limit=" + pageLimit + "&skip=" + skip;
+      const res = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer " + cleanKey
+        },
+        body: JSON.stringify({})
+      });
+
+      if (!res.ok) {
+        const errTxt = await res.text();
+        throw new Error(formatCrmApiError(res.status, errTxt, "TeleCRM"));
+      }
+
+      const data = await res.json();
+      const list = Array.isArray(data) ? data : (data && (data.data || data.leads || data.result)) || [];
+      if (!list.length) break;
+      allLeads.push(...list);
+      if (list.length < pageLimit) break;
     }
-    const data = await res.json();
-    const list = Array.isArray(data) ? data : (data && (data.data || data.leads || data.result)) || [];
-    return list;
+
+    return allLeads;
   }
 
   if (prov.indexOf("hubspot") >= 0) {
