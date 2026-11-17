@@ -516,12 +516,25 @@
       var cur = W.secrets[t[0]] || (t[0] === "crm_api_key" && S && S.crmApiKey ? { last4: String(S.crmApiKey).slice(-4), updated_at: (S._crmKeyUpdatedAt || new Date().toISOString()) } : null);
       var inp = el("input", {type: "password", autocomplete: "off", placeholder: cur ? "Set · ends …" + cur.last4 : "Not set", disabled: admin ? null : true, "aria-label": t[1]});
       var save = function(v){
+        var triggerSync = function(){
+          if (t[0] === "crm_api_key" && v){
+            S.crmAutoSync = true; provSave();
+            toast("CRM API key saved · Starting initial lead sync…");
+            provApi("crm", "sync").then(function(res){
+              var msg = res && res.error ? "CRM sync: " + res.error : "CRM sync complete: " + ((res && (res.saved != null ? res.saved : res.received)) || 0) + " leads updated";
+              toast(msg);
+              return typeof dbRefreshLists === "function" ? dbRefreshLists().catch(function(){}) : Promise.resolve();
+            }).catch(function(err){ toast("CRM sync: " + (err.message || err)); });
+          } else {
+            toast(v ? t[1] + " saved" : t[1] + " removed");
+          }
+        };
         sb.client.rpc("set_org_secret", {p_key: t[0], p_value: v}).then(function(r){
           if (r && r.error) throw r.error;
           if (t[0] === "crm_api_key" && S && S.crmApiKey) {
             delete S.crmApiKey; delete S._crmKeyUpdatedAt; provSave();
           }
-          toast(v ? t[1] + " saved" : t[1] + " removed");
+          triggerSync();
           inp.value = ""; state.prov = {}; wsLoad(true);
         }).catch(function(e){
           if (t[0] === "crm_api_key" && admin) {
@@ -529,7 +542,7 @@
             else { delete S.crmApiKey; delete S._crmKeyUpdatedAt; }
             provSave();
             inp.value = ""; state.prov = {};
-            toast(v ? t[1] + " saved" : t[1] + " removed");
+            triggerSync();
             render();
             return;
           }

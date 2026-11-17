@@ -3,6 +3,7 @@
 const D = require("./_db");
 const G = require("./_gadslib");
 const { syncGoogle } = require("./_gadsync");
+const { isDueToSync } = require("./_crmlib");
 
 module.exports = D.logged("google-cron", async function handler(req, res) {
   try {
@@ -13,6 +14,8 @@ module.exports = D.logged("google-cron", async function handler(req, res) {
       if (!(await G.configured())) return D.send(res, 200, { skipped: "Google Ads isn't connected for this workspace." });
       const S = await D.orgSettings();
       if (!S.googleAutoSync) return D.send(res, 200, { skipped: "Google auto-sync is off (Settings › Data connections)." });
+      const due = await isDueToSync(S, "google");
+      if (!due.due) return D.send(res, 200, { skipped: due.reason });
       const out = await syncGoogle(S, D.sbFetch, { budgetMs: 50000 });
       return D.send(res, out.errors && out.errors.length && !out.done ? 502 : 200, out);
     });

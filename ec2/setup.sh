@@ -169,6 +169,7 @@ cat > /etc/cron.d/lp-fanout <<'EOF'
 # Qlarity schedules: each line calls the site once per active workspace (ec2/fanout.sh). Times are UTC.
 */30 * * * *   root  /usr/local/bin/lp-fanout /api/meta-cron
 15,45 * * * *  root  /usr/local/bin/lp-fanout /api/google-cron
+*/15 * * * *   root  /usr/local/bin/lp-fanout /api/crm-cron
 */5 * * * *    root  /usr/local/bin/lp-fanout "/api/alerts-cron?mode=activity"
 5,35 * * * *   root  /usr/local/bin/lp-fanout "/api/alerts-cron?mode=summary"
 10,40 * * * *  root  /usr/local/bin/lp-fanout "/api/suite?op=cron&mode=capi"

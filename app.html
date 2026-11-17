@@ -3510,6 +3510,8 @@ var PROV = {
   meta: {api: "meta", label: "Meta API (direct)", key: "metaAccounts", prefix: "Meta API · ", env: "meta_access_token", what: "System User access token",
     help: "Meta Business Settings › Users › System users › your system user › Generate new token (tick ads_read; give the system user access to the ad accounts under Assigned assets)"},
   google: {api: "google", label: "Google Ads API", key: "googleAccounts", prefix: "Google Ads API · "},
+  crm: {api: "crm", label: "CRM API (direct)", key: "crmConfig", prefix: "CRM API · ", env: "crm_api_key", what: "CRM API key / token",
+    help: "Settings › Workspace › Tokens or Settings › Data connections"},
   alerts: {api: "alerts", label: "Alerts", key: "alertsNone"}
 };
 function provApi(pk, op, params){
@@ -3600,7 +3602,7 @@ function provSync(pk, W){
 }
 /* the connection box; compact = inside Lead data upload */
 /* ================= Google Ads connection (Settings › Data connections) ================= */
-var GADS_RANGES = [["2m", "This month + last month"], ["mtd", "This month"], ["30", "Last 30 days"], ["90", "Last 90 days"]];
+var GADS_RANGES = [["2", "Yesterday + today"], ["7", "Last 7 days"], ["14", "Last 14 days"], ["30", "Last 30 days"], ["mtd", "This month"], ["2m", "This month + last month"], ["90", "Last 90 days"]];
 function gadsPanel(){
   var S = state.settings, G = state.gads || (state.gads = {}), box = el("div", {cls: "panel", id: "gads-panel"});
   box.appendChild(el("div", {cls: "sec-head"}, el("h2", {text: "Google Ads · automatic sync"}),
@@ -3642,13 +3644,36 @@ function gadsPanel(){
   box.appendChild(acc);
   /* auto-sync */
   var on = !!S.googleAutoSync, auto = (sb.uploads || []).filter(function(u){ return (u.meta_files || []).indexOf("Google Ads API · auto-sync") >= 0; })[0];
-  var as = el("div", {cls: "group auto-box"}, el("h3", {text: "Auto-sync every 30 minutes"}));
+  var as = el("div", {cls: "group auto-box"}, el("h3", {text: "Auto-sync schedule & settings"}));
   var tg = el("input", {type: "checkbox", id: "gads-auto", checked: on ? true : null, disabled: canRun ? null : true});
   tg.addEventListener("change", function(){ S.googleAutoSync = tg.checked; provSave(); toast(tg.checked ? "Google auto-sync on" : "Google auto-sync off"); render(); });
-  as.appendChild(el("label", {cls: "toggle", "for": "gads-auto"}, tg, el("span", {text: "Pull Google Ads data for the ticked accounts every 30 minutes (at :15 and :45). Each run refreshes the whole range, so late conversions Google adds to past days are picked up."})));
+  as.appendChild(el("label", {cls: "toggle", "for": "gads-auto"}, tg, el("span", {text: "Pull Google Ads data for ticked accounts on your schedule (refreshes past days so late conversions are recorded)"})));
+
+  var gFreq = el("select", {"aria-label": "Google sync frequency", disabled: canRun ? null : true},
+    [["15", "Every 15 minutes"], ["30", "Every 30 minutes (recommended)"], ["60", "Every 1 hour"], ["120", "Every 2 hours"], ["daily", "Once a day"]]
+      .map(function(o){ return el("option", {value: o[0], selected: String(S.googleSyncFrequency || "30") === o[0] ? true : null, text: o[1]}); }));
+  gFreq.addEventListener("change", function(){ S.googleSyncFrequency = gFreq.value; provSave(); toast("Google sync frequency: " + gFreq.value + " min"); render(); });
+
+  var gHours = el("select", {"aria-label": "Google sync hours", disabled: canRun ? null : true},
+    [["all", "24/7 (continuous)"], ["working", "Working hours only (workspace business hours)"]]
+      .map(function(o){ return el("option", {value: o[0], selected: String(S.googleSyncHours || "all") === o[0] ? true : null, text: o[1]}); }));
+  gHours.addEventListener("change", function(){ S.googleSyncHours = gHours.value; provSave(); toast("Google sync hours updated"); });
+
+  var gHour = el("select", {"aria-label": "Google daily sync time", disabled: canRun ? null : true},
+    ["06:00", "08:00", "09:00", "10:00", "12:00", "18:00", "21:00"].map(function(h){
+      return el("option", {value: h, selected: (S.googleSyncHour || "09:00") === h ? true : null, text: h});
+    }));
+  gHour.addEventListener("change", function(){ S.googleSyncHour = gHour.value; provSave(); });
+
   var rs = el("select", {"aria-label": "Google sync range", disabled: canRun ? null : true}, GADS_RANGES.map(function(r){ return el("option", {value: r[0], selected: String(S.googleAutoRange || "2m") === r[0] ? true : null, text: r[1]}); }));
-  rs.addEventListener("change", function(){ S.googleAutoRange = rs.value; provSave(); });
-  as.appendChild(el("label", {cls: "field rep-field"}, el("span", {cls: "small", text: "Days to keep refreshed"}), rs));
+  rs.addEventListener("change", function(){ S.googleAutoRange = rs.value; provSave(); toast("Google sync range updated"); });
+
+  var gGrid = el("div", {style: "display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin:10px 0"},
+    el("label", {cls: "field rep-field"}, el("span", {cls: "small", text: "Sync frequency"}), gFreq),
+    el("label", {cls: "field rep-field"}, el("span", {cls: "small", text: "Active hours"}), gHours),
+    String(S.googleSyncFrequency) === "daily" ? el("label", {cls: "field rep-field"}, el("span", {cls: "small", text: "Daily sync time"}), gHour) : null,
+    el("label", {cls: "field rep-field"}, el("span", {cls: "small", text: "Days to keep refreshed"}), rs));
+  as.appendChild(gGrid);
   if (auto){ var age = (Date.now() - Date.parse(auto.uploaded_at)) / 60000;
     as.appendChild(el("div", {cls: "small", text: "Last sync: " + new Date(auto.uploaded_at).toLocaleString("en-IN", {dateStyle: "medium", timeStyle: "short"}) + " (" + (age < 60 ? Math.round(age) + " min ago" : (age / 60).toFixed(1) + " h ago") + ") · " + fInt(auto.meta_rows) + " campaign-days"}));
     if (/^Last run errors/.test(auto.crm_file || "")) as.appendChild(el("div", {cls: "msg err", text: auto.crm_file})); }
@@ -4105,11 +4130,28 @@ function autoRangeText(S){
     return spanText({from: f, to: t}) + (S.metaAutoTo ? "" : ", moving up to today"); }
   var x = AUTO_RANGES.filter(function(r){ return r[0] === k; })[0]; return x ? x[1].toLowerCase() : "yesterday + today"; }
 function metaAutoBox(st, canRun, saved){
-  var S = state.settings, on = !!S.metaAutoSync, box = el("div", {cls: "group auto-box"}, el("h3", {text: "Auto-sync every 30 minutes"}));
+  var S = state.settings, on = !!S.metaAutoSync, box = el("div", {cls: "group auto-box"}, el("h3", {text: "Auto-sync schedule & settings"}));
   var auto = (sb.uploads || []).filter(function(u){ return (u.meta_files || []).indexOf("Meta API · auto-sync") >= 0; })[0];
   var tg = el("input", {type: "checkbox", id: "meta-auto", checked: on ? true : null, disabled: canRun ? null : true});
-  tg.addEventListener("change", function(){ S.metaAutoSync = tg.checked; provSave(); toast(tg.checked ? "Auto-sync on: " + autoRangeText(S) + " every 30 minutes" : "Auto-sync off"); render(); renderProvUpload(); });
-  box.appendChild(el("label", {cls: "toggle", "for": "meta-auto"}, tg, el("span", {text: "Pull Meta data for the ticked accounts every 30 minutes (replaces those days, so nothing is counted twice)"})));
+  tg.addEventListener("change", function(){ S.metaAutoSync = tg.checked; provSave(); toast(tg.checked ? "Auto-sync on: " + autoRangeText(S) : "Auto-sync off"); render(); renderProvUpload(); });
+  box.appendChild(el("label", {cls: "toggle", "for": "meta-auto"}, tg, el("span", {text: "Pull Meta data for ticked accounts automatically on schedule (replaces days, no double-counting)"})));
+
+  var mFreq = el("select", {"aria-label": "Meta sync frequency", disabled: canRun ? null : true},
+    [["15", "Every 15 minutes"], ["30", "Every 30 minutes (recommended)"], ["60", "Every 1 hour"], ["120", "Every 2 hours"], ["daily", "Once a day"]]
+      .map(function(o){ return el("option", {value: o[0], selected: String(S.metaSyncFrequency || "30") === o[0] ? true : null, text: o[1]}); }));
+  mFreq.addEventListener("change", function(){ S.metaSyncFrequency = mFreq.value; provSave(); toast("Meta sync frequency updated"); render(); renderProvUpload(); });
+
+  var mHours = el("select", {"aria-label": "Meta sync hours", disabled: canRun ? null : true},
+    [["all", "24/7 (continuous)"], ["working", "Working hours only (workspace business hours)"]]
+      .map(function(o){ return el("option", {value: o[0], selected: String(S.metaSyncHours || "all") === o[0] ? true : null, text: o[1]}); }));
+  mHours.addEventListener("change", function(){ S.metaSyncHours = mHours.value; provSave(); toast("Meta sync hours updated"); });
+
+  var mHour = el("select", {"aria-label": "Meta daily sync time", disabled: canRun ? null : true},
+    ["06:00", "08:00", "09:00", "10:00", "12:00", "18:00", "21:00"].map(function(h){
+      return el("option", {value: h, selected: (S.metaSyncHour || "09:00") === h ? true : null, text: h});
+    }));
+  mHour.addEventListener("change", function(){ S.metaSyncHour = mHour.value; provSave(); });
+
   var cur = String(S.metaAutoRange || "2");
   var sel = el("select", {id: "meta-auto-range", "aria-label": "Auto-sync date range", disabled: canRun ? null : true}, AUTO_RANGES.map(function(r){
     var lab = r[0] === "shown" ? r[1] + " (" + (cur === "shown" && S.metaAutoFrom ? autoRangeText(S) : rangeText(false)) + ")" : r[1];
@@ -4119,7 +4161,13 @@ function metaAutoBox(st, canRun, saved){
     if (sel.value === "shown"){ var r = rangeOf(state.range), t = todayDay(); if (!r) r = {from: t - 30, to: t};
       S.metaAutoFrom = isoDay(r.from); S.metaAutoTo = r.to >= t ? "" : isoDay(r.to); }
     provSave(); toast("Auto-sync range: " + autoRangeText(S)); render(); renderProvUpload(); });
-  box.appendChild(el("div", {cls: "auto-range"}, el("label", {"for": "meta-auto-range", cls: "small", text: "Date range to keep refreshed"}), sel));
+
+  var mGrid = el("div", {style: "display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin:10px 0"},
+    el("label", {cls: "field rep-field"}, el("span", {cls: "small", text: "Sync frequency"}), mFreq),
+    el("label", {cls: "field rep-field"}, el("span", {cls: "small", text: "Active hours"}), mHours),
+    String(S.metaSyncFrequency) === "daily" ? el("label", {cls: "field rep-field"}, el("span", {cls: "small", text: "Daily sync time"}), mHour) : null,
+    el("label", {cls: "field rep-field"}, el("span", {cls: "small", text: "Date range to refresh"}), sel));
+  box.appendChild(mGrid);
   box.appendChild(el("div", {cls: "small", text: cur === "2" || cur === "today" ? "Each run refreshes these days for every ticked account." :
     "Each run refreshes yesterday + today first, then older days of the range in 7-day pieces, as many as fit in one run; a long range is fully refreshed within a few runs. To follow a new dashboard date range, pick “Dates shown on the dashboard” again."}));
   if (!st.cronReady) box.appendChild(el("div", {cls: "banner warn"}, el("div", null, el("b", {text: "One-time setup needed. "}),
@@ -4137,7 +4185,7 @@ function metaAutoBox(st, canRun, saved){
 
 /* CRM leads sent in by n8n (POST /api/crm-push): status and setup */
 
-/* one place to see both automatic feeds: Meta API sync and CRM leads from n8n */
+/* one place to see all automatic feeds: Meta API sync, Google Ads sync, and CRM direct sync / push */
 function connStatusCard(){
   var ago = function(t){ var m = (Date.now() - Date.parse(t)) / 60000; return m < 1 ? "just now" : m < 60 ? Math.round(m) + " min ago" : m < 1440 ? (m / 60).toFixed(1) + " h ago" : Math.round(m / 1440) + " days ago"; };
   var when = function(t){ return new Date(t).toLocaleString("en-IN", {day: "numeric", month: "short", hour: "numeric", minute: "2-digit"}); };
@@ -4150,51 +4198,195 @@ function connStatusCard(){
       o.lines.length ? el("ul", {cls: "conn-lines"}, o.lines.map(function(l){ return el("li", {text: l}); })) : null,
       o.err ? el("div", {cls: "msg err", text: o.err}) : null,
       el("button", {cls: "linkbtn", type: "button", onclick: function(){ var e = document.getElementById(o.target); if (e) e.scrollIntoView({behavior: "smooth", block: "start"}); }}, "Details ↓")); };
-  /* Meta */
+
+  /* 1. Meta */
   var accs = (S.metaAccounts || []).filter(function(a){ return a.on !== false; }), auto = ups.filter(function(u){ return (u.meta_files || []).indexOf("Meta API · auto-sync") >= 0; })[0];
   var m = {name: "Meta Ads · API sync", target: "meta-panel", lines: [], kind: "off", state: "Off", main: ""};
   var tokenOk = W.status ? !!W.status.configured : null;
   if (tokenOk === false){ m.kind = "err"; m.state = "Not connected"; m.main = "No Meta token yet (Settings › Workspace › Tokens)."; }
-  else if (!S.metaAutoSync){ m.kind = "off"; m.state = "Auto-sync off"; m.main = auto ? "Last synced " + ago(auto.uploaded_at) + " · turn on auto-sync below" : "Turn on auto-sync below to pull Meta data every 30 minutes."; }
+  else if (!S.metaAutoSync){ m.kind = "off"; m.state = "Auto-sync off"; m.main = auto ? "Last synced " + ago(auto.uploaded_at) + " · turn on auto-sync below" : "Turn on auto-sync below to pull Meta data."; }
   else if (auto){ var age = (Date.now() - Date.parse(auto.uploaded_at)) / 60000; m.kind = age > 50 ? "late" : "ok"; m.state = age > 50 ? "Late" : "Live"; m.main = "Last sync " + ago(auto.uploaded_at) + " (" + when(auto.uploaded_at) + ")"; }
   else { m.kind = "late"; m.state = "Waiting"; m.main = "Waiting for the first automatic run."; }
-  m.lines.push(accs.length + " ad account" + (accs.length === 1 ? "" : "s") + " selected · range: " + autoRangeText(S) + " · every 30 min");
+  m.lines.push(accs.length + " ad account" + (accs.length === 1 ? "" : "s") + " selected · " + (S.metaSyncFrequency ? "every " + S.metaSyncFrequency + " min" : "every 30 min") + " · range: " + autoRangeText(S));
   if (auto) m.lines.push(fInt(auto.meta_rows) + " Meta rows kept up to date");
   if (auto && String(auto.crm_file || "").indexOf("Last run errors") === 0){ m.err = auto.crm_file; if (m.kind === "ok"){ m.kind = "late"; m.state = "Some accounts failed"; } }
-  /* CRM */
-  var push = ups.filter(function(u){ return u.crm_file === "CRM push"; })[0];
-  var t = {name: "CRM leads · via n8n", target: "crm-push-panel", lines: [], kind: "off", state: "Not set up", main: "No leads received yet. See setup below."};
-  if (push){ var a2 = (Date.now() - Date.parse(push.uploaded_at)) / 60000; t.kind = a2 > 50 ? "late" : "ok"; t.state = a2 > 50 ? "Late" : "Live";
-    t.main = "Last push " + ago(push.uploaded_at) + " (" + when(push.uploaded_at) + ")";
-    t.lines.push(fInt(push.crm_rows) + " new leads added by n8n so far · every 30 min");
-    if (a2 > 50) t.err = "No leads from n8n for over 30 minutes. Check that the n8n workflow is Active and look at its last execution."; }
-  var allOk = m.kind === "ok" && t.kind === "ok";
+
+  /* 2. Google Ads */
+  var gadsAccs = (S.googleAccounts || []).filter(function(a){ return a.on !== false; }), gadsAuto = ups.filter(function(u){ return (u.meta_files || []).indexOf("Google Ads API · auto-sync") >= 0; })[0];
+  var g = {name: "Google Ads · API sync", target: "gads-panel", lines: [], kind: "off", state: "Off", main: ""};
+  var gadsConfigured = (state.gads && state.gads.status) ? state.gads.status.configured : null;
+  if (gadsConfigured === false){ g.kind = "err"; g.state = "Not connected"; g.main = "No Google Ads token yet (Settings › Workspace › Tokens)."; }
+  else if (!S.googleAutoSync){ g.kind = "off"; g.state = "Auto-sync off"; g.main = gadsAuto ? "Last synced " + ago(gadsAuto.uploaded_at) + " · turn on auto-sync below" : "Turn on auto-sync below to pull Google Ads data."; }
+  else if (gadsAuto){ var ag = (Date.now() - Date.parse(gadsAuto.uploaded_at)) / 60000; g.kind = ag > 50 ? "late" : "ok"; g.state = ag > 50 ? "Late" : "Live"; g.main = "Last sync " + ago(gadsAuto.uploaded_at) + " (" + when(gadsAuto.uploaded_at) + ")"; }
+  else { g.kind = "late"; g.state = "Waiting"; g.main = "Waiting for the first automatic run."; }
+  g.lines.push(gadsAccs.length + " account" + (gadsAccs.length === 1 ? "" : "s") + " selected · " + (S.googleSyncFrequency ? "every " + S.googleSyncFrequency + " min" : "every 30 min"));
+  if (gadsAuto) g.lines.push(fInt(gadsAuto.meta_rows) + " campaign-days stored");
+
+  /* 3. CRM */
+  var crmSync = ups.filter(function(u){ return u.crm_file && (u.crm_file.indexOf("CRM API") >= 0 || u.crm_file === "CRM push"); })[0];
+  var t = {name: "CRM leads · Direct sync", target: "crm-panel", lines: [], kind: "off", state: "Not set up", main: "No leads received yet."};
+  var crmKeySet = !!(S.crmApiKey || (W && W.secrets && W.secrets["crm_api_key"]) || (state.crm && state.crm.status && state.crm.status.configured));
+  if (!crmKeySet && !crmSync){ t.kind = "err"; t.state = "Not connected"; t.main = "Enter your CRM API key below to start syncing."; }
+  else if (S.crmAutoSync === false){ t.kind = "off"; t.state = "Auto-sync off"; t.main = crmSync ? "Last synced " + ago(crmSync.uploaded_at) + " · turn on auto-sync below" : "Turn on auto-sync below to pull leads automatically."; }
+  else if (crmSync){ var ac = (Date.now() - Date.parse(crmSync.uploaded_at)) / 60000; t.kind = ac > 60 ? "late" : "ok"; t.state = ac > 60 ? "Late" : "Live";
+    t.main = "Last sync " + ago(crmSync.uploaded_at) + " (" + when(crmSync.uploaded_at) + ")"; }
+  else { t.kind = "late"; t.state = "Waiting"; t.main = "Waiting for the first sync run."; }
+  var crmProv = S.crmProvider || S.crm_name || "CRM";
+  t.lines.push(crmProv + " · " + (S.crmSyncFrequency ? "every " + S.crmSyncFrequency + " min" : "every 30 min") + (S.crmSyncHours === "working" ? " (working hours)" : " (24/7)"));
+  if (crmSync) t.lines.push(fInt(crmSync.crm_rows) + " leads stored in database");
+
+  var allOk = m.kind === "ok" && (g.kind === "ok" || g.kind === "off") && t.kind === "ok";
   return el("div", {cls: "group set-card conn-card"},
-    el("div", {cls: "conn-head"}, el("h3", {text: "Connection status"}), el("span", {cls: "small", text: allOk ? "Both feeds are running." : "Check the feed marked below."}),
-      el("button", {cls: "linkbtn", type: "button", onclick: function(){ sb.histAsked = false; if (state.prov && state.prov.meta) state.prov.meta.status = null; render(); }}, "Refresh")),
-    el("div", {cls: "conn-grid"}, tile(m), tile(t)));
+    el("div", {cls: "conn-head"}, el("h3", {text: "Connection status"}), el("span", {cls: "small", text: allOk ? "All configured feeds are running." : "Check the feed marked below."}),
+      el("button", {cls: "linkbtn", type: "button", onclick: function(){ sb.histAsked = false; if (state.prov && state.prov.meta) state.prov.meta.status = null; if (state.crm) state.crm.status = null; render(); }}, "Refresh")),
+    el("div", {cls: "conn-grid"}, tile(m), tile(g), tile(t)));
 }
-function crmPushPanel(){
-  var box = el("div", {cls: "panel", id: "crm-push-panel"}, el("div", {cls: "sec-head"}, el("h2", {text: "CRM via n8n · automatic leads"}),
-    el("span", {cls: "note", text: "n8n reads leads from the CRM with its own connection and sends them here, so nobody has to upload the CRM export. Leads are matched by lead id: new ones are added, existing ones get the latest status, owner and other columns."})));
-  if (!sb.cfg || sb.status !== "ready"){ box.appendChild(el("div", {cls: "small", text: "Sign in to the workspace database to see n8n pushes."})); return box; }
-  if (!sb.histAsked){ sb.histAsked = true; dbRefreshLists().then(function(){ if (state.tab === "settings") render(); }).catch(function(){}); }
-  var u = (sb.uploads || []).filter(function(x){ return x.crm_file === "CRM push"; })[0];
-  if (u){ var age = (Date.now() - Date.parse(u.uploaded_at)) / 60000;
-    box.appendChild(el("div", {cls: "wz-status"}, el("span", {cls: "pill " + (age > 50 ? "warn" : "good"), text: age > 50 ? "Late" : "Receiving"}),
-      el("span", {cls: "small", text: "Last push: " + new Date(u.uploaded_at).toLocaleString("en-IN", {dateStyle: "medium", timeStyle: "short"}) + " (" + (age < 60 ? Math.round(age) + " min ago" : (age / 60).toFixed(1) + " h ago") + ") · " + fInt(u.crm_rows) + " leads added by n8n so far" +
-        (u.date_from ? " · " + spanText({from: dayOf(Date.parse(u.date_from + "T00:00:00Z")), to: dayOf(Date.parse((u.date_to || u.date_from) + "T00:00:00Z"))}) : "")})));
-    if (age > 50) box.appendChild(el("div", {cls: "banner warn", text: "No push for more than 30 minutes. Check the n8n workflow's executions."}));
-  } else box.appendChild(el("div", {cls: "small", text: "No pushes received yet."}));
+
+function crmPanel(){
+  var S = state.settings, C = state.crm || (state.crm = {}), box = el("div", {cls: "panel", id: "crm-panel"});
+  box.appendChild(el("div", {cls: "sec-head"}, el("h2", {text: "CRM · Direct sync & leads"}),
+    el("span", {cls: "note", text: "Pulls leads directly from your CRM (TeleCRM, HubSpot, Zoho, LeadSquared, Salesforce, etc.) with your API key on your schedule, or receives webhook pushes from n8n. New leads are added, and existing leads get latest statuses and owner assignments."})));
+  if (!sb.cfg || sb.status !== "ready"){ box.appendChild(el("div", {cls: "small", text: "Sign in to the workspace database to configure CRM sync."})); return box; }
+  var canRun = sbCanWrite(), admin = (typeof sbRole === "function" ? sbRole() : sb.role) === "admin";
+  if (!C.status && !C.loading){
+    C.loading = true;
+    provApi("crm", "status").then(function(d){ C.status = d; }).catch(function(e){ C.status = {err: e.message === "NOAPI" ? "Direct CRM sync runs on the live site." : e.message}; })
+      .then(function(){ C.loading = false; if (state.tab === "settings") render(); });
+  }
+  var st = C.status || {}, isKeySet = !!(st.configured || S.crmApiKey);
+
+  /* Status pill */
+  var stPill = el("div", {cls: "wz-status"},
+    el("span", {cls: "pill " + (isKeySet ? "good" : "warn"), text: isKeySet ? "Connected" : "API key not set"}),
+    el("span", {cls: "small", text: isKeySet ? (S.crmProvider || "TeleCRM") + " · key ending ••••" + (st.last4 || (S.crmApiKey ? String(S.crmApiKey).slice(-4) : "••••")) + " · auto-sync " + (S.crmAutoSync !== false ? "on" : "off") : "Enter your CRM API key below to start automatic syncing."}));
+  box.appendChild(stPill);
+
+  /* Connection settings group */
+  var cg = el("div", {cls: "group"}, el("h3", {text: "CRM Connection & Credentials"}));
+
+  // Provider select
+  var provSel = el("select", {"aria-label": "CRM Provider", disabled: canRun ? null : true},
+    [["TeleCRM", "TeleCRM"], ["HubSpot", "HubSpot"], ["Zoho CRM", "Zoho CRM"], ["LeadSquared", "LeadSquared"], ["Salesforce", "Salesforce"], ["Custom API", "Custom API / Webhook"]]
+      .map(function(x){ return el("option", {value: x[0], selected: (S.crmProvider || "TeleCRM") === x[0] ? true : null, text: x[1]}); }));
+  provSel.addEventListener("change", function(){ S.crmProvider = provSel.value; provSave(); render(); });
+
+  // Key input
+  var keyInp = el("input", {type: "password", placeholder: isKeySet ? "Key is set · paste new key to replace" : "Paste your CRM API key / access token", autocomplete: "off", disabled: canRun ? null : true, "aria-label": "CRM API Key"});
+  var saveKeyBtn = el("button", {cls: "btn ghost", type: "button", disabled: canRun ? null : true, onclick: function(){
+    var val = keyInp.value.trim();
+    if (!val){ toast("Paste a CRM API key first"); return; }
+    sb.client.rpc("set_org_secret", {p_key: "crm_api_key", p_value: val}).then(function(r){
+      if (r && r.error) throw r.error;
+      if (S.crmApiKey) { delete S.crmApiKey; delete S._crmKeyUpdatedAt; }
+      S.crmAutoSync = true; provSave();
+      keyInp.value = ""; C.status = null;
+      toast("CRM API key saved · Syncing leads now…");
+      runCrmSync();
+    }).catch(function(e){
+      if (admin){
+        S.crmApiKey = val; S._crmKeyUpdatedAt = new Date().toISOString(); S.crmAutoSync = true;
+        provSave(); keyInp.value = ""; C.status = null;
+        toast("CRM API key saved · Syncing leads now…");
+        runCrmSync();
+      } else {
+        toast("Not saved: " + (e.message || e));
+      }
+    });
+  }}, "Save & sync key");
+
+  // Enterprise ID input (for TeleCRM)
+  var entInp = el("input", {type: "text", placeholder: "e.g. Enterprise ID from TeleCRM › Settings › Website & API", value: S.crmEnterpriseId || "", disabled: canRun ? null : true, "aria-label": "TeleCRM Enterprise ID"});
+  entInp.addEventListener("change", function(){ S.crmEnterpriseId = entInp.value.trim(); provSave(); toast("Enterprise ID saved"); });
+
+  var cgGrid = el("div", {style: "display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin:10px 0"},
+    el("label", {cls: "field rep-field"}, el("span", {cls: "small", text: "CRM Provider"}), provSel),
+    el("label", {cls: "field rep-field"}, el("span", {cls: "small", text: "CRM Enterprise / Account ID"}, entInp)),
+    el("label", {cls: "field rep-field"}, el("span", {cls: "small", text: "CRM API Key / Token"}), el("div", {style: "display:flex;gap:8px"}, keyInp, saveKeyBtn)));
+  cg.appendChild(cgGrid);
+  cg.appendChild(el("span", {cls: "small", text: "TeleCRM users: find your Enterprise ID and API token in TeleCRM › Settings › Website & API."}));
+  box.appendChild(cg);
+
+  /* Auto-sync and Schedule settings group */
+  var sg = el("div", {cls: "group auto-box"}, el("h3", {text: "Auto-sync schedule & settings"}));
+  var on = S.crmAutoSync !== false && isKeySet;
+  var tg = el("input", {type: "checkbox", id: "crm-auto-sync", checked: on ? true : null, disabled: canRun ? null : true});
+  tg.addEventListener("change", function(){ S.crmAutoSync = tg.checked; provSave(); toast(tg.checked ? "CRM auto-sync on" : "CRM auto-sync off"); render(); });
+  sg.appendChild(el("label", {cls: "toggle", "for": "crm-auto-sync"}, tg, el("span", {text: "Pull leads automatically from CRM on your chosen schedule (new leads added, statuses and assignees updated)"})));
+
+  // Frequency
+  var freqSel = el("select", {"aria-label": "Sync frequency", disabled: canRun ? null : true},
+    [["15", "Every 15 minutes"], ["30", "Every 30 minutes (recommended)"], ["60", "Every 1 hour"], ["120", "Every 2 hours"], ["daily", "Once a day"]]
+      .map(function(x){ return el("option", {value: x[0], selected: String(S.crmSyncFrequency || "30") === x[0] ? true : null, text: x[1]}); }));
+  freqSel.addEventListener("change", function(){ S.crmSyncFrequency = freqSel.value; provSave(); toast("Sync schedule updated"); render(); });
+
+  // Hours
+  var hoursSel = el("select", {"aria-label": "Sync hours", disabled: canRun ? null : true},
+    [["all", "24/7 (continuous throughout the day)"], ["working", "Working hours only (workspace business hours)"]]
+      .map(function(x){ return el("option", {value: x[0], selected: String(S.crmSyncHours || "all") === x[0] ? true : null, text: x[1]}); }));
+  hoursSel.addEventListener("change", function(){ S.crmSyncHours = hoursSel.value; provSave(); toast("Sync hours updated"); });
+
+  // Daily hour
+  var hourSel = el("select", {"aria-label": "Daily sync time", disabled: canRun ? null : true},
+    ["06:00", "08:00", "09:00", "10:00", "12:00", "18:00", "21:00"].map(function(h){
+      return el("option", {value: h, selected: (S.crmSyncHour || "09:00") === h ? true : null, text: h});
+    }));
+  hourSel.addEventListener("change", function(){ S.crmSyncHour = hourSel.value; provSave(); });
+
+  // Lookback Range
+  var rangeSel = el("select", {"aria-label": "Lookback range", disabled: canRun ? null : true},
+    [["today", "Today only"], ["2", "Yesterday + today"], ["7", "Last 7 days (recommended)"], ["14", "Last 14 days"], ["30", "Last 30 days"], ["mtd", "This month"], ["all", "All recent leads"]]
+      .map(function(x){ return el("option", {value: x[0], selected: String(S.crmAutoRange || "7") === x[0] ? true : null, text: x[1]}); }));
+  rangeSel.addEventListener("change", function(){ S.crmAutoRange = rangeSel.value; provSave(); toast("Sync range updated"); });
+
+  var schedGrid = el("div", {style: "display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin:10px 0"},
+    el("label", {cls: "field rep-field"}, el("span", {cls: "small", text: "Sync frequency"}), freqSel),
+    el("label", {cls: "field rep-field"}, el("span", {cls: "small", text: "Active hours"}), hoursSel),
+    String(S.crmSyncFrequency) === "daily" ? el("label", {cls: "field rep-field"}, el("span", {cls: "small", text: "Daily sync time"}), hourSel) : null,
+    el("label", {cls: "field rep-field"}, el("span", {cls: "small", text: "Date range to refresh"}), rangeSel));
+  sg.appendChild(schedGrid);
+
+  /* Manual Sync Action */
+  var runCrmSync = function(){
+    C.syncing = true; C.syncMsg = null; render();
+    provApi("crm", "sync").then(function(d){
+      C.syncMsg = d.skipped ? {kind: "warn", text: d.skipped} : {kind: d.error ? "err" : "ok", text: d.error || ("Synced " + (d.saved || d.received || 0) + " leads from " + (S.crmProvider || "CRM") + " (" + (d.new_leads || 0) + " new, " + (d.updated || 0) + " updated).")};
+    }).catch(function(e){
+      C.syncMsg = {kind: "err", text: "Sync failed: " + e.message};
+    }).then(function(){
+      C.syncing = false;
+      return dbRefreshLists().catch(function(){});
+    }).then(function(){
+      if (state.source === "db") dbOpen(true).catch(function(){});
+      render();
+    });
+  };
+
+  if (canRun){
+    var syncBtn = el("button", {cls: "btn", type: "button", disabled: C.syncing ? true : null, onclick: runCrmSync}, C.syncing ? "Pulling leads from CRM…" : "Sync CRM leads now");
+    sg.appendChild(el("div", {cls: "row-add", style: "margin-top:12px"}, syncBtn, el("span", {cls: "small", text: "Pulls recent leads immediately using your CRM API key and updates the dashboard."})));
+  }
+  if (C.syncMsg) sg.appendChild(el("div", {cls: "msg " + (C.syncMsg.kind === "err" ? "err" : C.syncMsg.kind === "warn" ? "warn" : "ok"), text: C.syncMsg.text}));
+
+  // Upload history & last sync status
+  var u = (sb.uploads || []).filter(function(x){ return x.crm_file && (x.crm_file.indexOf("CRM API") >= 0 || x.crm_file === "CRM push"); })[0];
+  if (u){
+    var age = (Date.now() - Date.parse(u.uploaded_at)) / 60000;
+    sg.appendChild(el("div", {cls: "small", style: "margin-top:8px", text: "Last sync: " + new Date(u.uploaded_at).toLocaleString("en-IN", {dateStyle: "medium", timeStyle: "short"}) + " (" + (age < 60 ? Math.round(age) + " min ago" : (age / 60).toFixed(1) + " h ago") + ") · " + fInt(u.crm_rows) + " leads in database · " + u.crm_file}));
+  }
+  box.appendChild(sg);
+
+  /* Alternative webhook & n8n setup (collapsible) */
   var url = location.origin + "/api/crm-push";
-  box.appendChild(el("details", {cls: "push-setup"}, el("summary", {text: "Setup (one time)"}),
+  box.appendChild(el("details", {cls: "push-setup", style: "margin-top:16px"}, el("summary", {text: "Alternative: Webhook & n8n Inbound Push"}),
     el("ol", null,
-      el("li", null, "Settings › Workspace › API keys: create a ", el("b", {text: "CRM push"}), " key and copy it (it is shown once)."),
-      el("li", null, "With TeleCRM: import the n8n workflow from the repo (n8n/telecrm-to-dashboard.json); in its TeleCRM step pick your TeleCRM credential and enterprise id; in its last step put the push key. Any other CRM: call the address below from its webhook / automation."),
-      el("li", null, "Send leads with POST to ", el("code", {text: url}), " with header ", el("code", {text: "x-push-key: <your CRM push key>"}), " and a JSON array of leads. Column names like the CRM export (Lead id, Created On, Status, Facebook Campaign Name, Facebook Ad Set Name, Facebook Ad, Assignee name, First Attempted Call, Phone, Email…) or TeleCRM API leads ({id, fields}) both work."),
-      el("li", null, "Activate the workflow. It runs every 30 minutes; the status above shows the last push."))));
+      el("li", null, "Settings › Workspace › API keys: create a ", el("b", {text: "CRM push"}), " key and copy it."),
+      el("li", null, "With TeleCRM or n8n: you can also configure an automated webhook workflow to push leads instantly upon creation."),
+      el("li", null, "Send leads with POST to ", el("code", {text: url}), " with header ", el("code", {text: "x-push-key: <your CRM push key>"}), " and a JSON array of leads."),
+      el("li", null, "Both methods (Direct API Pull and Webhook Push) merge into the exact same database without duplicating leads."))));
+
   return box;
 }
+var crmPushPanel = crmPanel;
 /* Lead data upload: choose where the Meta data comes from */
 function metaSourceNow(){ var v; try { v = localStorage.getItem("lp-meta-source"); } catch (e) {} return v === "meta" ? v : "file"; }
 function renderProvUpload(){

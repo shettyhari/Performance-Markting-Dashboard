@@ -12,6 +12,12 @@
     "api/crm-push.js": {
       "maxDuration": 60
     },
+    "api/crm.js": {
+      "maxDuration": 60
+    },
+    "api/crm-cron.js": {
+      "maxDuration": 60
+    },
     "api/google.js": {
       "maxDuration": 60
     },

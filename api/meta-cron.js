@@ -7,6 +7,7 @@
 // continuing where the last run stopped, so a long range is fully refreshed within a few runs.
 const D = require("./_db");
 const { accountRows } = require("./_metalib");
+const { isDueToSync } = require("./_crmlib");
 const AUTO_FILE = "Meta API · auto-sync";
 const send = D.send, sbFetch = D.sbFetch;
 const clean = (v) => String(v == null ? "" : v).replace(/\s+/g, " ").trim();
@@ -39,6 +40,8 @@ module.exports = D.logged("meta-cron", async function handler(req, res) {
     if (!(await D.orgSecret("meta_access_token"))) return send(res, 200, { skipped: "No Meta token for this workspace." });
     const S = await D.orgSettings(), stAt = D.settingsUpdatedAt();
     if (!S.metaAutoSync) return send(res, 200, { skipped: "Auto-sync is off (dashboard › Settings › Meta API)." });
+    const due = await isDueToSync(S, "meta");
+    if (!due.due) return send(res, 200, { skipped: due.reason });
     const accounts = (Array.isArray(S.metaAccounts) ? S.metaAccounts : []).filter((a) => a && a.id && a.on !== false);
     if (!accounts.length) return send(res, 200, { skipped: "No ad accounts ticked." });
     const R = autoRange(S);
