@@ -6816,8 +6816,8 @@ var PRODUCT = {name: "Qlarity", tagline: "See what your ad spend really delivers
 function brandMark(size){
   /* the logo, with its light-lettering version for dark mode; the wordmark below stays as the fallback */
   if (PRODUCT.logo) return el("span", {cls: "q-logos" + (size ? " " + size : ""), role: "img", "aria-label": PRODUCT.name},
-    el("img", {cls: "q-logo lt", src: PRODUCT.logo, alt: "", width: "620", height: "200", decoding: "async"}),
-    PRODUCT.logoDark ? el("img", {cls: "q-logo dk", src: PRODUCT.logoDark, alt: "", width: "620", height: "200", decoding: "async"}) : null);
+    el("img", {cls: "q-logo lt", src: PRODUCT.logo, alt: "", width: "906", height: "326", decoding: "async"}),
+    PRODUCT.logoDark ? el("img", {cls: "q-logo dk", src: PRODUCT.logoDark, alt: "", width: "906", height: "326", decoding: "async"}) : null);
   var n = PRODUCT.name, w = el("span", {cls: "q-word" + (size ? " " + size : ""), "aria-label": n});
   if (/^Q/i.test(n)){ w.appendChild(el("b", {text: n.charAt(0), "aria-hidden": "true"})); w.appendChild(el("span", {text: n.slice(1), "aria-hidden": "true"})); }
   else w.appendChild(el("span", {text: n}));
