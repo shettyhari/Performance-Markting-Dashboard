@@ -22,17 +22,17 @@
 <style>
 /* Qlarity Console: the platform view for the Qlarity team (api/admin.js). Brand colours; light and dark share the lp-theme choice. */
 :root{
-  --cyan:#007b83;--cyan2:#8ab4f8;--blue:#1a73e8;--deep:#174ea6;--navy:#1a73e8;
-  --bg:#f8f9fa;--panel:#ffffff;--soft:#f1f3f4;--ink:#202124;--fg:#3c4043;--muted:#5f6368;--line:#dadce0;--line2:#e8eaed;
-  --series:#1a73e8;--series-soft:rgba(26,115,232,.12);--accent-text:#1a73e8;--shadow:0 1px 3px rgba(60,64,67,.08),0 1px 2px rgba(60,64,67,.04);
+  --cyan:#007b83;--cyan2:#eaaa00;--blue:#3a0f34;--deep:#260822;--navy:#3a0f34;
+  --bg:#f4f6f8;--panel:#ffffff;--soft:#e8edf1;--ink:#1e1622;--fg:#2e2735;--muted:#655c6f;--line:#dde3e8;--line2:#e8edf1;
+  --series:#3a0f34;--series-soft:rgba(58,15,52,.12);--accent-text:#3a0f34;--shadow:0 1px 3px rgba(58,15,52,.06),0 1px 2px rgba(0,0,0,.04);
   --good:#137333;--warn:#b06000;--serious:#e37400;--crit:#c5221f;--good-bg:#e6f4ea;--warn-bg:#fef7e0;--crit-bg:#fce8e6;
   color-scheme:light;
 }
-:root[data-theme="dark"]{--bg:#202124;--panel:#292a2d;--soft:#35363a;--ink:#ffffff;--fg:#e8eaed;--muted:#9aa0a6;--line:#3c4043;--line2:#35363a;
-  --series:#8ab4f8;--series-soft:rgba(138,180,248,.16);--accent-text:#8ab4f8;--shadow:0 1px 2px rgba(0,0,0,.3),0 10px 30px rgba(0,0,0,.25);
+:root[data-theme="dark"]{--bg:#160f1a;--panel:#241b2b;--soft:#2c2134;--ink:#ffffff;--fg:#ebe5ef;--muted:#a69bae;--line:#3b2e42;--line2:#2e2235;
+  --series:#eaaa00;--series-soft:rgba(234,170,0,.16);--accent-text:#eaaa00;--shadow:0 1px 2px rgba(0,0,0,.3),0 10px 30px rgba(0,0,0,.25);
   --good:#81c995;--warn:#fdd663;--serious:#f2994a;--crit:#f28b82;--good-bg:#1e3a2a;--warn-bg:#3a3420;--crit-bg:#3c2524;color-scheme:dark}
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#202124;--panel:#292a2d;--soft:#35363a;--ink:#ffffff;--fg:#e8eaed;--muted:#9aa0a6;--line:#3c4043;--line2:#35363a;
-  --series:#8ab4f8;--series-soft:rgba(138,180,248,.16);--accent-text:#8ab4f8;--shadow:0 1px 2px rgba(0,0,0,.3),0 10px 30px rgba(0,0,0,.25);
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#160f1a;--panel:#241b2b;--soft:#2c2134;--ink:#ffffff;--fg:#ebe5ef;--muted:#a69bae;--line:#3b2e42;--line2:#2e2235;
+  --series:#eaaa00;--series-soft:rgba(234,170,0,.16);--accent-text:#eaaa00;--shadow:0 1px 2px rgba(0,0,0,.3),0 10px 30px rgba(0,0,0,.25);
   --good:#81c995;--warn:#fdd663;--serious:#f2994a;--crit:#f28b82;--good-bg:#1e3a2a;--warn-bg:#3a3420;--crit-bg:#3c2524;color-scheme:dark}}
 *{box-sizing:border-box}
 html,body{margin:0}
@@ -42,10 +42,10 @@ button{font:inherit;cursor:pointer}
 a{color:var(--accent-text)}
 .num{font-variant-numeric:tabular-nums}
 /* top bar */
-.top{position:sticky;top:0;z-index:30;background:linear-gradient(120deg,var(--navy) 0%,var(--deep) 70%,#0a3fb3 100%);color:#fff;border-bottom:1px solid rgba(255,255,255,.08)}
+.top{position:sticky;top:0;z-index:30;background:linear-gradient(120deg,var(--navy) 0%,var(--deep) 70%,#3a0f34 100%);color:#fff;border-bottom:1px solid rgba(255,255,255,.08)}
 .top-in{max-width:1840px;margin:0 auto;padding:12px 24px;display:flex;align-items:center;gap:14px}
 .top img{height:30px;width:auto;display:block}
-.badge-console{font:700 11px/1 Inter;letter-spacing:.14em;text-transform:uppercase;padding:6px 9px;border-radius:999px;background:rgba(0,227,255,.14);color:var(--cyan2);border:1px solid rgba(0,227,255,.3)}
+.badge-console{font:700 11px/1 Inter;letter-spacing:.14em;text-transform:uppercase;padding:6px 9px;border-radius:999px;background:rgba(234,170,0,.15);color:var(--cyan2);border:1px solid rgba(234,170,0,.35)}
 .top .sp{flex:1}
 .top .who{font-size:13px;color:rgba(255,255,255,.75);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:260px}
 .ibtn{height:36px;min-width:36px;padding:0 12px;display:inline-flex;align-items:center;justify-content:center;gap:7px;border-radius:9px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.06);color:#fff;font-size:13px;font-weight:500;text-decoration:none}
