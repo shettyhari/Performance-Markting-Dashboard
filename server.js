@@ -41,7 +41,8 @@ const REWRITES = {
   "/app": "/app.html",
   "/admin": "/admin.html",
   "/privacy": "/privacy.html",
-  "/terms": "/terms.html"
+  "/terms": "/terms.html",
+  "/blog": "/blog.html"
 };
 
 const PORT = process.env.PORT || 3000;
@@ -53,6 +54,11 @@ const server = http.createServer((req, res) => {
   // Rewrites
   if (REWRITES[pathname]) {
     pathname = REWRITES[pathname];
+  } else if (pathname.startsWith("/blog/") && !pathname.endsWith(".html")) {
+    const candidate = path.join(__dirname, pathname + ".html");
+    if (fs.existsSync(candidate)) {
+      pathname = pathname + ".html";
+    }
   }
 
   // Handle API routes

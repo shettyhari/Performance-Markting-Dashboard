@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Qlarity Blog — Performance Marketing, CPQL &amp; Attribution Playbooks for Indian Agencies</title>
+  <meta name="description" content="In-depth guides, mathematical attribution formulas, multi-currency ad spend tracking playbooks, and AI lead scoring frameworks built for Indian performance marketing agencies and growth brands." />
+  <meta name="keywords" content="performance marketing blog India, CPQL calculation, cost per qualified lead, multi-currency ad spend tracking, AI lead scoring Meta Google ads, B2B marketing attribution" />
+  <link rel="canonical" href="https://getqlarity.online/blog" />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+  <meta name="theme-color" content="#3A0F34" />
+
+  <!-- Favicons (Google SERP & Browser Compliant) -->
+  <link rel="icon" href="/favicon.ico" sizes="any" />
+  <link rel="shortcut icon" href="/favicon.ico" />
+  <link rel="icon" type="image/png" sizes="48x48" href="/brand/qlarity-icon-48.png" />
+  <link rel="icon" type="image/png" sizes="96x96" href="/brand/qlarity-icon-96.png" />
+  <link rel="icon" type="image/png" sizes="144x144" href="/brand/qlarity-icon-144.png" />
+  <link rel="icon" type="image/png" sizes="192x192" href="/brand/qlarity-icon-192.png" />
+  <link rel="icon" type="image/png" sizes="512x512" href="/brand/qlarity-icon-512.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/brand/qlarity-icon-180.png" />
+  <link rel="manifest" href="/site.webmanifest" />
+
+  <!-- Open Graph / Social Meta -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Qlarity" />
+  <meta property="og:title" content="Qlarity Blog — Performance Marketing &amp; Attribution Playbooks" />
+  <meta property="og:description" content="Data-backed playbooks, attribution frameworks, and unit economics for Indian performance agencies and growth marketers." />
+  <meta property="og:url" content="https://getqlarity.online/blog" />
+  <meta property="og:image" content="https://getqlarity.online/brand/qlarity-og.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:locale" content="en_IN" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Qlarity Blog — Performance Marketing &amp; Attribution Playbooks" />
+  <meta name="twitter:description" content="Data-backed playbooks, attribution frameworks, and unit economics for Indian performance agencies and growth marketers." />
+  <meta name="twitter:image" content="https://getqlarity.online/brand/qlarity-og.png" />
+
+  <!-- Structured Data (CollectionPage + BreadcrumbList) -->
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "CollectionPage",
+          "@id": "https://getqlarity.online/blog#webpage",
+          "url": "https://getqlarity.online/blog",
+          "name": "Qlarity Blog — Performance Marketing & Attribution Playbooks",
+          "description": "In-depth guides, mathematical attribution formulas, and multi-currency spend tracking playbooks for performance marketing agencies.",
+          "isPartOf": { "@id": "https://getqlarity.online/#site" },
+          "hasPart": [
+            {
+              "@type": "BlogPosting",
+              "headline": "Cost Per Qualified Lead (CPQL): The Complete Guide to Stopping Wasted Ad Spend",
+              "url": "https://getqlarity.online/blog/cost-per-qualified-lead-cpql-guide",
+              "datePublished": "2026-11-22"
+            },
+            {
+              "@type": "BlogPosting",
+              "headline": "Multi-Currency Ad Spend Tracking for Indian Agencies (USD, GBP, EUR & INR)",
+              "url": "https://getqlarity.online/blog/multi-currency-ad-spend-tracking-agencies",
+              "datePublished": "2026-11-22"
+            },
+            {
+              "@type": "BlogPosting",
+              "headline": "AI Lead Scoring for Meta and Google Ads: How to Train Algorithms on Real Buyers",
+              "url": "https://getqlarity.online/blog/ai-lead-scoring-meta-google-ads",
+              "datePublished": "2026-11-22"
+            },
+            {
+              "@type": "BlogPosting",
+              "headline": "B2B Performance Marketing Attribution: The Full-Funnel Guide from First Click to Closed-Won",
+              "url": "https://getqlarity.online/blog/b2b-performance-marketing-attribution-guide",
+              "datePublished": "2026-11-22"
+            }
+          ]
+        },
+        {
+          "@type": "BreadcrumbList",
+          "@id": "https://getqlarity.online/blog#breadcrumb",
+          "itemListElement": [
+            {
+              "@type": "ListItem",
+              "position": 1,
+              "name": "Home",
+              "item": "https://getqlarity.online/"
+            },
+            {
+              "@type": "ListItem",
+              "position": 2,
+              "name": "Blog & Guides",
+              "item": "https://getqlarity.online/blog"
+            }
+          ]
+        }
+      ]
+    }
+  </script>
+
+  <!-- Google Fonts: Playfair Display + Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            aubergine: {
+              DEFAULT: '#3A0F34',
+              dark: '#260822',
+              light: '#521A4A',
+            },
+            marigold: {
+              DEFAULT: '#EAAA00',
+              hover: '#D49A00',
+            },
+            icesilver: {
+              canvas: '#F4F6F8',
+              top: '#E8EDF1',
+              card: '#DDE3E8',
+            },
+          },
+          fontFamily: {
+            serif: ['"Playfair Display"', 'Georgia', 'serif'],
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+          },
+        },
+      },
+    };
+  </script>
+</head>
+<body class="font-sans text-[#1E1B24] bg-white antialiased selection:bg-marigold selection:text-aubergine overflow-x-hidden">
+
+  <!-- 1. Sticky Top Navbar -->
+  <header class="sticky top-0 z-50 bg-icesilver-top/90 backdrop-blur-md border-b border-icesilver-card/80">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 h-20 flex items-center justify-between">
+      <!-- Qlarity Logotype -->
+      <a href="/" aria-label="Qlarity — Measure, Analyse, Grow" class="inline-flex items-center group select-none shrink-0">
+        <img src="/brand/qlarity-logo.png" alt="Qlarity — Measure, Analyse, Grow" class="h-11 sm:h-13 w-auto object-contain" width="906" height="326" />
+      </a>
+
+      <!-- Desktop Primary Navigation -->
+      <nav aria-label="Primary Navigation" class="hidden md:flex items-center gap-7 text-sm font-medium text-[#2A2433]">
+        <a href="/" class="hover:text-aubergine transition py-2">Home</a>
+        <a href="/#features" class="hover:text-aubergine transition py-2">Features</a>
+        <a href="/#roi-calculator" class="hover:text-aubergine transition py-2">ROI Calculator</a>
+        <a href="/#pricing" class="hover:text-aubergine transition py-2">Pricing</a>
+        <a href="/blog" class="text-aubergine font-bold border-b-2 border-aubergine py-2">Blog</a>
+        <a href="/app" class="hover:text-aubergine font-semibold transition py-2 inline-flex items-center gap-1">Open App &rarr;</a>
+      </nav>
+
+      <!-- Header Actions -->
+      <div class="flex items-center gap-3">
+        <button
+          type="button"
+          data-open-demo
+          class="bg-marigold hover:bg-marigold-hover text-aubergine font-semibold text-sm px-5 py-2.5 rounded-full shadow-sm transition cursor-pointer"
+        >
+          Request a Demo
+        </button>
+
+        <!-- Mobile Menu Button -->
+        <button
+          type="button"
+          id="mobile-menu-btn"
+          aria-expanded="false"
+          aria-controls="mobile-menu"
+          aria-label="Toggle navigation menu"
+          class="md:hidden p-2.5 rounded-xl border border-icesilver-card bg-white/85 text-aubergine cursor-pointer"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobile Navigation Drawer -->
+    <nav id="mobile-menu" aria-label="Mobile Navigation" class="hidden md:hidden bg-white border-b border-icesilver-card px-6 py-4 space-y-2">
+      <a href="/" class="mobile-nav-link block py-2 text-sm font-medium text-aubergine">Home</a>
+      <a href="/#features" class="mobile-nav-link block py-2 text-sm font-medium text-aubergine">Features</a>
+      <a href="/#roi-calculator" class="mobile-nav-link block py-2 text-sm font-medium text-aubergine">ROI Calculator</a>
+      <a href="/#pricing" class="mobile-nav-link block py-2 text-sm font-medium text-aubergine">Pricing</a>
+      <a href="/blog" class="mobile-nav-link block py-2 text-sm font-bold text-aubergine">Blog &amp; Guides</a>
+      <a href="/app" class="mobile-nav-link block py-2 text-sm font-bold text-aubergine border-t border-icesilver-card pt-3">Open App &rarr;</a>
+    </nav>
+  </header>
+
+  <!-- 2. Hero Header -->
+  <section class="bg-gradient-to-b from-icesilver-top via-icesilver-canvas to-white py-14 sm:py-20 px-4 sm:px-6 border-b border-icesilver-card/60">
+    <div class="max-w-4xl mx-auto text-center">
+      <!-- Breadcrumb Navigation -->
+      <nav aria-label="Breadcrumb" class="inline-flex items-center gap-2 text-xs font-medium text-gray-500 mb-5">
+        <a href="/" class="hover:text-aubergine">Home</a>
+        <span aria-hidden="true">&rsaquo;</span>
+        <span class="text-aubergine font-bold" aria-current="page">Blog &amp; Playbooks</span>
+      </nav>
+
+      <h1 class="font-serif text-4xl sm:text-5xl font-extrabold text-aubergine leading-tight">
+        The Qlarity Growth &amp; Attribution Journal
+      </h1>
+      <p class="mt-4 text-base sm:text-lg text-gray-700 max-w-2xl mx-auto leading-relaxed">
+        Mathematical formulas, cross-border currency reconciliation playbooks, and AI lead scoring frameworks built for Indian performance agencies and growth marketers.
+      </p>
+
+      <!-- Category Filter Pills & Search -->
+      <div class="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
+        <div class="w-full sm:w-72 relative">
+          <input
+            type="search"
+            id="blog-search"
+            placeholder="Search guides (e.g. CPQL, Forex, AI)..."
+            class="w-full pl-9 pr-4 py-2.5 rounded-full border border-icesilver-card text-xs focus:outline-none focus:border-aubergine bg-white shadow-2xs"
+          />
+          <svg class="w-4 h-4 text-gray-400 absolute left-3 top-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+        </div>
+
+        <div class="flex flex-wrap items-center justify-center gap-2" id="filter-pills">
+          <button type="button" data-filter="all" class="filter-btn active px-4 py-2 rounded-full text-xs font-bold bg-aubergine text-white shadow-2xs cursor-pointer">
+            All Guides
+          </button>
+          <button type="button" data-filter="cpql" class="filter-btn px-4 py-2 rounded-full text-xs font-semibold bg-white border border-icesilver-card text-aubergine hover:bg-icesilver-canvas cursor-pointer">
+            CPQL &amp; Quality
+          </button>
+          <button type="button" data-filter="currency" class="filter-btn px-4 py-2 rounded-full text-xs font-semibold bg-white border border-icesilver-card text-aubergine hover:bg-icesilver-canvas cursor-pointer">
+            Multi-Currency Ops
+          </button>
+          <button type="button" data-filter="ai" class="filter-btn px-4 py-2 rounded-full text-xs font-semibold bg-white border border-icesilver-card text-aubergine hover:bg-icesilver-canvas cursor-pointer">
+            AI Lead Scoring
+          </button>
+          <button type="button" data-filter="b2b" class="filter-btn px-4 py-2 rounded-full text-xs font-semibold bg-white border border-icesilver-card text-aubergine hover:bg-icesilver-canvas cursor-pointer">
+            B2B Attribution
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. Featured Hero Guide -->
+  <section class="max-w-6xl mx-auto px-4 sm:px-6 py-12">
+    <div class="bg-gradient-to-br from-aubergine to-aubergine-dark text-white rounded-3xl p-8 sm:p-12 shadow-xl relative overflow-hidden">
+      <!-- Decorative Backdrop Element -->
+      <div class="absolute -right-12 -bottom-12 w-64 h-64 bg-marigold/10 rounded-full blur-3xl pointer-events-none"></div>
+
+      <div class="max-w-2xl relative z-10">
+        <div class="flex items-center gap-3 mb-4">
+          <span class="bg-marigold text-aubergine font-extrabold text-[11px] px-3 py-1 rounded-full uppercase tracking-wider">
+            Featured Deep-Dive
+          </span>
+          <span class="text-white/70 text-xs">8 min read &bull; Nov 22, 2026</span>
+        </div>
+
+        <h2 class="font-serif text-2xl sm:text-4xl font-bold leading-tight">
+          <a href="/blog/cost-per-qualified-lead-cpql-guide" class="hover:text-marigold transition">
+            Cost Per Qualified Lead (CPQL): The Complete Guide to Stopping Wasted Ad Spend
+          </a>
+        </h2>
+
+        <p class="mt-4 text-sm sm:text-base text-white/80 leading-relaxed">
+          Traditional Cost Per Lead (CPL) is a vanity metric that blinds agencies to unprofitable marketing campaigns. Learn the mathematical formula for CPQL, how to map CRM sales stages back into Meta and Google ad bidding algorithms, and how top agencies reduce acquisition costs by 34%.
+        </p>
+
+        <div class="mt-8 flex flex-wrap items-center gap-4">
+          <a
+            href="/blog/cost-per-qualified-lead-cpql-guide"
+            class="bg-marigold hover:bg-marigold-hover text-aubergine font-bold text-sm px-6 py-3 rounded-full transition inline-flex items-center gap-2"
+          >
+            <span>Read Complete Guide</span>
+            <span aria-hidden="true">&rarr;</span>
+          </a>
+          <span class="text-xs text-white/60">Includes CPQL Calculator Formula &amp; Case Study</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. Blog Posts Grid -->
+  <main class="max-w-6xl mx-auto px-4 sm:px-6 pb-20">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="article-grid">
+
+      <!-- Post 1: CPQL Guide -->
+      <article class="article-card bg-white rounded-2xl border border-icesilver-card overflow-hidden shadow-2xs hover:shadow-lg transition flex flex-col group" data-category="cpql" data-keywords="cpql cost per qualified lead cpl formula math metrics calculation wasted spend meta google lead quality">
+        <div class="h-3 bg-gradient-to-r from-aubergine to-marigold"></div>
+        <div class="p-7 flex-1 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between text-xs text-gray-500 mb-3">
+              <span class="bg-icesilver-canvas font-bold text-aubergine px-2.5 py-1 rounded-md text-[11px] uppercase tracking-wider">CPQL &amp; Quality</span>
+              <span>8 min read</span>
+            </div>
+            <h3 class="font-serif text-xl font-bold text-aubergine group-hover:text-marigold-hover transition leading-snug">
+              <a href="/blog/cost-per-qualified-lead-cpql-guide">
+                Cost Per Qualified Lead (CPQL): The Complete Guide to Stopping Wasted Ad Spend
+              </a>
+            </h3>
+            <p class="text-xs sm:text-sm text-gray-600 mt-3 leading-relaxed">
+              Why 60% of leads never convert, the exact CPQL mathematical formula, and step-by-step instructions to feed verified lead signals back into ad networks.
+            </p>
+          </div>
+          <div class="mt-6 pt-4 border-t border-icesilver-card/60 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <div class="w-7 h-7 rounded-full bg-aubergine text-marigold text-xs font-bold flex items-center justify-center">HS</div>
+              <span class="text-xs font-semibold text-aubergine">Harikrishna S.</span>
+            </div>
+            <a href="/blog/cost-per-qualified-lead-cpql-guide" class="text-xs font-bold text-aubergine group-hover:text-marigold transition inline-flex items-center gap-1">
+              Read Guide &rarr;
+            </a>
+          </div>
+        </div>
+      </article>
+
+      <!-- Post 2: Multi-Currency Operations -->
+      <article class="article-card bg-white rounded-2xl border border-icesilver-card overflow-hidden shadow-2xs hover:shadow-lg transition flex flex-col group" data-category="currency" data-keywords="multi currency ad spend tracking indian agency usd gbp eur inr forex ad account reconciliation client reporting exchange rate">
+        <div class="h-3 bg-gradient-to-r from-marigold to-emerald-600"></div>
+        <div class="p-7 flex-1 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between text-xs text-gray-500 mb-3">
+              <span class="bg-icesilver-canvas font-bold text-aubergine px-2.5 py-1 rounded-md text-[11px] uppercase tracking-wider">Multi-Currency Ops</span>
+              <span>10 min read</span>
+            </div>
+            <h3 class="font-serif text-xl font-bold text-aubergine group-hover:text-marigold-hover transition leading-snug">
+              <a href="/blog/multi-currency-ad-spend-tracking-agencies">
+                Multi-Currency Ad Spend Tracking for Indian Agencies: Reconciling USD, GBP, EUR &amp; INR
+              </a>
+            </h3>
+            <p class="text-xs sm:text-sm text-gray-600 mt-3 leading-relaxed">
+              Managing international ad accounts from India? How forex spreads, billing cycle mismatches, and mixed currencies distort client ROAS—and how to automate reconciliation.
+            </p>
+          </div>
+          <div class="mt-6 pt-4 border-t border-icesilver-card/60 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <div class="w-7 h-7 rounded-full bg-aubergine text-marigold text-xs font-bold flex items-center justify-center">HS</div>
+              <span class="text-xs font-semibold text-aubergine">Harikrishna S.</span>
+            </div>
+            <a href="/blog/multi-currency-ad-spend-tracking-agencies" class="text-xs font-bold text-aubergine group-hover:text-marigold transition inline-flex items-center gap-1">
+              Read Guide &rarr;
+            </a>
+          </div>
+        </div>
+      </article>
+
+      <!-- Post 3: AI Lead Scoring -->
+      <article class="article-card bg-white rounded-2xl border border-icesilver-card overflow-hidden shadow-2xs hover:shadow-lg transition flex flex-col group" data-category="ai" data-keywords="ai lead scoring meta google ads instant forms fake leads capi conversion api bot filter high intent value based bidding troas">
+        <div class="h-3 bg-gradient-to-r from-purple-600 to-aubergine"></div>
+        <div class="p-7 flex-1 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between text-xs text-gray-500 mb-3">
+              <span class="bg-icesilver-canvas font-bold text-aubergine px-2.5 py-1 rounded-md text-[11px] uppercase tracking-wider">AI Lead Scoring</span>
+              <span>9 min read</span>
+            </div>
+            <h3 class="font-serif text-xl font-bold text-aubergine group-hover:text-marigold-hover transition leading-snug">
+              <a href="/blog/ai-lead-scoring-meta-google-ads">
+                AI Lead Scoring for Meta and Google Ads: How to Train Algorithms on Real Buyers
+              </a>
+            </h3>
+            <p class="text-xs sm:text-sm text-gray-600 mt-3 leading-relaxed">
+              Why 40% of Meta Instant Forms and Search leads never answer the phone. Discover how real-time AI filters bots, predicts buyer intent, and pushes conversion value signals back to Meta CAPI.
+            </p>
+          </div>
+          <div class="mt-6 pt-4 border-t border-icesilver-card/60 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <div class="w-7 h-7 rounded-full bg-aubergine text-marigold text-xs font-bold flex items-center justify-center">HS</div>
+              <span class="text-xs font-semibold text-aubergine">Harikrishna S.</span>
+            </div>
+            <a href="/blog/ai-lead-scoring-meta-google-ads" class="text-xs font-bold text-aubergine group-hover:text-marigold transition inline-flex items-center gap-1">
+              Read Guide &rarr;
+            </a>
+          </div>
+        </div>
+      </article>
+
+      <!-- Post 4: B2B Attribution -->
+      <article class="article-card bg-white rounded-2xl border border-icesilver-card overflow-hidden shadow-2xs hover:shadow-lg transition flex flex-col group" data-category="b2b" data-keywords="b2b performance marketing attribution first click closed won offline conversion tracking hubspot telecrm salesforce pipeline roi blended cac">
+        <div class="h-3 bg-gradient-to-r from-blue-600 to-aubergine"></div>
+        <div class="p-7 flex-1 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between text-xs text-gray-500 mb-3">
+              <span class="bg-icesilver-canvas font-bold text-aubergine px-2.5 py-1 rounded-md text-[11px] uppercase tracking-wider">B2B Attribution</span>
+              <span>11 min read</span>
+            </div>
+            <h3 class="font-serif text-xl font-bold text-aubergine group-hover:text-marigold-hover transition leading-snug">
+              <a href="/blog/b2b-performance-marketing-attribution-guide">
+                B2B Performance Marketing Attribution: Connecting First Ad Clicks to CRM Closed-Won Revenue
+              </a>
+            </h3>
+            <p class="text-xs sm:text-sm text-gray-600 mt-3 leading-relaxed">
+              Standard 7-day browser cookies fail B2B sales cycles. Here is the technical architecture to link ad clicks to HubSpot and TeleCRM revenue milestones.
+            </p>
+          </div>
+          <div class="mt-6 pt-4 border-t border-icesilver-card/60 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <div class="w-7 h-7 rounded-full bg-aubergine text-marigold text-xs font-bold flex items-center justify-center">HS</div>
+              <span class="text-xs font-semibold text-aubergine">Harikrishna S.</span>
+            </div>
+            <a href="/blog/b2b-performance-marketing-attribution-guide" class="text-xs font-bold text-aubergine group-hover:text-marigold transition inline-flex items-center gap-1">
+              Read Guide &rarr;
+            </a>
+          </div>
+        </div>
+      </article>
+
+    </div>
+
+    <!-- Empty State for Search / Filter -->
+    <div id="no-results" class="hidden text-center py-16">
+      <div class="text-3xl text-gray-300 mb-2">&#128269;</div>
+      <h3 class="font-serif text-xl font-bold text-aubergine">No matching guides found</h3>
+      <p class="text-xs text-gray-500 mt-1">Try another keyword or reset the filter to view all playbooks.</p>
+      <button type="button" id="reset-filter-btn" class="mt-4 px-4 py-2 rounded-full bg-aubergine text-white text-xs font-bold cursor-pointer">
+        Reset All Filters
+      </button>
+    </div>
+  </main>
+
+  <!-- 5. Demo / Call to Action Banner -->
+  <section class="bg-icesilver-canvas border-t border-b border-icesilver-card py-16 px-4 sm:px-6">
+    <div class="max-w-4xl mx-auto text-center">
+      <span class="text-xs font-semibold uppercase tracking-wider text-aubergine/75">Stop Wasting Ad Budget</span>
+      <h2 class="font-serif text-3xl sm:text-4xl font-bold text-aubergine mt-1">
+        Ready to Track Your True CPQL Across Every Ad Account?
+      </h2>
+      <p class="text-sm sm:text-base text-gray-600 mt-3 max-w-xl mx-auto leading-relaxed">
+        See how Qlarity unifies Meta Ads, Google Ads, and CRM pipeline stages into one live, multi-currency reporting dashboard for your agency.
+      </p>
+      <div class="mt-8 flex flex-wrap items-center justify-center gap-4">
+        <button
+          type="button"
+          data-open-demo
+          class="bg-marigold hover:bg-marigold-hover text-aubergine font-bold text-sm px-7 py-3 rounded-full shadow-sm transition cursor-pointer"
+        >
+          Request Your 1-on-1 Demo &rarr;
+        </button>
+        <a
+          href="/#roi-calculator"
+          class="bg-white border border-icesilver-card text-aubergine font-semibold text-sm px-6 py-3 rounded-full hover:bg-icesilver-top transition"
+        >
+          Calculate Wasted Ad Spend
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. Footer -->
+  <footer class="bg-aubergine text-white pt-14 pb-10 px-4 sm:px-6">
+    <div class="max-w-5xl mx-auto">
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-8 pb-10 border-b border-white/15 text-sm">
+        <div>
+          <h3 class="font-semibold mb-3 text-white">Navigation</h3>
+          <ul class="space-y-2 text-white/75 text-xs">
+            <li><a href="/" class="hover:text-white transition">Home</a></li>
+            <li><a href="/app" class="hover:text-white transition">Open Dashboard</a></li>
+            <li><a href="/#features" class="hover:text-white transition">Features</a></li>
+            <li><a href="/#pricing" class="hover:text-white transition">Pricing</a></li>
+            <li><a href="/privacy" class="hover:text-white transition">Privacy Policy</a></li>
+            <li><a href="/terms" class="hover:text-white transition">Terms of Service</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h3 class="font-semibold mb-3 text-white">Growth Playbooks</h3>
+          <ul class="space-y-2 text-white/75 text-xs">
+            <li><a href="/blog/cost-per-qualified-lead-cpql-guide" class="hover:text-white transition">Cost Per Qualified Lead Guide</a></li>
+            <li><a href="/blog/multi-currency-ad-spend-tracking-agencies" class="hover:text-white transition">Multi-Currency Spend Tracking</a></li>
+            <li><a href="/blog/ai-lead-scoring-meta-google-ads" class="hover:text-white transition">AI Lead Scoring Playbook</a></li>
+            <li><a href="/blog/b2b-performance-marketing-attribution-guide" class="hover:text-white transition">B2B Attribution Architecture</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h3 class="font-semibold mb-3 text-white">Tools &amp; Calculators</h3>
+          <ul class="space-y-2 text-white/75 text-xs">
+            <li><a href="/#roi-calculator" class="hover:text-white transition">Wasted Ad Spend Calculator</a></li>
+            <li><a href="/#how-it-works" class="hover:text-white transition">How Qlarity Works</a></li>
+            <li><a href="/#faq" class="hover:text-white transition">FAQ</a></li>
+            <li><button type="button" data-open-demo class="hover:text-white transition cursor-pointer">Contact Enterprise Sales</button></li>
+          </ul>
+        </div>
+
+        <div>
+          <div class="mb-4">
+            <img src="/brand/qlarity-logo-dark.png" alt="Qlarity" class="h-8 w-auto object-contain" width="906" height="326" />
+          </div>
+          <h3 class="font-semibold mb-3 text-white">Connect</h3>
+          <div class="text-xs text-white/75 mb-3 leading-relaxed">
+            Built for Indian Performance Agencies &amp; Growth Brands.<br />
+            <a href="mailto:harikrishnashetty1@gmail.com" class="underline hover:text-marigold transition">harikrishnashetty1@gmail.com</a>
+          </div>
+          <div class="text-xs text-white/75">Getqlarity.online</div>
+        </div>
+      </div>
+
+      <div class="pt-8 text-center">
+        <button
+          type="button"
+          data-open-demo
+          class="inline-block bg-marigold hover:bg-marigold-hover text-aubergine font-semibold text-sm px-7 py-2.5 rounded-full transition cursor-pointer"
+        >
+          Get Started
+        </button>
+        <p class="mt-5 text-xs text-white/60">
+          Copyright &copy; 2026 Getqlarity.online. All rights reserved.
+        </p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Interactive Request a Demo Modal -->
+  <div
+    id="demo-modal"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="modal-title"
+    class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-aubergine-dark/70 backdrop-blur-xs"
+  >
+    <div class="bg-white rounded-2xl max-w-md w-full p-6 sm:p-8 shadow-2xl border border-icesilver-card relative">
+      <button
+        type="button"
+        id="close-modal-btn"
+        aria-label="Close demo request modal"
+        class="absolute top-4 right-4 w-8 h-8 rounded-full bg-icesilver-canvas hover:bg-icesilver-card text-aubergine flex items-center justify-center font-bold cursor-pointer"
+      >
+        &times;
+      </button>
+
+      <div id="demo-form-container">
+        <span class="text-[11px] font-semibold uppercase tracking-wider text-amber-700">Live Product Walkthrough</span>
+        <h2 id="modal-title" class="font-serif text-2xl font-bold text-aubergine mt-1">
+          Request Your Qlarity Demo
+        </h2>
+        <p class="text-xs text-gray-600 mt-1.5">
+          See how Qlarity tracks your exact CPQL and ROAS across domestic and international accounts.
+        </p>
+
+        <form id="demo-form" class="mt-5 space-y-4" novalidate>
+          <div>
+            <label for="lead-name" class="block text-xs font-semibold text-aubergine mb-1">Full Name *</label>
+            <input
+              id="lead-name"
+              name="name"
+              type="text"
+              required
+              placeholder="Alex Morgan"
+              class="w-full px-3.5 py-2.5 rounded-xl border border-icesilver-card text-sm focus:outline-none focus:border-aubergine"
+            />
+          </div>
+
+          <div>
+            <label for="lead-email" class="block text-xs font-semibold text-aubergine mb-1">Work Email *</label>
+            <input
+              id="lead-email"
+              name="email"
+              type="email"
+              required
+              placeholder="alex@growthagency.com"
+              class="w-full px-3.5 py-2.5 rounded-xl border border-icesilver-card text-sm focus:outline-none focus:border-aubergine"
+            />
+          </div>
+
+          <div>
+            <label for="lead-spend" class="block text-xs font-semibold text-aubergine mb-1">Monthly Client Ad Spend Managed</label>
+            <select
+              id="lead-spend"
+              name="spend"
+              class="w-full px-3.5 py-2.5 rounded-xl border border-icesilver-card text-sm bg-white focus:outline-none focus:border-aubergine"
+            >
+              <option value="under-2l">Under &#8377;2,00,000 / month (or &lt; $2.5k)</option>
+              <option value="2l-10l" selected>&#8377;2,00,000 &ndash; &#8377;10,00,000 / month ($2.5k &ndash; $12k)</option>
+              <option value="10l-50l">&#8377;10,00,000 &ndash; &#8377;50,00,000 / month ($12k &ndash; $60k)</option>
+              <option value="50l-plus">&#8377;50,00,000+ / month ($60k+ Multi-Brand Agency)</option>
+            </select>
+          </div>
+
+          <p id="form-error" class="hidden text-xs text-red-600 font-medium">
+            Please enter your full name and a valid work email address.
+          </p>
+
+          <button
+            type="submit"
+            class="w-full bg-marigold hover:bg-marigold-hover text-aubergine font-bold text-sm py-3 px-5 rounded-full shadow-sm transition cursor-pointer"
+          >
+            Confirm Demo Request &rarr;
+          </button>
+        </form>
+      </div>
+
+      <div id="demo-success-container" class="hidden text-center py-4">
+        <div class="w-12 h-12 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center mx-auto text-xl font-bold mb-3">&#10003;</div>
+        <h3 class="font-serif text-xl font-bold text-aubergine">Demo Request Received!</h3>
+        <p id="demo-success-msg" class="text-xs text-gray-600 mt-2 leading-relaxed">
+          Thanks! We have sent a calendar invite for your personalized Qlarity walkthrough.
+        </p>
+        <button
+          type="button"
+          id="reset-modal-btn"
+          class="mt-5 bg-aubergine text-white text-xs font-semibold py-2.5 px-6 rounded-full hover:bg-aubergine-light transition cursor-pointer"
+        >
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Interactive JavaScript -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      // 1. Mobile Menu Toggle
+      var mobileBtn = document.getElementById('mobile-menu-btn');
+      var mobileMenu = document.getElementById('mobile-menu');
+      if (mobileBtn && mobileMenu) {
+        mobileBtn.addEventListener('click', function () {
+          var isExpanded = mobileBtn.getAttribute('aria-expanded') === 'true';
+          mobileBtn.setAttribute('aria-expanded', String(!isExpanded));
+          mobileMenu.classList.toggle('hidden');
+        });
+      }
+
+      // 2. Blog Search & Filter Logic
+      var filterBtns = document.querySelectorAll('.filter-btn');
+      var searchInput = document.getElementById('blog-search');
+      var articles = document.querySelectorAll('.article-card');
+      var noResults = document.getElementById('no-results');
+      var resetBtn = document.getElementById('reset-filter-btn');
+      var activeFilter = 'all';
+
+      function filterArticles() {
+        var query = (searchInput ? searchInput.value : '').toLowerCase().trim();
+        var visibleCount = 0;
+
+        articles.forEach(function (article) {
+          var category = article.getAttribute('data-category') || '';
+          var keywords = (article.getAttribute('data-keywords') || '') + ' ' + article.textContent.toLowerCase();
+
+          var matchesCategory = (activeFilter === 'all') || (category === activeFilter);
+          var matchesSearch = !query || (keywords.indexOf(query) !== -1);
+
+          if (matchesCategory && matchesSearch) {
+            article.classList.remove('hidden');
+            visibleCount++;
+          } else {
+            article.classList.add('hidden');
+          }
+        });
+
+        if (noResults) {
+          if (visibleCount === 0) {
+            noResults.classList.remove('hidden');
+          } else {
+            noResults.classList.add('hidden');
+          }
+        }
+      }
+
+      filterBtns.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          filterBtns.forEach(function (b) {
+            b.classList.remove('bg-aubergine', 'text-white', 'font-bold', 'shadow-2xs');
+            b.classList.add('bg-white', 'border', 'border-icesilver-card', 'text-aubergine', 'font-semibold');
+          });
+          btn.classList.add('bg-aubergine', 'text-white', 'font-bold', 'shadow-2xs');
+          btn.classList.remove('bg-white', 'border', 'border-icesilver-card', 'text-aubergine', 'font-semibold');
+
+          activeFilter = btn.getAttribute('data-filter') || 'all';
+          filterArticles();
+        });
+      });
+
+      if (searchInput) {
+        searchInput.addEventListener('input', filterArticles);
+      }
+
+      if (resetBtn) {
+        resetBtn.addEventListener('click', function () {
+          if (searchInput) searchInput.value = '';
+          activeFilter = 'all';
+          filterBtns.forEach(function (b) {
+            if (b.getAttribute('data-filter') === 'all') {
+              b.classList.add('bg-aubergine', 'text-white', 'font-bold', 'shadow-2xs');
+              b.classList.remove('bg-white', 'border', 'border-icesilver-card', 'text-aubergine', 'font-semibold');
+            } else {
+              b.classList.remove('bg-aubergine', 'text-white', 'font-bold', 'shadow-2xs');
+              b.classList.add('bg-white', 'border', 'border-icesilver-card', 'text-aubergine', 'font-semibold');
+            }
+          });
+          filterArticles();
+        });
+      }
+
+      // 3. Demo Modal Logic
+      var modal = document.getElementById('demo-modal');
+      var openBtns = document.querySelectorAll('[data-open-demo]');
+      var closeModalBtn = document.getElementById('close-modal-btn');
+      var resetModalBtn = document.getElementById('reset-modal-btn');
+      var demoForm = document.getElementById('demo-form');
+      var formContainer = document.getElementById('demo-form-container');
+      var successContainer = document.getElementById('demo-success-container');
+      var successMsg = document.getElementById('demo-success-msg');
+      var formError = document.getElementById('form-error');
+      var leadNameInput = document.getElementById('lead-name');
+      var leadEmailInput = document.getElementById('lead-email');
+
+      function openModal() {
+        if (!modal) return;
+        modal.classList.remove('hidden');
+        if (leadNameInput) leadNameInput.focus();
+      }
+
+      function closeModal() {
+        if (!modal) return;
+        modal.classList.add('hidden');
+        if (formError) formError.classList.add('hidden');
+        if (formContainer) formContainer.classList.remove('hidden');
+        if (successContainer) successContainer.classList.add('hidden');
+        if (demoForm) demoForm.reset();
+      }
+
+      openBtns.forEach(function (btn) {
+        btn.addEventListener('click', openModal);
+      });
+
+      if (closeModalBtn) closeModalBtn.addEventListener('click', closeModal);
+      if (resetModalBtn) resetModalBtn.addEventListener('click', closeModal);
+
+      if (modal) {
+        modal.addEventListener('click', function (e) {
+          if (e.target === modal) closeModal();
+        });
+      }
+
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && modal && !modal.classList.contains('hidden')) {
+          closeModal();
+        }
+      });
+
+      if (demoForm) {
+        demoForm.addEventListener('submit', function (e) {
+          e.preventDefault();
+          var nameVal = leadNameInput ? leadNameInput.value.trim() : '';
+          var emailVal = leadEmailInput ? leadEmailInput.value.trim() : '';
+
+          if (!nameVal || !emailVal || emailVal.indexOf('@') === -1) {
+            if (formError) formError.classList.remove('hidden');
+            return;
+          }
+
+          if (formError) formError.classList.add('hidden');
+          if (successMsg) {
+            successMsg.textContent = 'Thanks, ' + nameVal + '! We have sent a calendar invite to ' + emailVal + ' for your personalized walkthrough.';
+          }
+          if (formContainer) formContainer.classList.add('hidden');
+          if (successContainer) successContainer.classList.remove('hidden');
+        });
+      }
+    });
+  </script>
+</body>
+</html>

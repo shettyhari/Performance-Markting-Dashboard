@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Multi-Currency Ad Spend Tracking for Indian Agencies: Reconciling USD, GBP, EUR &amp; INR | Qlarity</title>
+  <meta name="description" content="Master multi-currency ad spend tracking. How Indian performance agencies manage USD, GBP, EUR, AED client ad accounts alongside INR billing without spreadsheet chaos or forex reconciliation losses." />
+  <meta name="keywords" content="multi-currency ad spend tracking, Indian agency reporting dashboard, foreign client ad accounts, USD GBP INR ad reconciliation, Meta Google currency attribution" />
+  <link rel="canonical" href="https://getqlarity.online/blog/multi-currency-ad-spend-tracking-agencies" />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+  <meta name="theme-color" content="#3A0F34" />
+
+  <!-- Favicons -->
+  <link rel="icon" href="/favicon.ico" sizes="any" />
+  <link rel="shortcut icon" href="/favicon.ico" />
+  <link rel="icon" type="image/png" sizes="48x48" href="/brand/qlarity-icon-48.png" />
+  <link rel="icon" type="image/png" sizes="192x192" href="/brand/qlarity-icon-192.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/brand/qlarity-icon-180.png" />
+  <link rel="manifest" href="/site.webmanifest" />
+
+  <!-- Open Graph / Twitter Meta -->
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="Qlarity" />
+  <meta property="og:title" content="Multi-Currency Ad Spend Tracking for Indian Agencies: Reconciling USD, GBP, EUR &amp; INR" />
+  <meta property="og:description" content="Managing global ad accounts from India? How forex spreads and mixed currencies distort client ROAS—and how automated attribution fixes it." />
+  <meta property="og:url" content="https://getqlarity.online/blog/multi-currency-ad-spend-tracking-agencies" />
+  <meta property="og:image" content="https://getqlarity.online/brand/qlarity-og.png" />
+  <meta property="article:published_time" content="2026-11-22T08:00:00+05:30" />
+  <meta property="article:modified_time" content="2026-11-22T08:00:00+05:30" />
+  <meta property="article:author" content="Harikrishna Shetty" />
+  <meta property="article:section" content="Agency Operations" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Multi-Currency Ad Spend Tracking for Indian Agencies" />
+  <meta name="twitter:description" content="Reconcile USD, GBP, EUR, and INR ad accounts without manual currency conversion errors." />
+  <meta name="twitter:image" content="https://getqlarity.online/brand/qlarity-og.png" />
+
+  <!-- Structured Data: BlogPosting & BreadcrumbList -->
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "BlogPosting",
+          "@id": "https://getqlarity.online/blog/multi-currency-ad-spend-tracking-agencies#article",
+          "headline": "Multi-Currency Ad Spend Tracking for Indian Agencies: Reconciling USD, GBP, EUR & INR",
+          "description": "Comprehensive playbook on how Indian performance marketing agencies manage international client ad spend across USD, GBP, EUR, AED, and INR seamlessly.",
+          "mainEntityOfPage": "https://getqlarity.online/blog/multi-currency-ad-spend-tracking-agencies",
+          "datePublished": "2026-11-22T08:00:00+05:30",
+          "dateModified": "2026-11-22T08:00:00+05:30",
+          "author": {
+            "@type": "Person",
+            "name": "Harikrishna Shetty",
+            "jobTitle": "Performance Attribution Specialist",
+            "url": "https://getqlarity.online/"
+          },
+          "publisher": {
+            "@type": "Organization",
+            "name": "Qlarity",
+            "url": "https://getqlarity.online/",
+            "logo": {
+              "@type": "ImageObject",
+              "url": "https://getqlarity.online/brand/qlarity-icon-512.png",
+              "width": 512,
+              "height": 512
+            }
+          },
+          "image": "https://getqlarity.online/brand/qlarity-og.png",
+          "articleSection": "Agency Operations",
+          "keywords": "multi-currency ad spend tracking, Indian agency reporting dashboard, foreign ad accounts, USD GBP INR reconciliation"
+        },
+        {
+          "@type": "BreadcrumbList",
+          "@id": "https://getqlarity.online/blog/multi-currency-ad-spend-tracking-agencies#breadcrumb",
+          "itemListElement": [
+            {
+              "@type": "ListItem",
+              "position": 1,
+              "name": "Home",
+              "item": "https://getqlarity.online/"
+            },
+            {
+              "@type": "ListItem",
+              "position": 2,
+              "name": "Blog",
+              "item": "https://getqlarity.online/blog"
+            },
+            {
+              "@type": "ListItem",
+              "position": 3,
+              "name": "Multi-Currency Spend Tracking",
+              "item": "https://getqlarity.online/blog/multi-currency-ad-spend-tracking-agencies"
+            }
+          ]
+        }
+      ]
+    }
+  </script>
+
+  <!-- Google Fonts & Tailwind -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            aubergine: { DEFAULT: '#3A0F34', dark: '#260822', light: '#521A4A' },
+            marigold: { DEFAULT: '#EAAA00', hover: '#D49A00' },
+            icesilver: { canvas: '#F4F6F8', top: '#E8EDF1', card: '#DDE3E8' },
+          },
+          fontFamily: {
+            serif: ['"Playfair Display"', 'Georgia', 'serif'],
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+          },
+        },
+      },
+    };
+  </script>
+</head>
+<body class="font-sans text-[#1E1B24] bg-white antialiased selection:bg-marigold selection:text-aubergine">
+
+  <!-- Header -->
+  <header class="sticky top-0 z-50 bg-icesilver-top/90 backdrop-blur-md border-b border-icesilver-card/80">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 h-20 flex items-center justify-between">
+      <a href="/" aria-label="Qlarity — Measure, Analyse, Grow" class="inline-flex items-center select-none shrink-0">
+        <img src="/brand/qlarity-logo.png" alt="Qlarity — Measure, Analyse, Grow" class="h-11 sm:h-13 w-auto object-contain" width="906" height="326" />
+      </a>
+      <nav class="hidden md:flex items-center gap-7 text-sm font-medium text-[#2A2433]">
+        <a href="/" class="hover:text-aubergine transition py-2">Home</a>
+        <a href="/blog" class="text-aubergine font-bold py-2">All Guides</a>
+        <a href="/#roi-calculator" class="hover:text-aubergine transition py-2">ROI Calculator</a>
+        <a href="/#pricing" class="hover:text-aubergine transition py-2">Pricing</a>
+        <a href="/app" class="hover:text-aubergine font-semibold transition py-2 inline-flex items-center gap-1">Open App &rarr;</a>
+      </nav>
+      <button type="button" data-open-demo class="bg-marigold hover:bg-marigold-hover text-aubergine font-semibold text-xs sm:text-sm px-5 py-2.5 rounded-full shadow-sm transition cursor-pointer">
+        Request a Demo
+      </button>
+    </div>
+  </header>
+
+  <!-- Article Hero -->
+  <header class="bg-gradient-to-b from-icesilver-top via-icesilver-canvas to-white pt-12 pb-10 px-4 sm:px-6 border-b border-icesilver-card/60">
+    <div class="max-w-3xl mx-auto">
+      <nav aria-label="Breadcrumb" class="inline-flex items-center gap-2 text-xs font-medium text-gray-500 mb-6">
+        <a href="/" class="hover:text-aubergine">Home</a>
+        <span>&rsaquo;</span>
+        <a href="/blog" class="hover:text-aubergine">Blog</a>
+        <span>&rsaquo;</span>
+        <span class="text-aubergine font-bold" aria-current="page">Multi-Currency Ad Spend</span>
+      </nav>
+
+      <div class="flex items-center gap-3 text-xs font-semibold uppercase tracking-wider text-aubergine/70 mb-3">
+        <span class="bg-marigold text-aubergine font-extrabold px-3 py-1 rounded-full text-[11px]">Agency Operations</span>
+        <span>10 min read &bull; Published Nov 22, 2026</span>
+      </div>
+
+      <h1 class="font-serif text-3xl sm:text-5xl font-extrabold text-aubergine leading-tight">
+        Multi-Currency Ad Spend Tracking for Indian Agencies: Reconciling USD, GBP, EUR &amp; INR
+      </h1>
+
+      <p class="mt-4 text-base sm:text-lg text-gray-700 leading-relaxed">
+        Why Indian agencies managing international accounts lose countless billable hours on forex spread calculations and manual spreadsheet updates—and how automated multi-currency workspaces solve it.
+      </p>
+
+      <div class="mt-6 pt-6 border-t border-icesilver-card/80 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-full bg-aubergine text-marigold font-bold text-sm flex items-center justify-center">HS</div>
+          <div>
+            <div class="text-xs font-bold text-aubergine">Harikrishna Shetty</div>
+            <div class="text-[11px] text-gray-500">Performance Attribution Lead &bull; Qlarity</div>
+          </div>
+        </div>
+        <div class="text-xs text-gray-500">
+          Targeted to: Agency Owners &amp; Media Buyers
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Article Body -->
+  <main class="max-w-3xl mx-auto px-4 sm:px-6 py-12 text-[#2A2433] leading-relaxed">
+
+    <!-- Key Takeaways Box -->
+    <div class="bg-icesilver-canvas rounded-2xl p-6 sm:p-8 border border-icesilver-card mb-10">
+      <h2 class="font-serif text-lg font-bold text-aubergine flex items-center gap-2 mb-3">
+        <span class="text-marigold text-xl">&#9733;</span> Executive Summary &amp; Key Takeaways
+      </h2>
+      <ul class="space-y-2 text-sm text-gray-700">
+        <li class="flex items-start gap-2">
+          <span class="text-emerald-700 font-bold">&#10003;</span>
+          <span><strong>The Indian Agency Edge:</strong> Over 60% of top Indian performance marketing agencies now manage ad budgets for US ($), UK (£), Europe (&euro;), and UAE (AED) clients.</span>
+        </li>
+        <li class="flex items-start gap-2">
+          <span class="text-emerald-700 font-bold">&#10003;</span>
+          <span><strong>Forex Distortion:</strong> Currency fluctuations (e.g. USD/INR moving from 83.2 to 84.5) create artificial ROAS swings on static spreadsheets that confuse overseas clients.</span>
+        </li>
+        <li class="flex items-start gap-2">
+          <span class="text-emerald-700 font-bold">&#10003;</span>
+          <span><strong>Workspace Isolation:</strong> An effective agency dashboard must display native ad account currency to the client while consolidating all accounts into INR for agency-level profit and loss reporting.</span>
+        </li>
+        <li class="flex items-start gap-2">
+          <span class="text-emerald-700 font-bold">&#10003;</span>
+          <span><strong>Pricing Alignment:</strong> Western attribution platforms charge high USD seat licenses ($300&ndash;$800/mo) per account. Qlarity provides flat INR pricing with unlimited multi-currency workspace support.</span>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Section 1 -->
+    <section class="mb-12">
+      <h2 class="font-serif text-2xl sm:text-3xl font-bold text-aubergine mb-4">
+        1. The Cross-Border Agency Reality in India
+      </h2>
+      <p class="text-base text-gray-700 mb-4 leading-relaxed">
+        India has become the global capital for high-performance media buying. From Bengaluru and Gurgaon to Mumbai and Pune, agencies manage ad accounts for local D2C brands alongside international clients across North America, the UK, and the Middle East.
+      </p>
+      <p class="text-base text-gray-700 mb-4 leading-relaxed">
+        However, cross-border operations introduce operational friction:
+      </p>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 my-6">
+        <div class="p-5 bg-white border border-icesilver-card rounded-2xl shadow-2xs">
+          <div class="text-aubergine font-bold text-sm mb-1">Domestic Client Accounts</div>
+          <div class="text-xs text-gray-600">Billed in INR (₹). Needs GST compliance, Indian payment gateway tracking, and INR-denominated Cost Per Qualified Lead (CPQL) benchmarks.</div>
+        </div>
+        <div class="p-5 bg-white border border-icesilver-card rounded-2xl shadow-2xs">
+          <div class="text-aubergine font-bold text-sm mb-1">Global Client Accounts</div>
+          <div class="text-xs text-gray-600">Funded in USD ($), GBP (£), EUR (&euro;), or AED. Clients demand live reporting in their local currency, but your media buyers need normalized metrics.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 2 -->
+    <section class="mb-12">
+      <h2 class="font-serif text-2xl sm:text-3xl font-bold text-aubergine mb-4">
+        2. The 3 Hidden Traps of Multi-Currency Ad Reporting
+      </h2>
+      <div class="space-y-6">
+        <div>
+          <h3 class="font-bold text-lg text-aubergine">Trap #1: Dynamic Forex Spread Misattribution</h3>
+          <p class="text-sm text-gray-700 mt-1 leading-relaxed">
+            When calculating ROAS across currencies on Google Sheets or Looker Studio, teams often use a hard-coded exchange rate (e.g., $1 = ₹84). When actual daily exchange rates fluctuate, reported revenue and ad spend drift by 3% to 6%, creating discrepancies that erode client trust during quarterly business reviews.
+          </p>
+        </div>
+
+        <div>
+          <h3 class="font-bold text-lg text-aubergine">Trap #2: Ad Network Billing Threshold Jitter</h3>
+          <p class="text-sm text-gray-700 mt-1 leading-relaxed">
+            Meta Ads and Google Ads charge corporate credit cards when spending hits arbitrary billing thresholds (e.g., every $500 or $1,000) rather than at month-end. If an agency attempts to reconcile monthly ad spend from bank statements rather than API click-spend, cross-currency reconciliation is thrown off by thousands of dollars.
+          </p>
+        </div>
+
+        <div>
+          <h3 class="font-bold text-lg text-aubergine">Trap #3: Multi-Currency Blended CPQL Fallacy</h3>
+          <p class="text-sm text-gray-700 mt-1 leading-relaxed">
+            Attempting to calculate a single blended agency-wide Cost Per Qualified Lead across disparate regions without currency normalization produces meaningless numbers. A $40 CPQL in Texas represents a phenomenal B2B campaign, whereas a ₹3,300 CPQL in Delhi might represent an overpriced real estate funnel.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 3 -->
+    <section class="mb-12">
+      <h2 class="font-serif text-2xl sm:text-3xl font-bold text-aubergine mb-4">
+        3. How to Structure Multi-Currency Workspaces
+      </h2>
+      <p class="text-base text-gray-700 mb-4 leading-relaxed">
+        The best practice architecture adopted by elite performance agencies utilizes <strong>Dual-Layer Currency Normalization</strong>:
+      </p>
+
+      <div class="bg-icesilver-canvas p-6 rounded-2xl border border-icesilver-card my-6">
+        <h4 class="font-bold text-aubergine text-sm mb-3">The Dual-Layer Architecture:</h4>
+        <div class="space-y-3 text-xs sm:text-sm text-gray-700">
+          <div class="p-3 bg-white rounded-xl border border-icesilver-card">
+            <strong>Layer 1: Native Client View</strong> &mdash; Each client workspace automatically inherits the currency of its connected Meta/Google ad accounts (e.g. Workspace A displays entirely in USD $, Workspace B in GBP £, Workspace C in INR ₹).
+          </div>
+          <div class="p-3 bg-white rounded-xl border border-icesilver-card">
+            <strong>Layer 2: Consolidated Agency View</strong> &mdash; Agency directors can toggle a master switch to convert total client ad spend under management into INR (₹) using live RBI/forex rates for internal capacity planning and margin analysis.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 4 -->
+    <section class="mb-12">
+      <h2 class="font-serif text-2xl sm:text-3xl font-bold text-aubergine mb-4">
+        4. Reconciling International Ad Spend in Qlarity
+      </h2>
+      <p class="text-base text-gray-700 mb-4 leading-relaxed">
+        Qlarity was architected from day one to eliminate multi-currency friction for Indian marketing agencies:
+      </p>
+      <ul class="list-disc pl-6 space-y-2 text-sm text-gray-700 mb-6">
+        <li><strong>Automatic Currency Detection:</strong> Connect your client&rsquo;s Meta Ad Account or Google Ads Manager, and Qlarity instantly reads the account-level ISO currency code.</li>
+        <li><strong>Zero Forex Conversion Loss:</strong> All platform metrics (CPC, CPM, CPQL, ROAS) are calculated in the account&rsquo;s native currency without loss of precision.</li>
+        <li><strong>White-Label Multi-Currency Client Portals:</strong> Give your overseas clients login access with their brand logo, where they see their metrics in USD or GBP, completely white-labeled.</li>
+        <li><strong>Flat INR Subscription:</strong> Unlike US software vendors that charge $500+/month with 3.5% foreign transaction fees on your credit card, Qlarity offers predictable INR billing with GST invoicing.</li>
+      </ul>
+
+      <!-- Interactive Banner -->
+      <div class="bg-aubergine text-white p-8 rounded-3xl my-8 text-center shadow-lg">
+        <h3 class="font-serif text-2xl font-bold mb-2">Manage Multi-Currency Accounts Seamlessly</h3>
+        <p class="text-xs sm:text-sm text-white/80 max-w-lg mx-auto mb-6">
+          See how Qlarity helps Indian agencies track over ₹25 Crore in domestic and international client ad spend without spreadsheet headaches.
+        </p>
+        <button
+          type="button"
+          data-open-demo
+          class="bg-marigold hover:bg-marigold-hover text-aubergine font-bold text-xs sm:text-sm px-6 py-3 rounded-full transition cursor-pointer"
+        >
+          Schedule an Agency Walkthrough &rarr;
+        </button>
+      </div>
+    </section>
+
+    <!-- Related Articles -->
+    <div class="border-t border-icesilver-card/80 pt-8 mt-12">
+      <h3 class="text-xs font-bold text-aubergine uppercase tracking-wider mb-4">Explore More Playbooks</h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <a href="/blog/cost-per-qualified-lead-cpql-guide" class="p-4 rounded-xl border border-icesilver-card hover:bg-icesilver-canvas transition block">
+          <div class="text-[11px] font-bold text-aubergine uppercase">Unit Economics</div>
+          <div class="font-bold text-sm text-aubergine mt-1">Cost Per Qualified Lead (CPQL): Stop Wasted Ad Spend &rarr;</div>
+        </a>
+        <a href="/blog/b2b-performance-marketing-attribution-guide" class="p-4 rounded-xl border border-icesilver-card hover:bg-icesilver-canvas transition block">
+          <div class="text-[11px] font-bold text-blue-700 uppercase">Full-Funnel Growth</div>
+          <div class="font-bold text-sm text-aubergine mt-1">B2B Performance Marketing Attribution Architecture &rarr;</div>
+        </a>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-aubergine text-white pt-12 pb-8 px-4 sm:px-6 mt-16">
+    <div class="max-w-4xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6 border-b border-white/15 pb-8 text-xs text-white/75">
+      <div class="flex items-center gap-3">
+        <img src="/brand/qlarity-logo-dark.png" alt="Qlarity" class="h-7 w-auto object-contain" width="906" height="326" />
+        <span>&bull; Measure &bull; Analyse &bull; Grow</span>
+      </div>
+      <div class="flex items-center gap-5">
+        <a href="/" class="hover:text-white transition">Home</a>
+        <a href="/blog" class="hover:text-white transition">Blog</a>
+        <a href="/privacy" class="hover:text-white transition">Privacy</a>
+        <a href="/terms" class="hover:text-white transition">Terms</a>
+      </div>
+    </div>
+    <div class="max-w-4xl mx-auto pt-6 text-center text-xs text-white/50">
+      &copy; 2026 Getqlarity.online. All rights reserved.
+    </div>
+  </footer>
+
+  <!-- Demo Modal -->
+  <div id="demo-modal" role="dialog" aria-modal="true" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-aubergine-dark/70 backdrop-blur-xs">
+    <div class="bg-white rounded-2xl max-w-md w-full p-6 sm:p-8 shadow-2xl border border-icesilver-card relative">
+      <button type="button" id="close-modal-btn" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-icesilver-canvas hover:bg-icesilver-card text-aubergine flex items-center justify-center font-bold cursor-pointer">&times;</button>
+      <div id="demo-form-container">
+        <span class="text-[11px] font-semibold uppercase tracking-wider text-amber-700">Live Product Walkthrough</span>
+        <h2 class="font-serif text-2xl font-bold text-aubergine mt-1">Request Your Qlarity Demo</h2>
+        <p class="text-xs text-gray-600 mt-1.5">See multi-currency client tracking in action.</p>
+        <form id="demo-form" class="mt-5 space-y-4" novalidate>
+          <div>
+            <label for="lead-name" class="block text-xs font-semibold text-aubergine mb-1">Full Name *</label>
+            <input id="lead-name" name="name" type="text" required placeholder="Alex Morgan" class="w-full px-3.5 py-2.5 rounded-xl border border-icesilver-card text-sm focus:outline-none focus:border-aubergine" />
+          </div>
+          <div>
+            <label for="lead-email" class="block text-xs font-semibold text-aubergine mb-1">Work Email *</label>
+            <input id="lead-email" name="email" type="email" required placeholder="alex@growthagency.com" class="w-full px-3.5 py-2.5 rounded-xl border border-icesilver-card text-sm focus:outline-none focus:border-aubergine" />
+          </div>
+          <div>
+            <label for="lead-spend" class="block text-xs font-semibold text-aubergine mb-1">Monthly Ad Spend Managed</label>
+            <select id="lead-spend" name="spend" class="w-full px-3.5 py-2.5 rounded-xl border border-icesilver-card text-sm bg-white focus:outline-none focus:border-aubergine">
+              <option value="under-2l">Under &#8377;2,00,000 / month (or &lt; $2.5k)</option>
+              <option value="2l-10l" selected>&#8377;2,00,000 &ndash; &#8377;10,00,000 / month ($2.5k &ndash; $12k)</option>
+              <option value="10l-50l">&#8377;10,00,000 &ndash; &#8377;50,00,000 / month ($12k &ndash; $60k)</option>
+              <option value="50l-plus">&#8377;50,00,000+ / month ($60k+ Multi-Brand)</option>
+            </select>
+          </div>
+          <p id="form-error" class="hidden text-xs text-red-600 font-medium">Please enter your full name and valid work email.</p>
+          <button type="submit" class="w-full bg-marigold hover:bg-marigold-hover text-aubergine font-bold text-sm py-3 px-5 rounded-full shadow-sm transition cursor-pointer">
+            Confirm Demo Request &rarr;
+          </button>
+        </form>
+      </div>
+      <div id="demo-success-container" class="hidden text-center py-4">
+        <div class="w-12 h-12 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center mx-auto text-xl font-bold mb-3">&#10003;</div>
+        <h3 class="font-serif text-xl font-bold text-aubergine">Demo Request Received!</h3>
+        <p class="text-xs text-gray-600 mt-2">Thanks! We have sent a calendar invite for your walkthrough.</p>
+        <button type="button" id="reset-modal-btn" class="mt-5 bg-aubergine text-white text-xs font-semibold py-2.5 px-6 rounded-full hover:bg-aubergine-light transition cursor-pointer">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      var modal = document.getElementById('demo-modal');
+      var openBtns = document.querySelectorAll('[data-open-demo]');
+      var closeBtn = document.getElementById('close-modal-btn');
+      var resetBtn = document.getElementById('reset-modal-btn');
+      var demoForm = document.getElementById('demo-form');
+      var formContainer = document.getElementById('demo-form-container');
+      var successContainer = document.getElementById('demo-success-container');
+      var formError = document.getElementById('form-error');
+
+      function openModal() { if (modal) modal.classList.remove('hidden'); }
+      function closeModal() {
+        if (!modal) return;
+        modal.classList.add('hidden');
+        if (formError) formError.classList.add('hidden');
+        if (formContainer) formContainer.classList.remove('hidden');
+        if (successContainer) successContainer.classList.add('hidden');
+        if (demoForm) demoForm.reset();
+      }
+
+      openBtns.forEach(function (btn) { btn.addEventListener('click', openModal); });
+      if (closeBtn) closeBtn.addEventListener('click', closeModal);
+      if (resetBtn) resetBtn.addEventListener('click', closeModal);
+      if (modal) { modal.addEventListener('click', function(e) { if (e.target === modal) closeModal(); }); }
+
+      if (demoForm) {
+        demoForm.addEventListener('submit', function (e) {
+          e.preventDefault();
+          var name = document.getElementById('lead-name').value.trim();
+          var email = document.getElementById('lead-email').value.trim();
+          if (!name || !email || email.indexOf('@') === -1) {
+            if (formError) formError.classList.remove('hidden');
+            return;
+          }
+          if (formError) formError.classList.add('hidden');
+          if (formContainer) formContainer.classList.add('hidden');
+          if (successContainer) successContainer.classList.remove('hidden');
+        });
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cost Per Qualified Lead (CPQL): The Complete Guide to Stopping Wasted Ad Spend | Qlarity</title>
+  <meta name="description" content="Master Cost Per Qualified Lead (CPQL). Learn the CPQL formula, CPL vs CPQL benchmarks for Indian agencies, CRM pipeline sync, and how to eliminate wasted ad spend on Meta and Google." />
+  <meta name="keywords" content="Cost Per Qualified Lead, CPQL formula, CPL vs CPQL, calculate CPQL, lead quality attribution, stop wasted ad spend, Meta ads CPQL, Google ads lead quality" />
+  <link rel="canonical" href="https://getqlarity.online/blog/cost-per-qualified-lead-cpql-guide" />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+  <meta name="theme-color" content="#3A0F34" />
+
+  <!-- Favicons -->
+  <link rel="icon" href="/favicon.ico" sizes="any" />
+  <link rel="shortcut icon" href="/favicon.ico" />
+  <link rel="icon" type="image/png" sizes="48x48" href="/brand/qlarity-icon-48.png" />
+  <link rel="icon" type="image/png" sizes="192x192" href="/brand/qlarity-icon-192.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/brand/qlarity-icon-180.png" />
+  <link rel="manifest" href="/site.webmanifest" />
+
+  <!-- Open Graph / Twitter Meta -->
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="Qlarity" />
+  <meta property="og:title" content="Cost Per Qualified Lead (CPQL): The Complete Guide to Stopping Wasted Ad Spend" />
+  <meta property="og:description" content="Why CPL is lying to your marketing team, the mathematical CPQL formula, and how leading agencies cut acquisition waste by 34%." />
+  <meta property="og:url" content="https://getqlarity.online/blog/cost-per-qualified-lead-cpql-guide" />
+  <meta property="og:image" content="https://getqlarity.online/brand/qlarity-og.png" />
+  <meta property="article:published_time" content="2026-11-22T08:00:00+05:30" />
+  <meta property="article:modified_time" content="2026-11-22T08:00:00+05:30" />
+  <meta property="article:author" content="Harikrishna Shetty" />
+  <meta property="article:section" content="Attribution & Analytics" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Cost Per Qualified Lead (CPQL): Stop Burning Ad Budget" />
+  <meta name="twitter:description" content="Calculate true CPQL and connect CRM stages back into Meta and Google Ads algorithms." />
+  <meta name="twitter:image" content="https://getqlarity.online/brand/qlarity-og.png" />
+
+  <!-- Structured Data: BlogPosting & BreadcrumbList -->
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "BlogPosting",
+          "@id": "https://getqlarity.online/blog/cost-per-qualified-lead-cpql-guide#article",
+          "headline": "Cost Per Qualified Lead (CPQL): The Complete Guide to Stopping Wasted Ad Spend",
+          "description": "Learn the mathematical formula for Cost Per Qualified Lead (CPQL), how to connect CRM sales stages back to ad networks, and how top agencies eliminate wasted ad spend.",
+          "mainEntityOfPage": "https://getqlarity.online/blog/cost-per-qualified-lead-cpql-guide",
+          "datePublished": "2026-11-22T08:00:00+05:30",
+          "dateModified": "2026-11-22T08:00:00+05:30",
+          "author": {
+            "@type": "Person",
+            "name": "Harikrishna Shetty",
+            "jobTitle": "Performance Attribution Specialist",
+            "url": "https://getqlarity.online/"
+          },
+          "publisher": {
+            "@type": "Organization",
+            "name": "Qlarity",
+            "url": "https://getqlarity.online/",
+            "logo": {
+              "@type": "ImageObject",
+              "url": "https://getqlarity.online/brand/qlarity-icon-512.png",
+              "width": 512,
+              "height": 512
+            }
+          },
+          "image": "https://getqlarity.online/brand/qlarity-og.png",
+          "articleSection": "Attribution & Analytics",
+          "keywords": "Cost Per Qualified Lead, CPQL, CPL vs CPQL, lead quality attribution, stop wasted ad spend"
+        },
+        {
+          "@type": "BreadcrumbList",
+          "@id": "https://getqlarity.online/blog/cost-per-qualified-lead-cpql-guide#breadcrumb",
+          "itemListElement": [
+            {
+              "@type": "ListItem",
+              "position": 1,
+              "name": "Home",
+              "item": "https://getqlarity.online/"
+            },
+            {
+              "@type": "ListItem",
+              "position": 2,
+              "name": "Blog",
+              "item": "https://getqlarity.online/blog"
+            },
+            {
+              "@type": "ListItem",
+              "position": 3,
+              "name": "Cost Per Qualified Lead (CPQL) Guide",
+              "item": "https://getqlarity.online/blog/cost-per-qualified-lead-cpql-guide"
+            }
+          ]
+        }
+      ]
+    }
+  </script>
+
+  <!-- Google Fonts & Tailwind -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            aubergine: { DEFAULT: '#3A0F34', dark: '#260822', light: '#521A4A' },
+            marigold: { DEFAULT: '#EAAA00', hover: '#D49A00' },
+            icesilver: { canvas: '#F4F6F8', top: '#E8EDF1', card: '#DDE3E8' },
+          },
+          fontFamily: {
+            serif: ['"Playfair Display"', 'Georgia', 'serif'],
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+          },
+        },
+      },
+    };
+  </script>
+</head>
+<body class="font-sans text-[#1E1B24] bg-white antialiased selection:bg-marigold selection:text-aubergine">
+
+  <!-- Header -->
+  <header class="sticky top-0 z-50 bg-icesilver-top/90 backdrop-blur-md border-b border-icesilver-card/80">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 h-20 flex items-center justify-between">
+      <a href="/" aria-label="Qlarity — Measure, Analyse, Grow" class="inline-flex items-center select-none shrink-0">
+        <img src="/brand/qlarity-logo.png" alt="Qlarity — Measure, Analyse, Grow" class="h-11 sm:h-13 w-auto object-contain" width="906" height="326" />
+      </a>
+      <nav class="hidden md:flex items-center gap-7 text-sm font-medium text-[#2A2433]">
+        <a href="/" class="hover:text-aubergine transition py-2">Home</a>
+        <a href="/blog" class="text-aubergine font-bold py-2">All Guides</a>
+        <a href="/#roi-calculator" class="hover:text-aubergine transition py-2">ROI Calculator</a>
+        <a href="/#pricing" class="hover:text-aubergine transition py-2">Pricing</a>
+        <a href="/app" class="hover:text-aubergine font-semibold transition py-2 inline-flex items-center gap-1">Open App &rarr;</a>
+      </nav>
+      <button type="button" data-open-demo class="bg-marigold hover:bg-marigold-hover text-aubergine font-semibold text-xs sm:text-sm px-5 py-2.5 rounded-full shadow-sm transition cursor-pointer">
+        Request a Demo
+      </button>
+    </div>
+  </header>
+
+  <!-- Article Hero -->
+  <header class="bg-gradient-to-b from-icesilver-top via-icesilver-canvas to-white pt-12 pb-10 px-4 sm:px-6 border-b border-icesilver-card/60">
+    <div class="max-w-3xl mx-auto">
+      <nav aria-label="Breadcrumb" class="inline-flex items-center gap-2 text-xs font-medium text-gray-500 mb-6">
+        <a href="/" class="hover:text-aubergine">Home</a>
+        <span>&rsaquo;</span>
+        <a href="/blog" class="hover:text-aubergine">Blog</a>
+        <span>&rsaquo;</span>
+        <span class="text-aubergine font-bold" aria-current="page">CPQL Guide</span>
+      </nav>
+
+      <div class="flex items-center gap-3 text-xs font-semibold uppercase tracking-wider text-aubergine/70 mb-3">
+        <span class="bg-marigold text-aubergine font-extrabold px-3 py-1 rounded-full text-[11px]">Core Metric</span>
+        <span>8 min read &bull; Published Nov 22, 2026</span>
+      </div>
+
+      <h1 class="font-serif text-3xl sm:text-5xl font-extrabold text-aubergine leading-tight">
+        Cost Per Qualified Lead (CPQL): The Complete Guide to Stopping Wasted Ad Spend
+      </h1>
+
+      <p class="mt-4 text-base sm:text-lg text-gray-700 leading-relaxed">
+        Why traditional Cost Per Lead (CPL) is a dangerous vanity metric that rewards junk conversions, how to calculate true CPQL, and how to train Meta and Google ad bidding algorithms on real revenue.
+      </p>
+
+      <div class="mt-6 pt-6 border-t border-icesilver-card/80 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-full bg-aubergine text-marigold font-bold text-sm flex items-center justify-center">HS</div>
+          <div>
+            <div class="text-xs font-bold text-aubergine">Harikrishna Shetty</div>
+            <div class="text-[11px] text-gray-500">Performance Attribution Lead &bull; Qlarity</div>
+          </div>
+        </div>
+        <div class="text-xs text-gray-500">
+          Targeted to: Growth Marketers &amp; Agency Leaders
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Article Body -->
+  <main class="max-w-3xl mx-auto px-4 sm:px-6 py-12 text-[#2A2433] leading-relaxed">
+
+    <!-- Key Takeaways Box -->
+    <div class="bg-icesilver-canvas rounded-2xl p-6 sm:p-8 border border-icesilver-card mb-10">
+      <h2 class="font-serif text-lg font-bold text-aubergine flex items-center gap-2 mb-3">
+        <span class="text-marigold text-xl">&#9733;</span> Executive Summary &amp; Key Takeaways
+      </h2>
+      <ul class="space-y-2 text-sm text-gray-700">
+        <li class="flex items-start gap-2">
+          <span class="text-emerald-700 font-bold">&#10003;</span>
+          <span><strong>The CPL Trap:</strong> Campaigns boasting a ₹250 CPL frequently cost over ₹3,500 per actual qualified buyer because 85% of instant form leads are bot submissions or wrong numbers.</span>
+        </li>
+        <li class="flex items-start gap-2">
+          <span class="text-emerald-700 font-bold">&#10003;</span>
+          <span><strong>The CPQL Formula:</strong> <code>CPQL = Total Campaign Ad Spend / Verified Sales Qualified Leads (SQLs)</code>.</span>
+        </li>
+        <li class="flex items-start gap-2">
+          <span class="text-emerald-700 font-bold">&#10003;</span>
+          <span><strong>Algorithm Feedback:</strong> Sending post-submission qualification milestones back to Meta Conversions API (CAPI) and Google Ads cuts junk submissions by up to 40% in under three weeks.</span>
+        </li>
+        <li class="flex items-start gap-2">
+          <span class="text-emerald-700 font-bold">&#10003;</span>
+          <span><strong>Agency Impact:</strong> Agencies reporting CPQL retain clients 2.4x longer by proving genuine pipeline value instead of empty click counts.</span>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Table of Contents -->
+    <div class="border border-icesilver-card rounded-2xl p-6 mb-12 bg-white">
+      <h3 class="text-xs font-bold text-aubergine uppercase tracking-wider mb-3">Table of Contents</h3>
+      <ol class="space-y-1.5 text-sm font-medium text-aubergine">
+        <li><a href="#cpl-trap" class="hover:underline">1. The Lead Quality Paradox: Why CPL is Lying to You</a></li>
+        <li><a href="#what-is-cpql" class="hover:underline">2. What is Cost Per Qualified Lead (CPQL)?</a></li>
+        <li><a href="#the-formula" class="hover:underline">3. The CPQL Mathematical Formula &amp; Worked Example</a></li>
+        <li><a href="#qualification-stages" class="hover:underline">4. Mapping the 4-Stage Lead Qualification Lifecycle</a></li>
+        <li><a href="#meta-google-training" class="hover:underline">5. Training Meta and Google Ad Algorithms on CPQL</a></li>
+        <li><a href="#qlarity-solution" class="hover:underline">6. How Qlarity Automates Real-Time CPQL Attribution</a></li>
+      </ol>
+    </div>
+
+    <!-- Section 1 -->
+    <section id="cpl-trap" class="mb-12">
+      <h2 class="font-serif text-2xl sm:text-3xl font-bold text-aubergine mb-4">
+        1. The Lead Quality Paradox: Why CPL is Lying to You
+      </h2>
+      <p class="text-base text-gray-700 mb-4 leading-relaxed">
+        If you run performance campaigns on Meta (Facebook/Instagram Ads) or Google Search for Indian businesses, you have likely encountered this painful scenario:
+      </p>
+      <blockquote class="border-l-4 border-marigold pl-4 py-2 my-4 bg-icesilver-canvas/60 rounded-r-xl italic text-gray-800 text-sm">
+        &ldquo;The media buyer reports that Cost Per Lead dropped from ₹800 to ₹250. Everyone celebrates—until the sales team calls the leads and discovers 70% are students, competitor research, invalid phone numbers, or people who claim they never filled out a form.&rdquo;
+      </blockquote>
+      <p class="text-base text-gray-700 mb-4 leading-relaxed">
+        This is the <strong>Lead Quality Paradox</strong>. Ad platform bidding algorithms (like Meta’s Highest Volume or Google’s Maximize Conversions) are programmed to find the cheapest conversion possible within your target audience. Because unqualified users click indiscriminately and auto-fill forms without reading, the algorithm aggressively optimizes toward them.
+      </p>
+      <p class="text-base text-gray-700 leading-relaxed">
+        By measuring only <strong>Cost Per Lead (CPL)</strong>, agencies unintentionally incentivize algorithms to deliver spam.
+      </p>
+    </section>
+
+    <!-- Section 2 -->
+    <section id="what-is-cpql" class="mb-12">
+      <h2 class="font-serif text-2xl sm:text-3xl font-bold text-aubergine mb-4">
+        2. What is Cost Per Qualified Lead (CPQL)?
+      </h2>
+      <p class="text-base text-gray-700 mb-4 leading-relaxed">
+        <strong>Cost Per Qualified Lead (CPQL)</strong> is the total advertising investment required to generate a lead that satisfies your business’s specific qualification criteria.
+      </p>
+      <p class="text-base text-gray-700 mb-4 leading-relaxed">
+        Unlike standard CPL, CPQL discards spam, disposable email addresses, wrong numbers, and out-of-budget prospects. A lead is only counted when verified against minimum qualification standards, such as:
+      </p>
+      <ul class="list-disc pl-6 space-y-2 text-sm text-gray-700 mb-4">
+        <li><strong>Firmographic fit:</strong> Correct industry, minimum company headcount, or geographic location.</li>
+        <li><strong>Commercial intent:</strong> Verified business email domain (not <code>@tempmail.com</code> or personal domains where B2B is required).</li>
+        <li><strong>Budget alignment:</strong> Verified ad spend, annual turnover, or purchase authority.</li>
+        <li><strong>Sales confirmation:</strong> Successful contact established by the sales development representative (SDR) in CRM (e.g., TeleCRM, HubSpot, LeadSquared).</li>
+      </ul>
+    </section>
+
+    <!-- Section 3 -->
+    <section id="the-formula" class="mb-12">
+      <h2 class="font-serif text-2xl sm:text-3xl font-bold text-aubergine mb-4">
+        3. The CPQL Mathematical Formula &amp; Worked Example
+      </h2>
+      <p class="text-base text-gray-700 mb-4 leading-relaxed">
+        The fundamental formula for calculating CPQL is:
+      </p>
+
+      <div class="bg-aubergine text-white p-6 rounded-2xl my-6 text-center shadow-md">
+        <div class="text-xs font-semibold text-marigold uppercase tracking-wider mb-2">Mathematical Definition</div>
+        <div class="font-mono text-xl sm:text-2xl font-bold tracking-wide">
+          CPQL = Total Ad Spend / Verified Qualified Leads
+        </div>
+        <div class="text-xs text-white/70 mt-2">
+          Or alternatively: <code>CPQL = CPL / Lead Qualification Rate (%)</code>
+        </div>
+      </div>
+
+      <h3 class="font-serif text-xl font-bold text-aubergine mt-8 mb-4">The Real-World Agency Comparison</h3>
+      <p class="text-base text-gray-700 mb-4 leading-relaxed">
+        Consider two competing campaigns run by an agency for a B2B SaaS client with a monthly budget of ₹2,00,000 each:
+      </p>
+
+      <div class="overflow-x-auto my-6">
+        <table class="w-full text-left text-xs sm:text-sm border-collapse border border-icesilver-card rounded-xl overflow-hidden">
+          <thead>
+            <tr class="bg-aubergine text-white font-semibold">
+              <th class="p-3 border border-white/20">Metric</th>
+              <th class="p-3 border border-white/20">Campaign A (Meta Instant Forms)</th>
+              <th class="p-3 border border-white/20">Campaign B (Google Search High-Intent)</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-icesilver-card bg-white">
+            <tr>
+              <td class="p-3 font-semibold text-aubergine">Total Ad Spend</td>
+              <td class="p-3">₹2,00,000</td>
+              <td class="p-3">₹2,00,000</td>
+            </tr>
+            <tr class="bg-icesilver-canvas/50">
+              <td class="p-3 font-semibold text-aubergine">Raw Leads Reported</td>
+              <td class="p-3 font-bold text-emerald-700">800 leads</td>
+              <td class="p-3">200 leads</td>
+            </tr>
+            <tr>
+              <td class="p-3 font-semibold text-aubergine">Apparent CPL</td>
+              <td class="p-3 font-bold text-emerald-700">₹250 (Looks amazing!)</td>
+              <td class="p-3">₹1,000 (Looks expensive)</td>
+            </tr>
+            <tr class="bg-icesilver-canvas/50">
+              <td class="p-3 font-semibold text-aubergine">Lead Qualification Rate</td>
+              <td class="p-3 text-red-600 font-bold">10% (80 qualified)</td>
+              <td class="p-3 text-emerald-700 font-bold">65% (130 qualified)</td>
+            </tr>
+            <tr class="bg-amber-50 font-bold">
+              <td class="p-3 text-aubergine">True CPQL</td>
+              <td class="p-3 text-red-600">₹2,500 per qualified lead</td>
+              <td class="p-3 text-emerald-700">₹1,538 per qualified lead</td>
+            </tr>
+            <tr>
+              <td class="p-3 font-semibold text-aubergine">Closed-Won Deals</td>
+              <td class="p-3">4 deals (₹4,00,000 revenue)</td>
+              <td class="p-3 font-bold text-emerald-700">12 deals (₹12,00,000 revenue)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p class="text-sm text-gray-700 leading-relaxed">
+        If the agency reported on standard CPL, they would scale Campaign A and kill Campaign B. But Campaign B actually produced <strong>3x more revenue</strong> at a <strong>38% lower acquisition cost per real prospect</strong>.
+      </p>
+    </section>
+
+    <!-- Section 4 -->
+    <section id="qualification-stages" class="mb-12">
+      <h2 class="font-serif text-2xl sm:text-3xl font-bold text-aubergine mb-4">
+        4. Mapping the 4-Stage Lead Qualification Lifecycle
+      </h2>
+      <p class="text-base text-gray-700 mb-4 leading-relaxed">
+        To operationalize CPQL, your attribution system must recognize the standard progression of a lead through sales:
+      </p>
+
+      <div class="space-y-4 my-6">
+        <div class="p-5 rounded-2xl border border-icesilver-card bg-white shadow-2xs">
+          <div class="flex items-center gap-2 mb-1">
+            <span class="w-6 h-6 rounded-full bg-aubergine text-white text-xs font-bold flex items-center justify-center">1</span>
+            <h4 class="font-bold text-sm text-aubergine">Raw Inbound Submission (Lead)</h4>
+          </div>
+          <p class="text-xs text-gray-600 pl-8">
+            Form is submitted on landing page or native ad format. Contains unverified contact information.
+          </p>
+        </div>
+
+        <div class="p-5 rounded-2xl border border-icesilver-card bg-white shadow-2xs">
+          <div class="flex items-center gap-2 mb-1">
+            <span class="w-6 h-6 rounded-full bg-aubergine text-white text-xs font-bold flex items-center justify-center">2</span>
+            <h4 class="font-bold text-sm text-aubergine">Marketing Qualified Lead (MQL)</h4>
+          </div>
+          <p class="text-xs text-gray-600 pl-8">
+            Passed automated validation: phone number format is valid, business email passes MX record lookup, company size satisfies criteria.
+          </p>
+        </div>
+
+        <div class="p-5 rounded-2xl border border-icesilver-card bg-white shadow-2xs">
+          <div class="flex items-center gap-2 mb-1">
+            <span class="w-6 h-6 rounded-full bg-marigold text-aubergine text-xs font-bold flex items-center justify-center">3</span>
+            <h4 class="font-bold text-sm text-aubergine">Sales Qualified Lead (SQL) &mdash; <em>The CPQL Standard</em></h4>
+          </div>
+          <p class="text-xs text-gray-600 pl-8">
+            SDR completed discovery call, verified commercial intent, confirmed budget authority, and scheduled a product demonstration.
+          </p>
+        </div>
+
+        <div class="p-5 rounded-2xl border border-icesilver-card bg-white shadow-2xs">
+          <div class="flex items-center gap-2 mb-1">
+            <span class="w-6 h-6 rounded-full bg-emerald-600 text-white text-xs font-bold flex items-center justify-center">4</span>
+            <h4 class="font-bold text-sm text-aubergine">Opportunity / Closed-Won Deal</h4>
+          </div>
+          <p class="text-xs text-gray-600 pl-8">
+            Formal commercial proposal submitted, contract signed, and payment received.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 5 -->
+    <section id="meta-google-training" class="mb-12">
+      <h2 class="font-serif text-2xl sm:text-3xl font-bold text-aubergine mb-4">
+        5. Training Meta and Google Ad Algorithms on CPQL
+      </h2>
+      <p class="text-base text-gray-700 mb-4 leading-relaxed">
+        Calculating CPQL on a retrospective spreadsheet is useful, but the real leverage comes from <strong>closing the feedback loop</strong>.
+      </p>
+      <p class="text-base text-gray-700 mb-4 leading-relaxed">
+        When an SQL status is reached in your CRM, that signal must be pushed back into:
+      </p>
+      <ul class="list-disc pl-6 space-y-2 text-sm text-gray-700 mb-4">
+        <li><strong>Meta Conversions API (CAPI):</strong> Send custom events such as <code>QualifiedLead</code> or offline conversion values with matching hashed customer parameters (email, phone, fbp/fbc).</li>
+        <li><strong>Google Ads Enhanced Conversions for Leads:</strong> Upload offline conversion events matched to the Google Click ID (GCLID) or hashed user data.</li>
+      </ul>
+      <p class="text-base text-gray-700 leading-relaxed">
+        Once ad algorithms receive quality data, switch your bidding strategy from <em>Maximize Conversions</em> to <strong>Target ROAS (tROAS)</strong> or <strong>Value-Based Bidding</strong>. Within 14 to 21 days, ad algorithms stop serving impressions to serial form-clickers and focus exclusively on high-propensity buyers.
+      </p>
+    </section>
+
+    <!-- Section 6: Qlarity Solution CTA -->
+    <section id="qlarity-solution" class="bg-gradient-to-br from-aubergine to-aubergine-dark text-white rounded-3xl p-8 sm:p-10 my-12 shadow-xl">
+      <h2 class="font-serif text-2xl sm:text-3xl font-bold text-white mb-3">
+        Automate Your Agency&rsquo;s CPQL Tracking with Qlarity
+      </h2>
+      <p class="text-sm sm:text-base text-white/80 leading-relaxed mb-6">
+        Stop wrestling with CSV exports, broken UTM tags, and mismatched CRM sheets. Qlarity automatically connects your ad accounts (Meta, Google) with your CRM (TeleCRM, HubSpot) to display live CPQL, ROAS, and AI lead scoring on a unified client dashboard.
+      </p>
+      <div class="flex flex-wrap items-center gap-4">
+        <button
+          type="button"
+          data-open-demo
+          class="bg-marigold hover:bg-marigold-hover text-aubergine font-bold text-sm px-6 py-3 rounded-full transition cursor-pointer"
+        >
+          Book a 1-on-1 Walkthrough &rarr;
+        </button>
+        <a
+          href="/#roi-calculator"
+          class="text-xs font-semibold text-white/90 underline hover:text-marigold transition"
+        >
+          Try the Interactive ROI Calculator
+        </a>
+      </div>
+    </section>
+
+    <!-- Next / Related Articles -->
+    <div class="border-t border-icesilver-card/80 pt-8 mt-12">
+      <h3 class="text-xs font-bold text-aubergine uppercase tracking-wider mb-4">Continue Reading</h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <a href="/blog/multi-currency-ad-spend-tracking-agencies" class="p-4 rounded-xl border border-icesilver-card hover:bg-icesilver-canvas transition block">
+          <div class="text-[11px] font-bold text-amber-700 uppercase">Agency Operations</div>
+          <div class="font-bold text-sm text-aubergine mt-1">Multi-Currency Ad Spend Tracking for Indian Agencies &rarr;</div>
+        </a>
+        <a href="/blog/ai-lead-scoring-meta-google-ads" class="p-4 rounded-xl border border-icesilver-card hover:bg-icesilver-canvas transition block">
+          <div class="text-[11px] font-bold text-purple-700 uppercase">AI Automation</div>
+          <div class="font-bold text-sm text-aubergine mt-1">AI Lead Scoring: Train Algorithms on Real Buyers &rarr;</div>
+        </a>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-aubergine text-white pt-12 pb-8 px-4 sm:px-6 mt-16">
+    <div class="max-w-4xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6 border-b border-white/15 pb-8 text-xs text-white/75">
+      <div class="flex items-center gap-3">
+        <img src="/brand/qlarity-logo-dark.png" alt="Qlarity" class="h-7 w-auto object-contain" width="906" height="326" />
+        <span>&bull; Measure &bull; Analyse &bull; Grow</span>
+      </div>
+      <div class="flex items-center gap-5">
+        <a href="/" class="hover:text-white transition">Home</a>
+        <a href="/blog" class="hover:text-white transition">Blog</a>
+        <a href="/privacy" class="hover:text-white transition">Privacy</a>
+        <a href="/terms" class="hover:text-white transition">Terms</a>
+      </div>
+    </div>
+    <div class="max-w-4xl mx-auto pt-6 text-center text-xs text-white/50">
+      &copy; 2026 Getqlarity.online. All rights reserved.
+    </div>
+  </footer>
+
+  <!-- Demo Modal -->
+  <div id="demo-modal" role="dialog" aria-modal="true" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-aubergine-dark/70 backdrop-blur-xs">
+    <div class="bg-white rounded-2xl max-w-md w-full p-6 sm:p-8 shadow-2xl border border-icesilver-card relative">
+      <button type="button" id="close-modal-btn" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-icesilver-canvas hover:bg-icesilver-card text-aubergine flex items-center justify-center font-bold cursor-pointer">&times;</button>
+      <div id="demo-form-container">
+        <span class="text-[11px] font-semibold uppercase tracking-wider text-amber-700">Live Product Walkthrough</span>
+        <h2 class="font-serif text-2xl font-bold text-aubergine mt-1">Request Your Qlarity Demo</h2>
+        <p class="text-xs text-gray-600 mt-1.5">See how Qlarity tracks your exact CPQL across every ad account.</p>
+        <form id="demo-form" class="mt-5 space-y-4" novalidate>
+          <div>
+            <label for="lead-name" class="block text-xs font-semibold text-aubergine mb-1">Full Name *</label>
+            <input id="lead-name" name="name" type="text" required placeholder="Alex Morgan" class="w-full px-3.5 py-2.5 rounded-xl border border-icesilver-card text-sm focus:outline-none focus:border-aubergine" />
+          </div>
+          <div>
+            <label for="lead-email" class="block text-xs font-semibold text-aubergine mb-1">Work Email *</label>
+            <input id="lead-email" name="email" type="email" required placeholder="alex@growthagency.com" class="w-full px-3.5 py-2.5 rounded-xl border border-icesilver-card text-sm focus:outline-none focus:border-aubergine" />
+          </div>
+          <div>
+            <label for="lead-spend" class="block text-xs font-semibold text-aubergine mb-1">Monthly Ad Spend Managed</label>
+            <select id="lead-spend" name="spend" class="w-full px-3.5 py-2.5 rounded-xl border border-icesilver-card text-sm bg-white focus:outline-none focus:border-aubergine">
+              <option value="under-2l">Under &#8377;2,00,000 / month (or &lt; $2.5k)</option>
+              <option value="2l-10l" selected>&#8377;2,00,000 &ndash; &#8377;10,00,000 / month ($2.5k &ndash; $12k)</option>
+              <option value="10l-50l">&#8377;10,00,000 &ndash; &#8377;50,00,000 / month ($12k &ndash; $60k)</option>
+              <option value="50l-plus">&#8377;50,00,000+ / month ($60k+ Multi-Brand)</option>
+            </select>
+          </div>
+          <p id="form-error" class="hidden text-xs text-red-600 font-medium">Please enter your full name and valid work email.</p>
+          <button type="submit" class="w-full bg-marigold hover:bg-marigold-hover text-aubergine font-bold text-sm py-3 px-5 rounded-full shadow-sm transition cursor-pointer">
+            Confirm Demo Request &rarr;
+          </button>
+        </form>
+      </div>
+      <div id="demo-success-container" class="hidden text-center py-4">
+        <div class="w-12 h-12 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center mx-auto text-xl font-bold mb-3">&#10003;</div>
+        <h3 class="font-serif text-xl font-bold text-aubergine">Demo Request Received!</h3>
+        <p class="text-xs text-gray-600 mt-2">Thanks! We have sent a calendar invite for your walkthrough.</p>
+        <button type="button" id="reset-modal-btn" class="mt-5 bg-aubergine text-white text-xs font-semibold py-2.5 px-6 rounded-full hover:bg-aubergine-light transition cursor-pointer">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      var modal = document.getElementById('demo-modal');
+      var openBtns = document.querySelectorAll('[data-open-demo]');
+      var closeBtn = document.getElementById('close-modal-btn');
+      var resetBtn = document.getElementById('reset-modal-btn');
+      var demoForm = document.getElementById('demo-form');
+      var formContainer = document.getElementById('demo-form-container');
+      var successContainer = document.getElementById('demo-success-container');
+      var formError = document.getElementById('form-error');
+
+      function openModal() { if (modal) modal.classList.remove('hidden'); }
+      function closeModal() {
+        if (!modal) return;
+        modal.classList.add('hidden');
+        if (formError) formError.classList.add('hidden');
+        if (formContainer) formContainer.classList.remove('hidden');
+        if (successContainer) successContainer.classList.add('hidden');
+        if (demoForm) demoForm.reset();
+      }
+
+      openBtns.forEach(function (btn) { btn.addEventListener('click', openModal); });
+      if (closeBtn) closeBtn.addEventListener('click', closeModal);
+      if (resetBtn) resetBtn.addEventListener('click', closeModal);
+      if (modal) { modal.addEventListener('click', function(e) { if (e.target === modal) closeModal(); }); }
+
+      if (demoForm) {
+        demoForm.addEventListener('submit', function (e) {
+          e.preventDefault();
+          var name = document.getElementById('lead-name').value.trim();
+          var email = document.getElementById('lead-email').value.trim();
+          if (!name || !email || email.indexOf('@') === -1) {
+            if (formError) formError.classList.remove('hidden');
+            return;
+          }
+          if (formError) formError.classList.add('hidden');
+          if (formContainer) formContainer.classList.add('hidden');
+          if (successContainer) successContainer.classList.remove('hidden');
+        });
+      }
+    });
+  </script>
+</body>
+</html>

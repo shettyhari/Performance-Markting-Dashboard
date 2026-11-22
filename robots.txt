@@ -1,6 +1,8 @@
-# Qlarity: the marketing and legal pages are public; the dashboard and API are behind sign-in
+# Qlarity: the marketing, blog, and legal pages are public; the dashboard and API are behind sign-in
 User-agent: *
 Allow: /
+Allow: /blog
+Allow: /blog/*
 Disallow: /app
 Disallow: /api/
 Disallow: /admin

@@ -65,6 +65,14 @@
       "destination": "/terms.html"
     },
     {
+      "source": "/blog",
+      "destination": "/blog.html"
+    },
+    {
+      "source": "/blog/(.*)",
+      "destination": "/blog/$1.html"
+    },
+    {
       "source": "/admin",
       "destination": "/admin.html"
     }

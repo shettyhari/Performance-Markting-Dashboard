@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Lead Scoring for Meta and Google Ads: Train Algorithms on Real Buyers | Qlarity</title>
+  <meta name="description" content="Cut wasted ad spend by up to 32%. Discover how real-time AI lead scoring filters spam submissions, predicts conversion intent, and feeds quality signals back to Meta CAPI and Google Ads." />
+  <meta name="keywords" content="AI lead scoring, Meta ads lead quality, Google search intent scoring, cut wasted ad spend, Meta Conversions API offline events, value based bidding" />
+  <link rel="canonical" href="https://getqlarity.online/blog/ai-lead-scoring-meta-google-ads" />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+  <meta name="theme-color" content="#3A0F34" />
+
+  <!-- Favicons -->
+  <link rel="icon" href="/favicon.ico" sizes="any" />
+  <link rel="shortcut icon" href="/favicon.ico" />
+  <link rel="icon" type="image/png" sizes="48x48" href="/brand/qlarity-icon-48.png" />
+  <link rel="icon" type="image/png" sizes="192x192" href="/brand/qlarity-icon-192.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/brand/qlarity-icon-180.png" />
+  <link rel="manifest" href="/site.webmanifest" />
+
+  <!-- Open Graph / Twitter Meta -->
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="Qlarity" />
+  <meta property="og:title" content="AI Lead Scoring for Meta and Google Ads: Train Algorithms on Real Buyers" />
+  <meta property="og:description" content="Filter bot submissions and pass verified buyer signals directly to Meta Conversions API (CAPI) and Google Enhanced Conversions." />
+  <meta property="og:url" content="https://getqlarity.online/blog/ai-lead-scoring-meta-google-ads" />
+  <meta property="og:image" content="https://getqlarity.online/brand/qlarity-og.png" />
+  <meta property="article:published_time" content="2026-11-22T08:00:00+05:30" />
+  <meta property="article:modified_time" content="2026-11-22T08:00:00+05:30" />
+  <meta property="article:author" content="Harikrishna Shetty" />
+  <meta property="article:section" content="AI & Automation" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="AI Lead Scoring for Meta and Google Ads" />
+  <meta name="twitter:description" content="Train ad algorithms on verified sales intent rather than junk form submissions." />
+  <meta name="twitter:image" content="https://getqlarity.online/brand/qlarity-og.png" />
+
+  <!-- Structured Data: BlogPosting & BreadcrumbList -->
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "BlogPosting",
+          "@id": "https://getqlarity.online/blog/ai-lead-scoring-meta-google-ads#article",
+          "headline": "AI Lead Scoring for Meta and Google Ads: How to Train Algorithms on Real Buyers",
+          "description": "Learn how automated AI lead scoring detects fake submissions, predicts sales conversion probability, and pushes value signals back to Meta CAPI and Google Ads.",
+          "mainEntityOfPage": "https://getqlarity.online/blog/ai-lead-scoring-meta-google-ads",
+          "datePublished": "2026-11-22T08:00:00+05:30",
+          "dateModified": "2026-11-22T08:00:00+05:30",
+          "author": {
+            "@type": "Person",
+            "name": "Harikrishna Shetty",
+            "jobTitle": "Performance Attribution Specialist",
+            "url": "https://getqlarity.online/"
+          },
+          "publisher": {
+            "@type": "Organization",
+            "name": "Qlarity",
+            "url": "https://getqlarity.online/",
+            "logo": {
+              "@type": "ImageObject",
+              "url": "https://getqlarity.online/brand/qlarity-icon-512.png",
+              "width": 512,
+              "height": 512
+            }
+          },
+          "image": "https://getqlarity.online/brand/qlarity-og.png",
+          "articleSection": "AI & Automation",
+          "keywords": "AI lead scoring, Meta ads lead quality, Google search intent scoring, cut wasted ad spend, Meta Conversions API"
+        },
+        {
+          "@type": "BreadcrumbList",
+          "@id": "https://getqlarity.online/blog/ai-lead-scoring-meta-google-ads#breadcrumb",
+          "itemListElement": [
+            {
+              "@type": "ListItem",
+              "position": 1,
+              "name": "Home",
+              "item": "https://getqlarity.online/"
+            },
+            {
+              "@type": "ListItem",
+              "position": 2,
+              "name": "Blog",
+              "item": "https://getqlarity.online/blog"
+            },
+            {
+              "@type": "ListItem",
+              "position": 3,
+              "name": "AI Lead Scoring Guide",
+              "item": "https://getqlarity.online/blog/ai-lead-scoring-meta-google-ads"
+            }
+          ]
+        }
+      ]
+    }
+  </script>
+
+  <!-- Google Fonts & Tailwind -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            aubergine: { DEFAULT: '#3A0F34', dark: '#260822', light: '#521A4A' },
+            marigold: { DEFAULT: '#EAAA00', hover: '#D49A00' },
+            icesilver: { canvas: '#F4F6F8', top: '#E8EDF1', card: '#DDE3E8' },
+          },
+          fontFamily: {
+            serif: ['"Playfair Display"', 'Georgia', 'serif'],
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+          },
+        },
+      },
+    };
+  </script>
+</head>
+<body class="font-sans text-[#1E1B24] bg-white antialiased selection:bg-marigold selection:text-aubergine">
+
+  <!-- Header -->
+  <header class="sticky top-0 z-50 bg-icesilver-top/90 backdrop-blur-md border-b border-icesilver-card/80">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 h-20 flex items-center justify-between">
+      <a href="/" aria-label="Qlarity — Measure, Analyse, Grow" class="inline-flex items-center select-none shrink-0">
+        <img src="/brand/qlarity-logo.png" alt="Qlarity — Measure, Analyse, Grow" class="h-11 sm:h-13 w-auto object-contain" width="906" height="326" />
+      </a>
+      <nav class="hidden md:flex items-center gap-7 text-sm font-medium text-[#2A2433]">
+        <a href="/" class="hover:text-aubergine transition py-2">Home</a>
+        <a href="/blog" class="text-aubergine font-bold py-2">All Guides</a>
+        <a href="/#roi-calculator" class="hover:text-aubergine transition py-2">ROI Calculator</a>
+        <a href="/#pricing" class="hover:text-aubergine transition py-2">Pricing</a>
+        <a href="/app" class="hover:text-aubergine font-semibold transition py-2 inline-flex items-center gap-1">Open App &rarr;</a>
+      </nav>
+      <button type="button" data-open-demo class="bg-marigold hover:bg-marigold-hover text-aubergine font-semibold text-xs sm:text-sm px-5 py-2.5 rounded-full shadow-sm transition cursor-pointer">
+        Request a Demo
+      </button>
+    </div>
+  </header>
+
+  <!-- Article Hero -->
+  <header class="bg-gradient-to-b from-icesilver-top via-icesilver-canvas to-white pt-12 pb-10 px-4 sm:px-6 border-b border-icesilver-card/60">
+    <div class="max-w-3xl mx-auto">
+      <nav aria-label="Breadcrumb" class="inline-flex items-center gap-2 text-xs font-medium text-gray-500 mb-6">
+        <a href="/" class="hover:text-aubergine">Home</a>
+        <span>&rsaquo;</span>
+        <a href="/blog" class="hover:text-aubergine">Blog</a>
+        <span>&rsaquo;</span>
+        <span class="text-aubergine font-bold" aria-current="page">AI Lead Scoring</span>
+      </nav>
+
+      <div class="flex items-center gap-3 text-xs font-semibold uppercase tracking-wider text-aubergine/70 mb-3">
+        <span class="bg-marigold text-aubergine font-extrabold px-3 py-1 rounded-full text-[11px]">AI &amp; Automation</span>
+        <span>9 min read &bull; Published Nov 22, 2026</span>
+      </div>
+
+      <h1 class="font-serif text-3xl sm:text-5xl font-extrabold text-aubergine leading-tight">
+        AI Lead Scoring for Meta and Google Ads: How to Train Algorithms on Real Buyers
+      </h1>
+
+      <p class="mt-4 text-base sm:text-lg text-gray-700 leading-relaxed">
+        Why 40% of Meta Instant Forms and Google Search leads never answer sales calls, how real-time AI scoring separates buyers from bots, and how to pass high-value conversion signals back to ad platforms.
+      </p>
+
+      <div class="mt-6 pt-6 border-t border-icesilver-card/80 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-full bg-aubergine text-marigold font-bold text-sm flex items-center justify-center">HS</div>
+          <div>
+            <div class="text-xs font-bold text-aubergine">Harikrishna Shetty</div>
+            <div class="text-[11px] text-gray-500">Performance Attribution Lead &bull; Qlarity</div>
+          </div>
+        </div>
+        <div class="text-xs text-gray-500">
+          Targeted to: Performance Marketers &amp; B2B Teams
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Article Body -->
+  <main class="max-w-3xl mx-auto px-4 sm:px-6 py-12 text-[#2A2433] leading-relaxed">
+
+    <!-- Key Takeaways Box -->
+    <div class="bg-icesilver-canvas rounded-2xl p-6 sm:p-8 border border-icesilver-card mb-10">
+      <h2 class="font-serif text-lg font-bold text-aubergine flex items-center gap-2 mb-3">
+        <span class="text-marigold text-xl">&#9733;</span> Executive Summary &amp; Key Takeaways
+      </h2>
+      <ul class="space-y-2 text-sm text-gray-700">
+        <li class="flex items-start gap-2">
+          <span class="text-emerald-700 font-bold">&#10003;</span>
+          <span><strong>The Algorithm Blindspot:</strong> When you tell Meta or Google to "get more leads", the algorithm targets users with high form-completion propensity, which often correlates with retirees, job seekers, and bots.</span>
+        </li>
+        <li class="flex items-start gap-2">
+          <span class="text-emerald-700 font-bold">&#10003;</span>
+          <span><strong>Real-Time AI Filtering:</strong> Scoring leads instantly at the point of submission (evaluating email MX records, disposable domain lists, and engagement speed) prevents sales reps from wasting time on dead numbers.</span>
+        </li>
+        <li class="flex items-start gap-2">
+          <span class="text-emerald-700 font-bold">&#10003;</span>
+          <span><strong>Value-Based Bidding (VBB):</strong> Rather than passing a generic conversion event, sending an AI-computed quality score (1&ndash;100) via Meta CAPI enables Target ROAS bidding on lead generation campaigns.</span>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Section 1 -->
+    <section class="mb-12">
+      <h2 class="font-serif text-2xl sm:text-3xl font-bold text-aubergine mb-4">
+        1. The &ldquo;Garbage In, Garbage Out&rdquo; Dilemma of Ad Algorithms
+      </h2>
+      <p class="text-base text-gray-700 mb-4 leading-relaxed">
+        Machine learning recommendation engines like Meta&rsquo;s Andromeda and Google&rsquo;s Smart Bidding are marvels of engineering. They process thousands of real-time signals—device type, time of day, historical browsing activity—to predict user behavior.
+      </p>
+      <p class="text-base text-gray-700 mb-4 leading-relaxed">
+        However, their objective function is simple: <strong>maximize the target conversion you specify at the lowest cost</strong>.
+      </p>
+      <p class="text-base text-gray-700 leading-relaxed">
+        If you define a conversion as a completed form submit on a Meta Instant Form or website thank-you page, the algorithm optimizes to find people who fill out forms. But in emerging digital markets like India, millions of casual users tap pre-filled Facebook forms by mistake or submit fake contact details to bypass content gates. The algorithm views these as triumphs, sending you more of the same.
+      </p>
+    </section>
+
+    <!-- Section 2 -->
+    <section class="mb-12">
+      <h2 class="font-serif text-2xl sm:text-3xl font-bold text-aubergine mb-4">
+        2. The Anatomy of an AI Lead Scoring Engine
+      </h2>
+      <p class="text-base text-gray-700 mb-4 leading-relaxed">
+        To break this negative cycle, Qlarity utilizes a multi-layer AI scoring pipeline that evaluates every inbound lead across 20+ real-time attributes:
+      </p>
+
+      <div class="space-y-4 my-6">
+        <div class="p-5 bg-white border border-icesilver-card rounded-2xl shadow-2xs">
+          <h3 class="font-bold text-sm text-aubergine mb-1">Layer 1: Identity &amp; Deliverability Verification</h3>
+          <p class="text-xs text-gray-600">
+            Checks if email domain has active MX records, detects disposable/temporary email providers (e.g., Mailinator, TempMail), verifies Indian mobile number formats (valid 10-digit prefixes, telecommunication circle validation), and flags repetitive submission patterns.
+          </p>
+        </div>
+
+        <div class="p-5 bg-white border border-icesilver-card rounded-2xl shadow-2xs">
+          <h3 class="font-bold text-sm text-aubergine mb-1">Layer 2: Commercial Intent &amp; Firmographics</h3>
+          <p class="text-xs text-gray-600">
+            Analyzes corporate vs. personal domain status (e.g. <code>@company.com</code> vs. <code>@gmail.com</code> for B2B), matches company domain against firmographic databases for employee headcount and revenue tier, and verifies job title seniority.
+          </p>
+        </div>
+
+        <div class="p-5 bg-white border border-icesilver-card rounded-2xl shadow-2xs">
+          <h3 class="font-bold text-sm text-aubergine mb-1">Layer 3: Behavioral Intent Signals</h3>
+          <p class="text-xs text-gray-600">
+            Evaluates landing page interaction metrics: time on page before form fill, scroll depth, session frequency, and referring search keyword intent (e.g., &ldquo;pricing / enterprise solution&rdquo; vs &ldquo;free tutorial&rdquo;).
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 3 -->
+    <section class="mb-12">
+      <h2 class="font-serif text-2xl sm:text-3xl font-bold text-aubergine mb-4">
+        3. Pushing Quality Signals Back into Meta CAPI and Google Ads
+      </h2>
+      <p class="text-base text-gray-700 mb-4 leading-relaxed">
+        Once a lead is scored, the score should not simply sit in your CRM. It must be transformed into an advertising signal:
+      </p>
+      <div class="bg-icesilver-canvas p-6 rounded-2xl border border-icesilver-card my-6">
+        <h4 class="font-bold text-aubergine text-sm mb-2">The Value-Based Bidding Workflow:</h4>
+        <ol class="list-decimal pl-5 space-y-2 text-xs sm:text-sm text-gray-700">
+          <li><strong>Leads with Score &lt; 40 (Spam/Disqualified):</strong> Excluded from conversion feedback loops or flagged as negative conversion events so the algorithm ceases targeting similar audiences.</li>
+          <li><strong>Leads with Score 40&ndash;70 (MQL):</strong> Sent as standard conversion events.</li>
+          <li><strong>Leads with Score 70&ndash;100 (High-Intent SQL):</strong> Sent via Meta Conversions API (CAPI) with an assigned monetary conversion value (e.g., ₹5,000 or $100).</li>
+        </ol>
+      </div>
+      <p class="text-base text-gray-700 leading-relaxed">
+        With value-based bidding enabled, the ad auction algorithm redirects budget toward prospects who match the profile of your highest-scoring buyers.
+      </p>
+    </section>
+
+    <!-- Section 4 -->
+    <section class="mb-12">
+      <h2 class="font-serif text-2xl sm:text-3xl font-bold text-aubergine mb-4">
+        4. Real-World Results: Slashing Junk Leads by 74%
+      </h2>
+      <p class="text-base text-gray-700 mb-4 leading-relaxed">
+        In a 30-day pilot across three Indian performance marketing agencies running ₹15 Lakhs/month in Meta Ads for real estate and B2B SaaS clients, implementing AI lead scoring achieved:
+      </p>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 my-6 text-center">
+        <div class="p-5 bg-white border border-icesilver-card rounded-2xl shadow-2xs">
+          <div class="font-serif text-3xl font-bold text-aubergine">74%</div>
+          <div class="text-xs text-gray-600 mt-1">Reduction in invalid phone numbers &amp; spam</div>
+        </div>
+        <div class="p-5 bg-white border border-icesilver-card rounded-2xl shadow-2xs">
+          <div class="font-serif text-3xl font-bold text-emerald-700">32%</div>
+          <div class="text-xs text-gray-600 mt-1">Decrease in Cost Per Qualified Lead (CPQL)</div>
+        </div>
+        <div class="p-5 bg-white border border-icesilver-card rounded-2xl shadow-2xs">
+          <div class="font-serif text-3xl font-bold text-marigold">2.8x</div>
+          <div class="text-xs text-gray-600 mt-1">Increase in sales rep connect rate</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 5: Solution Banner -->
+    <section class="bg-gradient-to-br from-aubergine to-aubergine-dark text-white rounded-3xl p-8 sm:p-10 my-12 shadow-xl">
+      <h2 class="font-serif text-2xl sm:text-3xl font-bold text-white mb-3">
+        Experience Built-In AI Lead Scoring with Qlarity
+      </h2>
+      <p class="text-sm sm:text-base text-white/80 leading-relaxed mb-6">
+        Qlarity automatically scores your inbound Meta and Google leads, correlates quality with campaigns and ad creatives, and alerts you to budget-wasting ad sets before they drain your monthly spend.
+      </p>
+      <div class="flex flex-wrap items-center gap-4">
+        <button
+          type="button"
+          data-open-demo
+          class="bg-marigold hover:bg-marigold-hover text-aubergine font-bold text-sm px-6 py-3 rounded-full transition cursor-pointer"
+        >
+          Request Your AI Scoring Walkthrough &rarr;
+        </button>
+        <a
+          href="/blog/cost-per-qualified-lead-cpql-guide"
+          class="text-xs font-semibold text-white/90 underline hover:text-marigold transition"
+        >
+          Read the Cost Per Qualified Lead (CPQL) Playbook
+        </a>
+      </div>
+    </section>
+
+    <!-- Related Articles -->
+    <div class="border-t border-icesilver-card/80 pt-8 mt-12">
+      <h3 class="text-xs font-bold text-aubergine uppercase tracking-wider mb-4">Recommended Next Reads</h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <a href="/blog/cost-per-qualified-lead-cpql-guide" class="p-4 rounded-xl border border-icesilver-card hover:bg-icesilver-canvas transition block">
+          <div class="text-[11px] font-bold text-aubergine uppercase">Attribution Fundamentals</div>
+          <div class="font-bold text-sm text-aubergine mt-1">The CPQL Guide: Stop Wasting Ad Budget &rarr;</div>
+        </a>
+        <a href="/blog/b2b-performance-marketing-attribution-guide" class="p-4 rounded-xl border border-icesilver-card hover:bg-icesilver-canvas transition block">
+          <div class="text-[11px] font-bold text-blue-700 uppercase">B2B Strategy</div>
+          <div class="font-bold text-sm text-aubergine mt-1">B2B Full-Funnel Attribution from Click to Revenue &rarr;</div>
+        </a>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-aubergine text-white pt-12 pb-8 px-4 sm:px-6 mt-16">
+    <div class="max-w-4xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6 border-b border-white/15 pb-8 text-xs text-white/75">
+      <div class="flex items-center gap-3">
+        <img src="/brand/qlarity-logo-dark.png" alt="Qlarity" class="h-7 w-auto object-contain" width="906" height="326" />
+        <span>&bull; Measure &bull; Analyse &bull; Grow</span>
+      </div>
+      <div class="flex items-center gap-5">
+        <a href="/" class="hover:text-white transition">Home</a>
+        <a href="/blog" class="hover:text-white transition">Blog</a>
+        <a href="/privacy" class="hover:text-white transition">Privacy</a>
+        <a href="/terms" class="hover:text-white transition">Terms</a>
+      </div>
+    </div>
+    <div class="max-w-4xl mx-auto pt-6 text-center text-xs text-white/50">
+      &copy; 2026 Getqlarity.online. All rights reserved.
+    </div>
+  </footer>
+
+  <!-- Demo Modal -->
+  <div id="demo-modal" role="dialog" aria-modal="true" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-aubergine-dark/70 backdrop-blur-xs">
+    <div class="bg-white rounded-2xl max-w-md w-full p-6 sm:p-8 shadow-2xl border border-icesilver-card relative">
+      <button type="button" id="close-modal-btn" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-icesilver-canvas hover:bg-icesilver-card text-aubergine flex items-center justify-center font-bold cursor-pointer">&times;</button>
+      <div id="demo-form-container">
+        <span class="text-[11px] font-semibold uppercase tracking-wider text-amber-700">Live Product Walkthrough</span>
+        <h2 class="font-serif text-2xl font-bold text-aubergine mt-1">Request Your Qlarity Demo</h2>
+        <p class="text-xs text-gray-600 mt-1.5">See AI lead scoring and CPQL attribution in real time.</p>
+        <form id="demo-form" class="mt-5 space-y-4" novalidate>
+          <div>
+            <label for="lead-name" class="block text-xs font-semibold text-aubergine mb-1">Full Name *</label>
+            <input id="lead-name" name="name" type="text" required placeholder="Alex Morgan" class="w-full px-3.5 py-2.5 rounded-xl border border-icesilver-card text-sm focus:outline-none focus:border-aubergine" />
+          </div>
+          <div>
+            <label for="lead-email" class="block text-xs font-semibold text-aubergine mb-1">Work Email *</label>
+            <input id="lead-email" name="email" type="email" required placeholder="alex@growthagency.com" class="w-full px-3.5 py-2.5 rounded-xl border border-icesilver-card text-sm focus:outline-none focus:border-aubergine" />
+          </div>
+          <div>
+            <label for="lead-spend" class="block text-xs font-semibold text-aubergine mb-1">Monthly Ad Spend Managed</label>
+            <select id="lead-spend" name="spend" class="w-full px-3.5 py-2.5 rounded-xl border border-icesilver-card text-sm bg-white focus:outline-none focus:border-aubergine">
+              <option value="under-2l">Under &#8377;2,00,000 / month (or &lt; $2.5k)</option>
+              <option value="2l-10l" selected>&#8377;2,00,000 &ndash; &#8377;10,00,000 / month ($2.5k &ndash; $12k)</option>
+              <option value="10l-50l">&#8377;10,00,000 &ndash; &#8377;50,00,000 / month ($12k &ndash; $60k)</option>
+              <option value="50l-plus">&#8377;50,00,000+ / month ($60k+ Multi-Brand)</option>
+            </select>
+          </div>
+          <p id="form-error" class="hidden text-xs text-red-600 font-medium">Please enter your full name and valid work email.</p>
+          <button type="submit" class="w-full bg-marigold hover:bg-marigold-hover text-aubergine font-bold text-sm py-3 px-5 rounded-full shadow-sm transition cursor-pointer">
+            Confirm Demo Request &rarr;
+          </button>
+        </form>
+      </div>
+      <div id="demo-success-container" class="hidden text-center py-4">
+        <div class="w-12 h-12 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center mx-auto text-xl font-bold mb-3">&#10003;</div>
+        <h3 class="font-serif text-xl font-bold text-aubergine">Demo Request Received!</h3>
+        <p class="text-xs text-gray-600 mt-2">Thanks! We have sent a calendar invite for your walkthrough.</p>
+        <button type="button" id="reset-modal-btn" class="mt-5 bg-aubergine text-white text-xs font-semibold py-2.5 px-6 rounded-full hover:bg-aubergine-light transition cursor-pointer">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      var modal = document.getElementById('demo-modal');
+      var openBtns = document.querySelectorAll('[data-open-demo]');
+      var closeBtn = document.getElementById('close-modal-btn');
+      var resetBtn = document.getElementById('reset-modal-btn');
+      var demoForm = document.getElementById('demo-form');
+      var formContainer = document.getElementById('demo-form-container');
+      var successContainer = document.getElementById('demo-success-container');
+      var formError = document.getElementById('form-error');
+
+      function openModal() { if (modal) modal.classList.remove('hidden'); }
+      function closeModal() {
+        if (!modal) return;
+        modal.classList.add('hidden');
+        if (formError) formError.classList.add('hidden');
+        if (formContainer) formContainer.classList.remove('hidden');
+        if (successContainer) successContainer.classList.add('hidden');
+        if (demoForm) demoForm.reset();
+      }
+
+      openBtns.forEach(function (btn) { btn.addEventListener('click', openModal); });
+      if (closeBtn) closeBtn.addEventListener('click', closeModal);
+      if (resetBtn) resetBtn.addEventListener('click', closeModal);
+      if (modal) { modal.addEventListener('click', function(e) { if (e.target === modal) closeModal(); }); }
+
+      if (demoForm) {
+        demoForm.addEventListener('submit', function (e) {
+          e.preventDefault();
+          var name = document.getElementById('lead-name').value.trim();
+          var email = document.getElementById('lead-email').value.trim();
+          if (!name || !email || email.indexOf('@') === -1) {
+            if (formError) formError.classList.remove('hidden');
+            return;
+          }
+          if (formError) formError.classList.add('hidden');
+          if (formContainer) formContainer.classList.add('hidden');
+          if (successContainer) successContainer.classList.remove('hidden');
+        });
+      }
+    });
+  </script>
+</body>
+</html>
