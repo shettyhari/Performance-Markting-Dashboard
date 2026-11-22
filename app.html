@@ -1261,7 +1261,7 @@ tr.total-bottom td{position:static!important;background:var(--accent-soft)!impor
         <div class="field meta-brand-pick"><label for="meta-brand">1. Which brand is this Meta report for?</label><select id="meta-brand"></select></div>
         <label class="drop" id="drop-meta" for="file-meta">
           <span class="eyebrow">2. Meta Ads report(s) · brand-wise</span>
-          <h3>Meta Ads exports</h3>
+          <h3 style="display:flex;align-items:center;gap:6px"><svg viewBox="0 0 24 24" width="18" height="18" style="vertical-align:middle;display:inline-block;flex:none" fill="#0081FB" aria-hidden="true"><path d="M6.915 4.03c-2.19 0-4.043 1.03-5.27 2.68C.54 8.21 0 10.15 0 12.18c0 2.07.56 4.02 1.68 5.48 1.25 1.63 3.11 2.64 5.235 2.64 2.08 0 3.82-.93 5.085-2.52 1.265 1.59 3.005 2.52 5.085 2.52 2.125 0 3.985-1.01 5.235-2.64 1.12-1.46 1.68-3.41 1.68-5.48 0-2.03-.54-3.97-1.645-5.47-1.227-1.65-3.08-2.68-5.27-2.68-2.18 0-3.945 1.03-5.085 2.62-1.14-1.59-2.905-2.62-5.085-2.62zm-.05 2.45c1.47 0 2.795.84 3.665 2.27.87 1.43 1.47 3.32 1.47 5.43 0 .04 0 .08-.005.12-.045 2.11-.645 4-1.515 5.43-.87 1.43-2.195 2.27-3.665 2.27-1.39 0-2.61-.71-3.455-1.92C2.52 18.84 2.1 17.15 2.1 15.35c0-1.8.42-3.49 1.26-4.7 1.005-1.44 2.28-2.17 3.505-2.17zm10.27 0c1.225 0 2.5.73 3.505 2.17.84 1.21 1.26 2.9 1.26 4.7 0 1.8-.42 3.49-1.26 4.7-.845 1.21-2.065 1.92-3.455 1.92-1.47 0-2.795-.84-3.665-2.27-.87-1.43-1.47-3.32-1.515-5.43 0-.04-.005-.08-.005-.12 0-2.11.6-4 1.47-5.43.87-1.43 2.195-2.27 3.665-2.27z"/></svg>Meta Ads exports</h3>
           <span class="meta">Pick the brand above, then add that brand's report. Repeat for each brand; files are combined. Any column layout: the page finds Campaign, Ad set, Ad, Amount spent, Results (or Leads) and dates by name. Add Breakdown › By time › Day to filter spend by date. CSV or XLSX.</span>
           <span class="state" id="st-meta"></span><span class="err" id="er-meta"></span>
           <input type="file" id="file-meta" accept=".csv,.xlsx,.xls,.txt" multiple hidden>
@@ -4529,8 +4529,9 @@ function connStatusCard(){
   if (sb.status === "ready" && !sb.histAsked){ sb.histAsked = true; dbRefreshLists().then(function(){ if (state.tab === "settings") render(); }).catch(function(){}); }
   var ups = sb.uploads || [], S = state.settings, W = (state.prov || {}).meta || {};
   var tile = function(o){
+    var ic = o.target === "meta-panel" ? iconMeta(16) : o.target === "gads-panel" ? iconGoogle(16) : null;
     return el("div", {cls: "conn-tile conn-" + o.kind},
-      el("div", {cls: "conn-top"}, el("span", {cls: "conn-dot", "aria-hidden": "true"}), el("b", {text: o.name}), el("span", {cls: "pill " + ({ok: "good", late: "warn", off: "mut", err: "bad"}[o.kind]), text: o.state})),
+      el("div", {cls: "conn-top"}, el("span", {cls: "conn-dot", "aria-hidden": "true"}), ic ? el("span", {style: "display:inline-flex;align-items:center;margin-right:6px"}, ic) : null, el("b", {text: o.name}), el("span", {cls: "pill " + ({ok: "good", late: "warn", off: "mut", err: "bad"}[o.kind]), text: o.state})),
       el("div", {cls: "conn-main", text: o.main}),
       o.lines.length ? el("ul", {cls: "conn-lines"}, o.lines.map(function(l){ return el("li", {text: l}); })) : null,
       o.err ? el("div", {cls: "msg err", text: o.err}) : null,
@@ -5217,6 +5218,21 @@ var PAL = ["var(--c1)", "var(--c2)", "var(--c3)", "var(--c4)", "var(--c5)", "var
 function brandColor(b){ var i = (state.settings.brands || []).indexOf(b); return i < 0 ? "var(--c8)" : PAL[i % PAL.length]; }
 function monogram(b){ var w = String(b || "?").replace(/&/g, " ").replace(/\bby\b/gi, " ").trim().split(/\s+/);
   return (w.length > 1 ? w[0][0] + w[w.length - 1][0] : w[0].slice(0, 2)).toUpperCase(); }
+function iconMeta(sz){ sz = sz || 16;
+  var s = sv("svg", {viewBox: "0 0 24 24", width: sz, height: sz, "class": "plat-icon", "aria-hidden": "true", style: "flex:none;vertical-align:middle;display:inline-block"});
+  s.appendChild(sv("path", {d: "M6.915 4.03c-2.19 0-4.043 1.03-5.27 2.68C.54 8.21 0 10.15 0 12.18c0 2.07.56 4.02 1.68 5.48 1.25 1.63 3.11 2.64 5.235 2.64 2.08 0 3.82-.93 5.085-2.52 1.265 1.59 3.005 2.52 5.085 2.52 2.125 0 3.985-1.01 5.235-2.64 1.12-1.46 1.68-3.41 1.68-5.48 0-2.03-.54-3.97-1.645-5.47-1.227-1.65-3.08-2.68-5.27-2.68-2.18 0-3.945 1.03-5.085 2.62-1.14-1.59-2.905-2.62-5.085-2.62zm-.05 2.45c1.47 0 2.795.84 3.665 2.27.87 1.43 1.47 3.32 1.47 5.43 0 .04 0 .08-.005.12-.045 2.11-.645 4-1.515 5.43-.87 1.43-2.195 2.27-3.665 2.27-1.39 0-2.61-.71-3.455-1.92C2.52 18.84 2.1 17.15 2.1 15.35c0-1.8.42-3.49 1.26-4.7 1.005-1.44 2.28-2.17 3.505-2.17zm10.27 0c1.225 0 2.5.73 3.505 2.17.84 1.21 1.26 2.9 1.26 4.7 0 1.8-.42 3.49-1.26 4.7-.845 1.21-2.065 1.92-3.455 1.92-1.47 0-2.795-.84-3.665-2.27-.87-1.43-1.47-3.32-1.515-5.43 0-.04-.005-.08-.005-.12 0-2.11.6-4 1.47-5.43.87-1.43 2.195-2.27 3.665-2.27z", fill: "#0081FB"}));
+  return s; }
+function iconGoogle(sz){ sz = sz || 16;
+  var s = sv("svg", {viewBox: "0 0 24 24", width: sz, height: sz, "class": "plat-icon", "aria-hidden": "true", style: "flex:none;vertical-align:middle;display:inline-block"});
+  s.appendChild(sv("path", {d: "M3.714 15.656l6.85-11.865a2.723 2.723 0 013.72-.997l.117.068a2.723 2.723 0 01.996 3.72l-6.85 11.865a2.723 2.723 0 01-3.72.997l-.117-.068a2.723 2.723 0 01-.996-3.72z", fill: "#FBBC04"}));
+  s.appendChild(sv("path", {d: "M20.286 15.656a2.723 2.723 0 01-.996 3.72l-.117.068a2.723 2.723 0 01-3.72-.997l-6.85-11.865a2.723 2.723 0 01.996-3.72l.117-.068a2.723 2.723 0 013.72.997l6.85 11.865z", fill: "#4285F4"}));
+  s.appendChild(sv("circle", {cx: "5.625", cy: "18.969", r: "2.72", fill: "#34A853"}));
+  return s; }
+function iconLinkedIn(sz){ sz = sz || 16;
+  var s = sv("svg", {viewBox: "0 0 24 24", width: sz, height: sz, "class": "plat-icon", "aria-hidden": "true", style: "flex:none;vertical-align:middle;display:inline-block"});
+  s.appendChild(sv("rect", {width: "24", height: "24", rx: "4", fill: "#0A66C2"}));
+  s.appendChild(sv("path", {d: "M7.1 9.5H4.8V17H7.1V9.5ZM5.95 8.4C6.75 8.4 7.3 7.85 7.3 7.15C7.3 6.45 6.75 5.9 5.95 5.9C5.15 5.9 4.6 6.45 4.6 7.15C4.6 7.85 5.15 8.4 5.95 8.4ZM18.5 17H16.2V13.3C16.2 12.4 15.85 11.8 15.05 11.8C14.45 11.8 14.1 12.2 13.95 12.6C13.9 12.75 13.9 12.95 13.9 13.15V17H11.6C11.6 17 11.6 10.3 11.6 9.5H13.9V10.6C14.2 10.15 14.75 9.4 16.05 9.4C17.55 9.4 18.5 10.4 18.5 12.5V17Z", fill: "#FFFFFF"}));
+  return s; }
 
 /* charts drawn after the view is in the page (they need its width); redrawn on resize */
 var DRAWS = [];
@@ -5565,7 +5581,7 @@ document.getElementById("btn-menu").addEventListener("click", function(){
 document.getElementById("scrim").addEventListener("click", function(){ document.body.classList.remove("nav-open"); });
 document.getElementById("tablist").addEventListener("click", function(){ document.body.classList.remove("nav-open"); });
 
-/* ================= Google Analytics–style snapshot: metric tabs over one line chart ================= */
+/* ================= Performance Snapshot: metric tabs over one line chart ================= */
 function prevDaily(){
   var pr = prevRangeOf(rangeOf(state.range)); if (!pr || !state.Rprev) return null;
   var sR = state.R, sRange = state.range, out = null;
@@ -5684,7 +5700,7 @@ function renderHeader(){
   if (sb.cfg && sb.status === "ready" && state.source === "db"){
     var psel = el("select", {id: "plat-select", "aria-label": "Ad platform"}, [["meta", "Meta Ads"], ["google", "Google Ads"]].map(function(x){ return el("option", {value: x[0], selected: (state.platform || "meta") === x[0] ? true : null, text: x[1]}); }));
     psel.addEventListener("change", function(){ setPlatform(psel.value); });
-    chips.appendChild(el("label", {cls: "brand-pick plat-pick"}, el("span", {cls: "bp-dot", style: "background:" + (isGoogle() ? "#1a73e8" : "#0866ff"), "aria-hidden": "true"}), el("span", {cls: "bp-lbl", text: "Platform"}), psel)); }
+    chips.appendChild(el("label", {cls: "brand-pick plat-pick"}, isGoogle() ? iconGoogle(16) : iconMeta(16), el("span", {cls: "bp-lbl", text: "Platform"}), psel)); }
   chips.appendChild(el("label", {cls: "brand-pick"}, el("span", {cls: "bp-dot", style: "background:" + (state.brand === "All" ? "linear-gradient(135deg,#1e3a8a,#7c3aed)" : brandColor(state.brand)), "aria-hidden": "true"}),
     el("span", {cls: "bp-lbl", text: "Brand"}), bsel));
   document.body.classList.toggle("plat-google", isGoogle());

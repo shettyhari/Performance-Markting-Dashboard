@@ -1029,7 +1029,7 @@
     var buildCard = el("div", {cls: "group set-card", style: "padding:20px;margin-bottom:18px"});
     buildCard.appendChild(el("h3", {text: "1-Click Dynamic UTM Generator"}));
     buildCard.appendChild(el("p", {cls: "small", style: "color:var(--muted);margin:4px 0 14px"},
-      "Choose your advertising platform. Dynamic macros automatically pass campaign name, ad set name, and creative name into Google Analytics and CRM."));
+      "Choose your advertising platform. Dynamic macros automatically pass campaign name, ad set name, and creative name into ad attribution tracking and CRM."));
 
     // Platform Presets
     var platRow = el("div", {style: "display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px"});
