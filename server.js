@@ -39,6 +39,11 @@ const MIME = {
 const REWRITES = {
   "/": "/index.html",
   "/app": "/app.html",
+  "/features": "/features.html",
+  "/how-it-works": "/how-it-works.html",
+  "/integrations": "/integrations.html",
+  "/roi-calculator": "/roi-calculator.html",
+  "/pricing": "/pricing.html",
   "/admin": "/admin.html",
   "/privacy": "/privacy.html",
   "/terms": "/terms.html",
@@ -54,7 +59,7 @@ const server = http.createServer((req, res) => {
   // Rewrites
   if (REWRITES[pathname]) {
     pathname = REWRITES[pathname];
-  } else if (pathname.startsWith("/blog/") && !pathname.endsWith(".html")) {
+  } else if (!pathname.endsWith(".html")) {
     const candidate = path.join(__dirname, pathname + ".html");
     if (fs.existsSync(candidate)) {
       pathname = pathname + ".html";

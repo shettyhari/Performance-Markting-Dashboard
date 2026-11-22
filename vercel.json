@@ -37,6 +37,26 @@
       "destination": "/app.html"
     },
     {
+      "source": "/features",
+      "destination": "/features.html"
+    },
+    {
+      "source": "/how-it-works",
+      "destination": "/how-it-works.html"
+    },
+    {
+      "source": "/integrations",
+      "destination": "/integrations.html"
+    },
+    {
+      "source": "/roi-calculator",
+      "destination": "/roi-calculator.html"
+    },
+    {
+      "source": "/pricing",
+      "destination": "/pricing.html"
+    },
+    {
       "source": "/api/crm-push",
       "destination": "/api/crm?op=push"
     },

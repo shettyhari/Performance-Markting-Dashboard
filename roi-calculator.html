@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <!-- Google Tag Manager -->
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-QLARITY');</script>
+  <!-- End Google Tag Manager -->
+
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ROI &amp; Ad Waste Calculator — Calculate Recoverable Budget &amp; CPQL | Qlarity</title>
+  <meta name="description" content="Calculate how much ad budget your brand or agency is losing to junk bot leads and unoptimized campaigns. Interactive multi-currency calculator (INR, USD, GBP, EUR, AED) with live CPQL projections." />
+  <meta name="keywords" content="ad spend ROI calculator, CPQL calculator, marketing ad waste calculator, cost per qualified lead calculation, agency ad budget recovery, performance marketing ROI" />
+  <link rel="canonical" href="https://getqlarity.online/roi-calculator" />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+  <meta name="theme-color" content="#3A0F34" />
+
+  <!-- Favicons (Google SERP & Browser Compliant) -->
+  <link rel="icon" href="/favicon.ico" sizes="any" />
+  <link rel="shortcut icon" href="/favicon.ico" />
+  <link rel="icon" type="image/png" sizes="48x48" href="/brand/qlarity-icon-48.png" />
+  <link rel="icon" type="image/png" sizes="96x96" href="/brand/qlarity-icon-96.png" />
+  <link rel="icon" type="image/png" sizes="144x144" href="/brand/qlarity-icon-144.png" />
+  <link rel="icon" type="image/png" sizes="192x192" href="/brand/qlarity-icon-192.png" />
+  <link rel="icon" type="image/png" sizes="512x512" href="/brand/qlarity-icon-512.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/brand/qlarity-icon-180.png" />
+  <link rel="manifest" href="/site.webmanifest" />
+
+  <!-- Open Graph / Social Meta -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Qlarity" />
+  <meta property="og:title" content="Qlarity ROI &amp; Ad Waste Calculator" />
+  <meta property="og:description" content="Interactive multi-currency calculator. See how much ad spend you can recover with real-time AI lead scoring." />
+  <meta property="og:url" content="https://getqlarity.online/roi-calculator" />
+  <meta property="og:image" content="https://getqlarity.online/brand/qlarity-og.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:locale" content="en_IN" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Qlarity ROI &amp; Ad Waste Calculator" />
+  <meta name="twitter:description" content="Interactive multi-currency calculator. See how much ad spend you can recover with real-time AI lead scoring." />
+  <meta name="twitter:image" content="https://getqlarity.online/brand/qlarity-og.png" />
+
+  <!-- Structured Data: WebPage & BreadcrumbList -->
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "WebPage",
+          "@id": "https://getqlarity.online/roi-calculator#webpage",
+          "url": "https://getqlarity.online/roi-calculator",
+          "name": "ROI & Ad Waste Calculator — Calculate Recoverable Budget & CPQL",
+          "description": "Interactive ad spend audit and CPQL calculation tool for performance marketing agencies and brands.",
+          "isPartOf": { "@id": "https://getqlarity.online/#site" },
+          "breadcrumb": { "@id": "https://getqlarity.online/roi-calculator#breadcrumb" }
+        },
+        {
+          "@type": "BreadcrumbList",
+          "@id": "https://getqlarity.online/roi-calculator#breadcrumb",
+          "itemListElement": [
+            {
+              "@type": "ListItem",
+              "position": 1,
+              "name": "Home",
+              "item": "https://getqlarity.online/"
+            },
+            {
+              "@type": "ListItem",
+              "position": 2,
+              "name": "ROI Calculator",
+              "item": "https://getqlarity.online/roi-calculator"
+            }
+          ]
+        }
+      ]
+    }
+  </script>
+
+  <!-- Google Fonts: Playfair Display + Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            aubergine: {
+              DEFAULT: '#3A0F34',
+              dark: '#260822',
+              light: '#521A4A',
+            },
+            marigold: {
+              DEFAULT: '#EAAA00',
+              hover: '#D49A00',
+            },
+            icesilver: {
+              canvas: '#F4F6F8',
+              top: '#E8EDF1',
+              card: '#DDE3E8',
+            },
+          },
+          fontFamily: {
+            serif: ['"Playfair Display"', 'Georgia', 'serif'],
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+          },
+        },
+      },
+    };
+  </script>
+
+  <style>
+    /* Custom Range Slider Styling */
+    input[type="range"].qlarity-slider {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 8px;
+      border-radius: 999px;
+      background: #DDE3E8;
+      outline: none;
+    }
+    input[type="range"].qlarity-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: #3A0F34;
+      border: 3px solid #EAAA00;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(58, 15, 52, 0.25);
+      transition: transform 0.15s ease;
+    }
+    input[type="range"].qlarity-slider::-webkit-slider-thumb:hover {
+      transform: scale(1.1);
+    }
+    input[type="range"].qlarity-slider::-moz-range-thumb {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: #3A0F34;
+      border: 3px solid #EAAA00;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(58, 15, 52, 0.25);
+    }
+  </style>
+</head>
+<body class="font-sans text-[#1E1B24] bg-white antialiased selection:bg-marigold selection:text-aubergine overflow-x-hidden">
+  <!-- Google Tag Manager (noscript) -->
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-QLARITY"
+  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+  <!-- End Google Tag Manager (noscript) -->
+
+  <!-- 1. Sticky Top Navbar -->
+  <header class="sticky top-0 z-50 bg-icesilver-top/90 backdrop-blur-md border-b border-icesilver-card/80">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 h-20 flex items-center justify-between">
+      <a href="/" aria-label="Qlarity — Measure, Analyse, Grow" class="inline-flex items-center group select-none shrink-0">
+        <img src="/brand/qlarity-logo.png" alt="Qlarity — Measure, Analyse, Grow" class="h-11 sm:h-13 w-auto object-contain" width="906" height="326" />
+      </a>
+
+      <!-- Desktop Primary Navigation -->
+      <nav aria-label="Primary Navigation" class="hidden md:flex items-center gap-7 text-sm font-medium text-[#2A2433]">
+        <a href="/" class="hover:text-aubergine transition py-2">Home</a>
+        <a href="/features" class="hover:text-aubergine transition py-2">Features</a>
+        <a href="/how-it-works" class="hover:text-aubergine transition py-2">How It Works</a>
+        <a href="/integrations" class="hover:text-aubergine transition py-2">Integrations</a>
+        <a href="/roi-calculator" class="text-aubergine font-bold border-b-2 border-aubergine py-2">ROI Calculator</a>
+        <a href="/pricing" class="hover:text-aubergine transition py-2">Pricing</a>
+        <a href="/blog" class="hover:text-aubergine transition py-2">Blog</a>
+        <a href="/app" class="hover:text-aubergine font-semibold transition py-2 inline-flex items-center gap-1">Open App &rarr;</a>
+      </nav>
+
+      <!-- Header Actions -->
+      <div class="flex items-center gap-3">
+        <button
+          type="button"
+          data-open-demo
+          class="bg-marigold hover:bg-marigold-hover text-aubergine font-semibold text-sm px-5 py-2.5 rounded-full shadow-sm transition cursor-pointer"
+        >
+          Request a Demo
+        </button>
+
+        <!-- Mobile Menu Button -->
+        <button
+          type="button"
+          id="mobile-menu-btn"
+          aria-expanded="false"
+          aria-controls="mobile-menu"
+          aria-label="Toggle mobile menu"
+          class="md:hidden p-2 rounded-lg text-aubergine hover:bg-icesilver-card/50 transition cursor-pointer"
+        >
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobile Navigation Drawer -->
+    <div id="mobile-menu" class="hidden md:hidden bg-white border-b border-icesilver-card px-4 pt-3 pb-6 space-y-2">
+      <a href="/" class="block py-2 text-sm font-medium text-gray-700 hover:text-aubergine">Home</a>
+      <a href="/features" class="block py-2 text-sm font-medium text-gray-700 hover:text-aubergine">Features</a>
+      <a href="/how-it-works" class="block py-2 text-sm font-medium text-gray-700 hover:text-aubergine">How It Works</a>
+      <a href="/integrations" class="block py-2 text-sm font-medium text-gray-700 hover:text-aubergine">Integrations</a>
+      <a href="/roi-calculator" class="block py-2 text-sm font-bold text-aubergine">ROI Calculator</a>
+      <a href="/pricing" class="block py-2 text-sm font-medium text-gray-700 hover:text-aubergine">Pricing</a>
+      <a href="/blog" class="block py-2 text-sm font-medium text-gray-700 hover:text-aubergine">Blog</a>
+      <a href="/app" class="block py-2 text-sm font-semibold text-aubergine">Open App &rarr;</a>
+      <div class="pt-2">
+        <button type="button" data-open-demo class="w-full bg-marigold hover:bg-marigold-hover text-aubergine font-semibold text-sm py-2.5 rounded-full transition">
+          Request a Demo
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="bg-gradient-to-b from-icesilver-top via-icesilver-canvas to-white py-16 sm:py-24 border-b border-icesilver-card/60">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 text-center">
+      <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-aubergine/10 text-aubergine text-xs font-semibold uppercase tracking-wider mb-4">
+        🧮 Interactive Marketing Unit Economics
+      </span>
+      <h1 class="font-serif text-3xl sm:text-5xl lg:text-6xl font-bold text-aubergine tracking-tight leading-tight max-w-4xl mx-auto">
+        Calculate Your Recoverable Ad Spend &amp; True CPQL
+      </h1>
+      <p class="mt-6 text-base sm:text-lg text-gray-600 max-w-3xl mx-auto leading-relaxed">
+        Most lead-gen ad accounts bleed 20% to 35% of their total ad spend to fake submissions, unverified bots, and unoptimized ad sets. Adjust your monthly spend and sales qualification rate to see your potential recovery in seconds.
+      </p>
+
+      <!-- Currency Switcher Buttons -->
+      <div class="mt-8 flex flex-wrap items-center justify-center gap-2">
+        <span class="text-xs font-bold text-gray-500 uppercase tracking-wider mr-2">Client Currency:</span>
+        <button
+          type="button"
+          data-calc-currency="INR"
+          class="calc-curr-btn px-4 py-1.5 rounded-full text-xs font-bold transition bg-aubergine text-white shadow-xs cursor-pointer"
+        >
+          ₹ INR
+        </button>
+        <button
+          type="button"
+          data-calc-currency="USD"
+          class="calc-curr-btn px-4 py-1.5 rounded-full text-xs font-semibold transition bg-white border border-icesilver-card text-aubergine hover:bg-icesilver-canvas cursor-pointer"
+        >
+          $ USD
+        </button>
+        <button
+          type="button"
+          data-calc-currency="GBP"
+          class="calc-curr-btn px-4 py-1.5 rounded-full text-xs font-semibold transition bg-white border border-icesilver-card text-aubergine hover:bg-icesilver-canvas cursor-pointer"
+        >
+          £ GBP
+        </button>
+        <button
+          type="button"
+          data-calc-currency="EUR"
+          class="calc-curr-btn px-4 py-1.5 rounded-full text-xs font-semibold transition bg-white border border-icesilver-card text-aubergine hover:bg-icesilver-canvas cursor-pointer"
+        >
+          € EUR
+        </button>
+        <button
+          type="button"
+          data-calc-currency="AED"
+          class="calc-curr-btn px-4 py-1.5 rounded-full text-xs font-semibold transition bg-white border border-icesilver-card text-aubergine hover:bg-icesilver-canvas cursor-pointer"
+        >
+          AED
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Interactive Calculator Engine -->
+  <main class="max-w-5xl mx-auto px-4 sm:px-6 py-16">
+    <div class="bg-white rounded-3xl p-6 sm:p-12 border border-icesilver-card shadow-lg">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+        <!-- Sliders Column (7 cols) -->
+        <div class="lg:col-span-7 space-y-8">
+          <!-- Slider 1: Monthly Spend -->
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <label id="calc-spend-label" for="calc-spend-slider" class="text-xs font-bold uppercase tracking-wider text-aubergine">
+                Monthly Client Ad Spend (INR)
+              </label>
+              <span id="calc-spend-display" class="font-serif text-2xl font-bold text-aubergine">
+                &#8377;5,00,000
+              </span>
+            </div>
+            <input
+              id="calc-spend-slider"
+              type="range"
+              min="100000"
+              max="5000000"
+              step="50000"
+              value="500000"
+              class="qlarity-slider cursor-pointer"
+            />
+            <div class="flex justify-between text-[11px] text-gray-500 mt-1.5 font-medium">
+              <span id="calc-min-label">&#8377;1,00,000</span>
+              <span id="calc-mid-label">&#8377;25,00,000</span>
+              <span id="calc-max-label">&#8377;50,00,000</span>
+            </div>
+          </div>
+
+          <!-- Slider 2: Current Lead Qualification Rate -->
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <label for="calc-qual-slider" class="text-xs font-bold uppercase tracking-wider text-aubergine">
+                Current CRM Sales-Qualification Rate (%)
+              </label>
+              <span id="calc-qual-display" class="font-serif text-2xl font-bold text-amber-700">
+                20%
+              </span>
+            </div>
+            <input
+              id="calc-qual-slider"
+              type="range"
+              min="5"
+              max="60"
+              step="1"
+              value="20"
+              class="qlarity-slider cursor-pointer"
+            />
+            <div class="flex justify-between text-[11px] text-gray-500 mt-1.5 font-medium">
+              <span>5% (High Junk / Bot Submissions)</span>
+              <span>25% (Average B2B)</span>
+              <span>60% (High-Touch Enterprise)</span>
+            </div>
+            <p class="text-xs text-gray-500 mt-2">
+              Percentage of total ad submissions that actually speak with sales and qualify as an MQL or SQL.
+            </p>
+          </div>
+        </div>
+
+        <!-- Live Projection Card (5 cols) -->
+        <div class="lg:col-span-5 bg-gradient-to-br from-aubergine to-aubergine-dark text-white rounded-2xl p-6 sm:p-8 shadow-md flex flex-col justify-between">
+          <div>
+            <span class="text-[11px] font-bold uppercase tracking-wider text-marigold">Projected Annual Recovery</span>
+            <div id="calc-annual-savings" class="font-serif text-3xl sm:text-4xl font-extrabold text-white mt-1">
+              &#8377;16,80,000
+            </div>
+            <p class="text-xs text-gray-300 mt-1 leading-snug">
+              Estimated ad waste eliminated &amp; reallocated to high-intent campaigns.
+            </p>
+
+            <div class="mt-6 pt-5 border-t border-white/15 space-y-3.5 text-xs">
+              <div class="flex items-center justify-between">
+                <span class="text-gray-300">Current Cost / Qualified Lead:</span>
+                <span id="calc-current-cpql" class="font-bold text-rose-300 text-sm">&#8377;2,250</span>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="text-gray-300">Projected CPQL with Qlarity:</span>
+                <span id="calc-projected-cpql" class="font-bold text-emerald-300 text-base">&#8377;1,620</span>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="text-gray-300">Expected CPQL Reduction:</span>
+                <span class="font-bold text-marigold text-sm">&darr; 28%</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-8 pt-5 border-t border-white/15">
+            <button
+              type="button"
+              id="claim-roi-btn"
+              class="w-full bg-marigold hover:bg-marigold-hover text-aubergine font-bold text-xs sm:text-sm py-3 px-4 rounded-full shadow-md transition cursor-pointer text-center"
+            >
+              Claim This Recovery in a Demo &rarr;
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mathematical Formula Breakdown -->
+    <div class="mt-20 bg-icesilver-canvas/60 rounded-3xl p-8 sm:p-12 border border-icesilver-card">
+      <div class="max-w-3xl">
+        <span class="text-xs font-bold uppercase tracking-wider text-amber-700">Attribution Math</span>
+        <h2 class="font-serif text-2xl sm:text-3xl font-bold text-aubergine mt-2">
+          How the CPQL Formula Actually Works
+        </h2>
+        <p class="text-sm text-gray-600 mt-3 leading-relaxed">
+          Standard ad platforms optimize for Cost Per Lead (CPL). The problem? The ad algorithm doesn't care whether the lead is a 14-year-old student, a bot using a temporary disposable email, or a legitimate enterprise VP.
+        </p>
+
+        <!-- Formula Box -->
+        <div class="mt-6 bg-white p-5 rounded-xl border border-icesilver-card font-mono text-xs sm:text-sm text-aubergine shadow-2xs">
+          <strong>Cost Per Qualified Lead (CPQL) =</strong> Total Ad Spend / (Total Leads &times; Qualification Rate)
+        </div>
+
+        <p class="text-xs sm:text-sm text-gray-600 mt-4 leading-relaxed">
+          When Qlarity scores leads in real time and automatically pushes qualified conversion milestones back through Meta CAPI and Google Enhanced Conversions, the ad algorithms learn to stop serving impressions to junk profiles and focus strictly on prospects matching verified buyer behavior.
+        </p>
+      </div>
+    </div>
+  </main>
+
+  <!-- Global Footer -->
+  <footer class="bg-aubergine text-white pt-16 pb-12 border-t border-aubergine-light">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-10 pb-12 border-b border-white/10">
+        <div class="md:col-span-1">
+          <a href="/" class="inline-block mb-4">
+            <img src="/brand/qlarity-logo.png" alt="Qlarity — Measure, Analyse, Grow" class="h-10 w-auto brightness-0 invert" />
+          </a>
+          <p class="text-xs text-gray-300 leading-relaxed">
+            AI-powered performance attribution and lead scoring platform built for Indian performance agencies and high-growth brands.
+          </p>
+        </div>
+
+        <div>
+          <h4 class="text-xs font-bold uppercase tracking-wider text-marigold mb-4">Platform</h4>
+          <ul class="space-y-2.5 text-xs text-gray-300">
+            <li><a href="/features" class="hover:text-white transition">Features Overview</a></li>
+            <li><a href="/how-it-works" class="hover:text-white transition">How It Works</a></li>
+            <li><a href="/integrations" class="hover:text-white transition">Integrations Directory</a></li>
+            <li><a href="/roi-calculator" class="hover:text-white transition">ROI & Waste Calculator</a></li>
+            <li><a href="/pricing" class="hover:text-white transition">Transparent Pricing</a></li>
+            <li><a href="/app" class="hover:text-white font-semibold transition">Open Dashboard &rarr;</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="text-xs font-bold uppercase tracking-wider text-marigold mb-4">Resources & Guides</h4>
+          <ul class="space-y-2.5 text-xs text-gray-300">
+            <li><a href="/blog" class="hover:text-white transition">Growth Blog & Case Studies</a></li>
+            <li><a href="/blog/cost-per-qualified-lead-cpql-guide" class="hover:text-white transition">Complete CPQL Playbook</a></li>
+            <li><a href="/blog/multi-currency-ad-spend-tracking-agencies" class="hover:text-white transition">Multi-Currency Agency Tracking</a></li>
+            <li><a href="/blog/ai-lead-scoring-meta-google-ads" class="hover:text-white transition">AI Lead Scoring Guide</a></li>
+            <li><a href="/blog/b2b-performance-marketing-attribution-guide" class="hover:text-white transition">B2B Attribution Modeling</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="text-xs font-bold uppercase tracking-wider text-marigold mb-4">Legal & Contact</h4>
+          <ul class="space-y-2.5 text-xs text-gray-300">
+            <li><a href="/privacy" class="hover:text-white transition">Privacy Policy</a></li>
+            <li><a href="/terms" class="hover:text-white transition">Terms of Service</a></li>
+            <li><a href="mailto:harikrishnashetty1@gmail.com" class="hover:text-white transition">harikrishnashetty1@gmail.com</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="mt-8 flex flex-col sm:flex-row items-center justify-between text-xs text-gray-400 gap-4">
+        <div>&copy; 2026 Qlarity. All rights reserved. Measure &bull; Analyse &bull; Grow.</div>
+        <div class="flex items-center gap-6">
+          <a href="/privacy" class="hover:text-gray-200 transition">Privacy</a>
+          <a href="/terms" class="hover:text-gray-200 transition">Terms</a>
+          <a href="/sitemap.xml" class="hover:text-gray-200 transition">Sitemap</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Reusable Demo Request Modal -->
+  <div id="demo-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-aubergine-dark/70 backdrop-blur-xs p-4 hidden">
+    <div class="bg-white rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl relative border border-icesilver-card">
+      <button
+        type="button"
+        id="close-modal-btn"
+        aria-label="Close demo request modal"
+        class="absolute top-4 right-4 w-8 h-8 rounded-full bg-icesilver-canvas hover:bg-icesilver-card text-aubergine flex items-center justify-center font-bold cursor-pointer"
+      >
+        &times;
+      </button>
+
+      <div id="demo-form-container">
+        <span class="text-[11px] font-semibold uppercase tracking-wider text-amber-700">Live Product Walkthrough</span>
+        <h2 id="modal-title" class="font-serif text-2xl font-bold text-aubergine mt-1">
+          Request Your Qlarity Demo
+        </h2>
+        <p class="text-xs text-gray-600 mt-1.5">
+          See how Qlarity tracks your exact CPQL and ROAS across every ad channel.
+        </p>
+
+        <form id="demo-form" class="mt-5 space-y-4" novalidate>
+          <div>
+            <label for="lead-name" class="block text-xs font-semibold text-aubergine mb-1">Full Name *</label>
+            <input
+              id="lead-name"
+              name="name"
+              type="text"
+              required
+              placeholder="Alex Morgan"
+              class="w-full px-3.5 py-2.5 rounded-xl border border-icesilver-card text-sm focus:outline-none focus:border-aubergine"
+            />
+          </div>
+
+          <div>
+            <label for="lead-email" class="block text-xs font-semibold text-aubergine mb-1">Work Email *</label>
+            <input
+              id="lead-email"
+              name="email"
+              type="email"
+              required
+              placeholder="alex@growthagency.com"
+              class="w-full px-3.5 py-2.5 rounded-xl border border-icesilver-card text-sm focus:outline-none focus:border-aubergine"
+            />
+          </div>
+
+          <div>
+            <label for="lead-spend" class="block text-xs font-semibold text-aubergine mb-1">Monthly Client Ad Spend Managed</label>
+            <select
+              id="lead-spend"
+              name="spend"
+              class="w-full px-3.5 py-2.5 rounded-xl border border-icesilver-card text-sm bg-white focus:outline-none focus:border-aubergine"
+            >
+              <option value="under-2l">Under &#8377;2,00,000 / month (or &lt; $2.5k)</option>
+              <option value="2l-10l" selected>&#8377;2,00,000 &ndash; &#8377;10,00,000 / month ($2.5k &ndash; $12k)</option>
+              <option value="10l-50l">&#8377;10,00,000 &ndash; &#8377;50,00,000 / month ($12k &ndash; $60k)</option>
+              <option value="50l-plus">&#8377;50,00,000+ / month ($60k+ Multi-Brand Agency)</option>
+            </select>
+          </div>
+
+          <p id="form-error" class="hidden text-xs text-red-600 font-medium">
+            Please enter your full name and a valid work email address.
+          </p>
+
+          <button
+            type="submit"
+            class="w-full bg-marigold hover:bg-marigold-hover text-aubergine font-bold text-sm py-3 px-5 rounded-full shadow-sm transition cursor-pointer"
+          >
+            Confirm Demo Request &rarr;
+          </button>
+        </form>
+      </div>
+
+      <div id="demo-success-container" class="hidden text-center py-4">
+        <div class="w-12 h-12 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center mx-auto text-xl font-bold mb-3">&#10003;</div>
+        <h3 class="font-serif text-xl font-bold text-aubergine">Demo Request Received!</h3>
+        <p id="demo-success-msg" class="text-xs text-gray-600 mt-2 leading-relaxed">
+          Thanks! We have sent a calendar invite for your personalized Qlarity walkthrough.
+        </p>
+        <button
+          type="button"
+          id="reset-modal-btn"
+          class="mt-5 bg-aubergine text-white text-xs font-semibold py-2.5 px-6 rounded-full hover:bg-aubergine-light transition cursor-pointer"
+        >
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      // Mobile drawer
+      var mobileBtn = document.getElementById('mobile-menu-btn');
+      var mobileMenu = document.getElementById('mobile-menu');
+      if (mobileBtn && mobileMenu) {
+        mobileBtn.addEventListener('click', function () {
+          mobileMenu.classList.toggle('hidden');
+        });
+      }
+
+      // Multi-Currency Calculator
+      var calcCurrency = 'INR';
+      var calcCurrencyConfig = {
+        INR: { symbol: '₹', locale: 'en-IN' },
+        USD: { symbol: '$', locale: 'en-US' },
+        GBP: { symbol: '£', locale: 'en-GB' },
+        EUR: { symbol: '€', locale: 'de-DE' },
+        AED: { symbol: 'AED ', locale: 'en-US' }
+      };
+
+      var calcCurrencyPresets = {
+        INR: { code: 'INR', min: 100000, max: 5000000, step: 50000, val: 500000, cpl: 450, minTxt: '₹1,00,000', midTxt: '₹25,00,000', maxTxt: '₹50,00,000' },
+        USD: { code: 'USD', min: 2000, max: 100000, step: 1000, val: 15000, cpl: 35, minTxt: '$2,000', midTxt: '$50,000', maxTxt: '$100,000' },
+        GBP: { code: 'GBP', min: 2000, max: 80000, step: 1000, val: 12000, cpl: 28, minTxt: '£2,000', midTxt: '£40,000', maxTxt: '£80,000' },
+        EUR: { code: 'EUR', min: 2000, max: 90000, step: 1000, val: 14000, cpl: 32, minTxt: '€2,000', midTxt: '€45,000', maxTxt: '€90,000' },
+        AED: { code: 'AED', min: 10000, max: 350000, step: 5000, val: 55000, cpl: 130, minTxt: 'AED 10,000', midTxt: 'AED 175,000', maxTxt: 'AED 350,000' }
+      };
+
+      var calcCurrBtns = document.querySelectorAll('.calc-curr-btn');
+      var spendSlider = document.getElementById('calc-spend-slider');
+      var qualSlider = document.getElementById('calc-qual-slider');
+      var spendLabelEl = document.getElementById('calc-spend-label');
+      var spendDisplay = document.getElementById('calc-spend-display');
+      var qualDisplay = document.getElementById('calc-qual-display');
+      var minLabelEl = document.getElementById('calc-min-label');
+      var midLabelEl = document.getElementById('calc-mid-label');
+      var maxLabelEl = document.getElementById('calc-max-label');
+      var annualSavingsEl = document.getElementById('calc-annual-savings');
+      var currentCpqlEl = document.getElementById('calc-current-cpql');
+      var projectedCpqlEl = document.getElementById('calc-projected-cpql');
+      var claimRoiBtn = document.getElementById('claim-roi-btn');
+
+      function formatByCurrency(amount, currCode) {
+        var cfg = calcCurrencyConfig[currCode] || calcCurrencyConfig.INR;
+        var rounded = Math.round(amount);
+        try {
+          return cfg.symbol + rounded.toLocaleString(cfg.locale);
+        } catch (e) {
+          return cfg.symbol + String(rounded);
+        }
+      }
+
+      function updateRoiCalculator() {
+        if (!spendSlider || !qualSlider) return;
+        var preset = calcCurrencyPresets[calcCurrency] || calcCurrencyPresets.INR;
+        var monthlySpend = Number(spendSlider.value) || preset.val;
+        var qualPct = Number(qualSlider.value) || 20;
+        var qualRate = qualPct / 100;
+
+        var totalLeads = monthlySpend / preset.cpl;
+        var qualifiedLeads = Math.max(1, totalLeads * qualRate);
+        var currentCpql = monthlySpend / qualifiedLeads;
+
+        var wasteRecoveryFactor = Math.min(0.32, Math.max(0.18, 0.36 - qualRate * 0.4));
+        var annualRecoverable = monthlySpend * wasteRecoveryFactor * 12;
+        var projectedCpql = currentCpql * (1 - wasteRecoveryFactor * 1.15);
+
+        if (spendDisplay) spendDisplay.textContent = formatByCurrency(monthlySpend, calcCurrency);
+        if (qualDisplay) qualDisplay.textContent = qualPct + '%';
+        if (annualSavingsEl) annualSavingsEl.textContent = formatByCurrency(annualRecoverable, calcCurrency);
+        if (currentCpqlEl) currentCpqlEl.textContent = formatByCurrency(currentCpql, calcCurrency);
+        if (projectedCpqlEl) projectedCpqlEl.textContent = formatByCurrency(projectedCpql, calcCurrency);
+      }
+
+      calcCurrBtns.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          var selected = btn.getAttribute('data-calc-currency');
+          var preset = calcCurrencyPresets[selected];
+          if (!preset || !spendSlider) return;
+
+          calcCurrency = selected;
+          calcCurrBtns.forEach(function (b) {
+            b.classList.remove('bg-aubergine', 'text-white', 'font-bold');
+            b.classList.add('bg-white', 'border', 'border-icesilver-card', 'text-aubergine', 'font-semibold');
+          });
+          btn.classList.add('bg-aubergine', 'text-white', 'font-bold');
+          btn.classList.remove('bg-white', 'border', 'border-icesilver-card', 'text-aubergine', 'font-semibold');
+
+          spendSlider.min = String(preset.min);
+          spendSlider.max = String(preset.max);
+          spendSlider.step = String(preset.step);
+          spendSlider.value = String(preset.val);
+
+          if (spendLabelEl) spendLabelEl.textContent = 'Monthly Client Ad Spend (' + selected + ')';
+          if (minLabelEl) minLabelEl.textContent = preset.minTxt;
+          if (midLabelEl) midLabelEl.textContent = preset.midTxt;
+          if (maxLabelEl) maxLabelEl.textContent = preset.maxTxt;
+
+          updateRoiCalculator();
+
+          window.dataLayer = window.dataLayer || [];
+          window.dataLayer.push({ event: 'calculate_roi_currency_change', currency: selected });
+        });
+      });
+
+      if (spendSlider && qualSlider) {
+        spendSlider.addEventListener('input', function () {
+          updateRoiCalculator();
+          window.dataLayer = window.dataLayer || [];
+          window.dataLayer.push({
+            event: 'calculate_roi',
+            currency: calcCurrency,
+            spend: Number(spendSlider.value),
+            qual_rate: Number(qualSlider.value)
+          });
+        });
+        qualSlider.addEventListener('input', function () {
+          updateRoiCalculator();
+        });
+        updateRoiCalculator();
+      }
+
+      // Modal handling
+      var modal = document.getElementById('demo-modal');
+      var openBtns = document.querySelectorAll('[data-open-demo]');
+      var closeBtn = document.getElementById('close-modal-btn');
+      var resetBtn = document.getElementById('reset-modal-btn');
+      var demoForm = document.getElementById('demo-form');
+      var formContainer = document.getElementById('demo-form-container');
+      var successContainer = document.getElementById('demo-success-container');
+      var successMsg = document.getElementById('demo-success-msg');
+      var formError = document.getElementById('form-error');
+      var leadNameInput = document.getElementById('lead-name');
+      var leadEmailInput = document.getElementById('lead-email');
+      var leadSpendSelect = document.getElementById('lead-spend');
+
+      function openModal(presetSpendValue) {
+        if (!modal) return;
+        if (presetSpendValue && leadSpendSelect) {
+          leadSpendSelect.value = presetSpendValue;
+        }
+        modal.classList.remove('hidden');
+        if (leadNameInput) leadNameInput.focus();
+
+        window.dataLayer = window.dataLayer || [];
+        window.dataLayer.push({ event: 'demo_modal_opened', page: '/roi-calculator' });
+      }
+
+      function closeModal() {
+        if (!modal) return;
+        modal.classList.add('hidden');
+        if (formError) formError.classList.add('hidden');
+        if (formContainer) formContainer.classList.remove('hidden');
+        if (successContainer) successContainer.classList.add('hidden');
+        if (demoForm) demoForm.reset();
+      }
+
+      openBtns.forEach(function (btn) {
+        btn.addEventListener('click', function () { openModal(); });
+      });
+
+      if (claimRoiBtn && spendSlider) {
+        claimRoiBtn.addEventListener('click', function () {
+          var rawVal = Number(spendSlider.value) || 500000;
+          var inrRates = { INR: 1, USD: 84, GBP: 106, EUR: 91, AED: 23 };
+          var approxInr = rawVal * (inrRates[calcCurrency] || 1);
+          var tier = '2l-10l';
+          if (approxInr < 200000) tier = 'under-2l';
+          else if (approxInr <= 1000000) tier = '2l-10l';
+          else if (approxInr <= 5000000) tier = '10l-50l';
+          else tier = '50l-plus';
+          openModal(tier);
+        });
+      }
+
+      if (closeBtn) closeBtn.addEventListener('click', closeModal);
+      if (resetBtn) resetBtn.addEventListener('click', closeModal);
+      if (modal) {
+        modal.addEventListener('click', function (e) {
+          if (e.target === modal) closeModal();
+        });
+      }
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && modal && !modal.classList.contains('hidden')) {
+          closeModal();
+        }
+      });
+
+      if (demoForm) {
+        demoForm.addEventListener('submit', function (e) {
+          e.preventDefault();
+          var nameVal = leadNameInput ? leadNameInput.value.trim() : '';
+          var emailVal = leadEmailInput ? leadEmailInput.value.trim() : '';
+          var spendVal = leadSpendSelect ? leadSpendSelect.value : '';
+
+          if (!nameVal || !emailVal || emailVal.indexOf('@') === -1) {
+            if (formError) formError.classList.remove('hidden');
+            return;
+          }
+
+          if (formError) formError.classList.add('hidden');
+          if (successMsg) {
+            successMsg.textContent = 'Thanks, ' + nameVal + '! We have sent a calendar invite to ' + emailVal + ' for your personalized Qlarity walkthrough.';
+          }
+          if (formContainer) formContainer.classList.add('hidden');
+          if (successContainer) successContainer.classList.remove('hidden');
+
+          window.dataLayer = window.dataLayer || [];
+          window.dataLayer.push({
+            event: 'generate_lead',
+            page: '/roi-calculator',
+            lead_spend: spendVal
+          });
+        });
+      }
+    });
+  </script>
+</body>
+</html>
