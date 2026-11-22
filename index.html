@@ -1,912 +1,1742 @@
-<!doctype html>
-<html lang="en-IN">
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
 <head>
-<meta charset="utf-8">
-<script>try{var _t=localStorage.getItem("lp-theme");if(!_t && window.matchMedia && matchMedia("(prefers-color-scheme: dark)").matches)_t="dark";if(_t==="dark"||_t==="light")document.documentElement.setAttribute("data-theme",_t);}catch(e){}</script>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Qlarity | AI-Powered Performance Marketing Analytics</title>
-<meta name="description" content="Track ad performance, leads, and customer acquisition in one dashboard. Use Qlarity to identify wasted ad spend, understand results, and make smarter marketing decisions.">
-<link rel="canonical" href="https://getqlarity.online/">
-<meta name="robots" content="index, follow, max-image-preview:large">
-<meta name="theme-color" content="#1a73e8">
-<link rel="icon" href="/favicon.ico" sizes="any">
-<link rel="shortcut icon" href="/favicon.ico">
-<link rel="icon" type="image/png" sizes="48x48" href="/brand/qlarity-icon-48.png">
-<link rel="icon" type="image/png" sizes="96x96" href="/brand/qlarity-icon-96.png">
-<link rel="icon" type="image/png" sizes="144x144" href="/brand/qlarity-icon-144.png">
-<link rel="icon" type="image/png" sizes="192x192" href="/brand/qlarity-icon-192.png">
-<link rel="icon" type="image/png" sizes="512x512" href="/brand/qlarity-icon-512.png">
-<link rel="icon" type="image/png" sizes="32x32" href="/brand/qlarity-icon-32.png">
-<link rel="apple-touch-icon" sizes="180x180" href="/brand/qlarity-icon-180.png">
-<link rel="manifest" href="/site.webmanifest">
-<meta property="og:type" content="website">
-<meta property="og:site_name" content="Qlarity">
-<meta property="og:url" content="https://getqlarity.online/">
-<meta property="og:title" content="Qlarity | AI-Powered Performance Marketing Analytics">
-<meta property="og:description" content="Track ad performance, leads, and customer acquisition in one dashboard. Use Qlarity to identify wasted ad spend, understand results, and make smarter marketing decisions.">
-<meta property="og:image" content="https://getqlarity.online/brand/qlarity-og.png">
-<meta property="og:image:width" content="1200">
-<meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="Qlarity: AI-powered performance marketing analytics">
-<meta property="og:locale" content="en_IN">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Qlarity | AI-Powered Performance Marketing Analytics">
-<meta name="twitter:description" content="Track ad performance, leads, and customer acquisition in one dashboard. Use Qlarity to identify wasted ad spend, understand results, and make smarter marketing decisions.">
-<meta name="twitter:image" content="https://getqlarity.online/brand/qlarity-og.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap">
-<script type="application/ld+json">
-{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://getqlarity.online/#site","url":"https://getqlarity.online/","name":"Qlarity","publisher":{"@id":"https://getqlarity.online/#org"},"inLanguage":"en-IN"},{"@type":"Organization","@id":"https://getqlarity.online/#org","name":"Qlarity","url":"https://getqlarity.online/","logo":{"@type":"ImageObject","@id":"https://getqlarity.online/#logo","url":"https://getqlarity.online/brand/qlarity-icon-512.png","contentUrl":"https://getqlarity.online/brand/qlarity-icon-512.png","width":512,"height":512,"caption":"Qlarity"},"image":{"@id":"https://getqlarity.online/#logo"},"email":"harikrishnashetty1@gmail.com"},{"@type":"SoftwareApplication","name":"Qlarity","url":"https://getqlarity.online/","applicationCategory":"BusinessApplication","applicationSubCategory":"Performance marketing analytics","operatingSystem":"Web browser","publisher":{"@id":"https://getqlarity.online/#org"},"image":"https://getqlarity.online/brand/qlarity-icon-512.png","description":"AI-powered performance marketing analytics: track ad spend, leads and customer data in one place, spot wasted spend and make smarter marketing decisions.","offers":{"@type":"Offer","price":"0","priceCurrency":"INR","description":"Free during early access"},"featureList":["Campaign analytics","Brand awareness tracking","Lead and conversion tracking","E-commerce performance","Ad spend and ROI","Reports and alerts","Multi-brand dashboard"]}]}
-</script>
-<style>
-/* EBG / Google Analytics inspired modern palette with Plus Jakarta Sans typography */
-:root{
-  --coral:#1a73e8;--coral-hover:#1765cc;--coral-soft:#e8f0fe;--coral-line:rgba(26,115,232,.3);
-  --blue:#1a73e8;--blue-soft:#e8f0fe;--blue-line:#dadce0;
-  --cyan:#007b83;--cyan-soft:#e4f7f8;
-  --emerald:#137333;--emerald-soft:#e6f4ea;--emerald-line:rgba(19,115,51,.25);
-  --bad:#c5221f;--bad-bg:#fce8e6;--bad-line:#fad2cf;
-  --bg:#f8f9fa;--panel:#ffffff;--soft:#f1f3f4;--ink:#202124;--fg:#3c4043;--muted:#5f6368;--line:#dadce0;--line-soft:#e8eaed;
-  --nav-bg:rgba(248,249,250,.92);--navy:#111622;--btn2-border:#dadce0;--accent-text:#1a73e8;color-scheme:light;
-  --grad:linear-gradient(135deg,#1a73e8,#1967d2);
-  --r:16px;--r-sm:8px;--card-pad:24px;--icon:44px;--btn-h:48px;--gap:20px;
-  --shadow:0 1px 3px rgba(60,64,67,.08),0 1px 2px rgba(60,64,67,.04);
-  --shadow-lg:0 4px 16px rgba(60,64,67,.12),0 1px 3px rgba(60,64,67,.06);
-  --shadow-mint:0 4px 16px rgba(26,115,232,.28);
-}
-/* dark theme: EBG / GA dark canvas, blue accent */
-:root[data-theme="dark"]{
-  --bg:#202124;--panel:#292a2d;--soft:#35363a;--ink:#ffffff;--fg:#e8eaed;--muted:#9aa0a6;--line:#3c4043;--line-soft:#35363a;
-  --coral:#8ab4f8;--coral-hover:#aecbfa;--coral-soft:#2b3a55;--coral-line:rgba(138,180,248,.3);
-  --blue:#8ab4f8;--blue-soft:#2b3a55;--blue-line:rgba(138,180,248,.3);
-  --cyan:#78d9ec;--cyan-soft:rgba(0,123,131,.2);
-  --emerald:#81c995;--emerald-soft:#1e3a2a;--emerald-line:rgba(129,201,149,.3);
-  --bad:#f28b82;--bad-bg:#3c2524;--bad-line:rgba(242,139,130,.3);
-  --nav-bg:rgba(32,33,36,.92);--navy:#171d29;--btn2-border:rgba(255,255,255,.12);--accent-text:#8ab4f8;color-scheme:dark;
-  --grad:linear-gradient(135deg,#8ab4f8,#aecbfa);
-  --shadow:0 4px 20px -2px rgba(0,0,0,.4);
-  --shadow-lg:0 14px 40px -4px rgba(0,0,0,.6);
-  --shadow-mint:0 4px 18px rgba(138,180,248,.35);
-}
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
-  --bg:#202124;--panel:#292a2d;--soft:#35363a;--ink:#ffffff;--fg:#e8eaed;--muted:#9aa0a6;--line:#3c4043;--line-soft:#35363a;
-  --coral:#8ab4f8;--coral-hover:#aecbfa;--coral-soft:#2b3a55;--coral-line:rgba(138,180,248,.3);
-  --blue:#8ab4f8;--blue-soft:#2b3a55;--blue-line:rgba(138,180,248,.3);
-  --cyan:#78d9ec;--cyan-soft:rgba(0,123,131,.2);
-  --emerald:#81c995;--emerald-soft:#1e3a2a;--emerald-line:rgba(129,201,149,.3);
-  --bad:#f28b82;--bad-bg:#3c2524;--bad-line:rgba(242,139,130,.3);
-  --nav-bg:rgba(32,33,36,.92);--navy:#171d29;--btn2-border:rgba(255,255,255,.12);--accent-text:#8ab4f8;color-scheme:dark;
-  --grad:linear-gradient(135deg,#8ab4f8,#aecbfa);
-  --shadow:0 4px 20px -2px rgba(0,0,0,.4);
-  --shadow-lg:0 14px 40px -4px rgba(0,0,0,.6);
-  --shadow-mint:0 4px 18px rgba(138,180,248,.35);
-}}
-*{box-sizing:border-box}
-html{scroll-behavior:smooth}
-body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.55 "Plus Jakarta Sans",system-ui,-apple-system,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased}
-a{color:inherit}
-p{margin:0}
-.wrap{max-width:1320px;margin:0 auto;padding:0 24px}
-.skip{position:absolute;left:-999px}.skip:focus{left:16px;top:12px;z-index:99;background:var(--panel);padding:8px 12px;border-radius:8px}
-:focus-visible{outline:2px solid var(--coral);outline-offset:3px}
-/* buttons: Google Analytics / EBG blue pill button */
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;height:var(--btn-h);padding:0 26px;border-radius:999px;font:700 15px/1 "Plus Jakarta Sans",sans-serif;text-decoration:none;border:1.5px solid transparent;white-space:nowrap;transition:transform .18s,box-shadow .18s,background-color .18s,border-color .18s,color .18s}
-.btn.primary{color:#ffffff;background:var(--coral);box-shadow:var(--shadow-mint)}
-.btn.primary:hover{transform:translateY(-1.5px);background:var(--coral-hover);box-shadow:0 8px 24px rgba(26,115,232,.35)}
-:root[data-theme="dark"] .btn.primary{color:#202124}
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn.primary{color:#202124}}
-.btn.secondary{color:var(--ink);background:var(--panel);border-color:var(--btn2-border);box-shadow:0 1px 2px rgba(0,0,0,.03)}
-.btn.secondary:hover{border-color:var(--coral);color:var(--ink);background:var(--coral-soft);transform:translateY(-1px)}
-.dark .btn.secondary{color:#fff;background:transparent;border-color:rgba(255,255,255,.35)}
-.dark .btn.secondary:hover{border-color:var(--coral);color:var(--coral);background:var(--coral-soft)}
-.btn.sm{--btn-h:42px;height:42px;padding:0 20px;font-size:14px}
-.btn svg{width:17px;height:17px}
-.actions{display:flex;flex-wrap:wrap;gap:12px}
-/* nav */
-.nav{position:sticky;top:0;z-index:50;background:var(--nav-bg);backdrop-filter:saturate(1.4) blur(14px);border-bottom:1px solid transparent;transition:border-color .2s,box-shadow .2s}
-.nav.scrolled{border-bottom-color:var(--line);box-shadow:0 1px 3px rgba(0,0,0,.02)}
-.nav .wrap{display:flex;align-items:center;gap:28px;height:72px}
-.logo img{display:block;height:34px;width:auto}
-.logo .dk{display:none}
-:root[data-theme="dark"] .logo .lt{display:none} :root[data-theme="dark"] .logo .dk{display:block}
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .logo .lt{display:none} :root:not([data-theme="light"]) .logo .dk{display:block}}
-.theme-btn{width:40px;height:40px;display:grid;place-items:center;border:1.5px solid var(--btn2-border);border-radius:12px;background:var(--panel);color:var(--ink);cursor:pointer;transition:border-color .15s,color .15s,transform .15s}
-.theme-btn:hover{border-color:var(--coral);color:var(--coral);transform:translateY(-1px)}
-.theme-btn svg{width:18px;height:18px}
-.nav nav{display:flex;gap:28px;margin:0 auto;font-size:14.5px;font-weight:600;color:var(--ink)}
-.nav nav a{text-decoration:none;opacity:.85;transition:color .15s,opacity .15s}.nav nav a:hover{opacity:1;color:var(--accent-text)}
-:root[data-theme="dark"] .nav nav a:hover{color:var(--coral)}
-.nav .actions{gap:10px}
-/* typography */
-.eyebrow{display:inline-flex;align-items:center;gap:7px;padding:6px 14px;border-radius:999px;background:var(--coral-soft);border:1px solid var(--coral-line);color:var(--accent-text);font:700 12px/1 "Plus Jakarta Sans",sans-serif;letter-spacing:.06em;text-transform:uppercase;margin-bottom:16px}
-:root[data-theme="dark"] .eyebrow{background:var(--coral-soft);border-color:var(--coral-line);color:var(--coral)}
-h1{margin:0 0 20px;font:800 clamp(36px,4.4vw,56px)/1.06 "Plus Jakarta Sans",sans-serif;letter-spacing:-.03em;color:var(--ink);max-width:640px}
-h1 span{background:linear-gradient(135deg,#1a73e8 0%,#1967d2 50%,#4285f4 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
-:root[data-theme="dark"] h1 span{background:linear-gradient(135deg,#8ab4f8 0%,#aecbfa 50%,#d2e3fc 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
-h2{margin:0;font:800 clamp(28px,3vw,36px)/1.15 "Plus Jakarta Sans",sans-serif;letter-spacing:-.025em;color:var(--ink)}
-.dark h2{color:#ffffff}
-h3{margin:0 0 6px;font:700 17.5px/1.3 "Plus Jakarta Sans",sans-serif;color:var(--ink);letter-spacing:-.015em}
-.intro{max-width:620px;margin-top:14px;font-size:17.5px;color:var(--fg);line-height:1.5}
-.dark .intro{color:rgba(255,255,255,.88)}
-.dark .eyebrow{background:rgba(138,180,248,.14);border-color:rgba(138,180,248,.3);color:#8ab4f8}
-.head{margin-bottom:28px}
-/* sections */
-section{padding:72px 0}
-.soft{background:var(--soft)}
-.dark{background:radial-gradient(900px 420px at 85% 0%,rgba(26,115,232,.14),transparent 70%),linear-gradient(160deg,#171d29,#202736 60%,#141923);color:#fff}
-/* hero */
-.hero{padding:60px 0 80px;background:radial-gradient(1000px 500px at 50% 0%,rgba(26,115,232,.08),transparent 75%),var(--bg);text-align:center}
-.hero .wrap{display:flex;flex-direction:column;align-items:center}
-.hero-intro{max-width:860px;margin:0 auto 40px;display:flex;flex-direction:column;align-items:center}
-.hero h1{margin:0 auto 20px;max-width:820px;font:800 clamp(36px,4.5vw,56px)/1.08 "Plus Jakarta Sans",sans-serif;letter-spacing:-.03em;color:var(--ink)}
-.hero h1 span{background:linear-gradient(135deg,#1a73e8 0%,#1967d2 50%,#4285f4 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
-:root[data-theme="dark"] .hero h1 span{background:linear-gradient(135deg,#8ab4f8 0%,#aecbfa 50%,#d2e3fc 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
-.hero .lede{font-size:clamp(17px,1.35vw,19.5px);max-width:640px;margin:0 auto 28px;color:var(--fg);line-height:1.55}
-.hero .actions{display:flex;flex-wrap:wrap;justify-content:center;gap:14px}
-.trust{display:flex;flex-wrap:wrap;justify-content:center;gap:12px 24px;margin-top:24px;font-size:13.5px;color:var(--muted)}
-.trust span{display:inline-flex;align-items:center;gap:7px}
-.trust svg{width:16px;height:16px;color:var(--coral)}
-.works{margin-top:22px;padding-top:18px;border-top:1px solid var(--line);font-size:13px;color:var(--muted);width:100%;max-width:720px}
-.works b{color:var(--ink);font-weight:600}
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Qlarity — Make Every Marketing Rupee Count | AI Attribution for Indian Agencies & Brands</title>
+  <meta name="description" content="AI-powered performance marketing & lead-quality attribution built for Indian agencies and growth brands. Track global client ad spends (INR, USD, GBP, EUR, AED) with transparent INR pricing." />
+  <meta name="keywords" content="marketing attribution software India, performance marketing analytics India, CPQL tracking, AI lead scoring, Indian agency reporting dashboard, multi-currency ad spend tracking" />
+  <link rel="canonical" href="https://getqlarity.online/" />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+  <meta name="theme-color" content="#3A0F34" />
 
-/* ================= Modern Mockup Browser Device (screenshot replica) ================= */
-.device{width:100%;max-width:1200px;margin:0 auto;border-radius:24px;background:var(--panel);border:1px solid var(--line);box-shadow:0 30px 80px -20px rgba(15,23,42,.14),0 0 0 1px rgba(0,0,0,.03);overflow:hidden;padding:0;text-align:left}
-:root[data-theme="dark"] .device{box-shadow:0 30px 80px -20px rgba(0,0,0,.6)}
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .device{box-shadow:0 30px 80px -20px rgba(0,0,0,.6)}}
-.device-bar{display:flex;align-items:center;gap:12px;padding:11px 18px;background:var(--soft);border-bottom:1px solid var(--line);font-size:12px}
-.device-dots{display:flex;gap:7px}
-.d-dot{width:10px;height:10px;border-radius:50%}
-.d-dot.red{background:#ff5f56}.d-dot.yellow{background:#ffbd2e}.d-dot.green{background:#27c93f}
-.device-nav{display:flex;gap:8px;color:var(--muted);font-weight:700;font-size:11px;margin-left:4px}
-.device-url{flex:1;max-width:360px;margin:0 auto;background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:5px 16px;display:flex;align-items:center;gap:8px;color:var(--muted);font-size:12px}
-.device-url svg{width:13px;height:13px;color:var(--coral);flex-shrink:0}
+  <!-- Favicons (Google SERP & Browser Compliant) -->
+  <link rel="icon" href="/favicon.ico" sizes="any" />
+  <link rel="shortcut icon" href="/favicon.ico" />
+  <link rel="icon" type="image/png" sizes="48x48" href="/brand/qlarity-icon-48.png" />
+  <link rel="icon" type="image/png" sizes="96x96" href="/brand/qlarity-icon-96.png" />
+  <link rel="icon" type="image/png" sizes="144x144" href="/brand/qlarity-icon-144.png" />
+  <link rel="icon" type="image/png" sizes="192x192" href="/brand/qlarity-icon-192.png" />
+  <link rel="icon" type="image/png" sizes="512x512" href="/brand/qlarity-icon-512.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/brand/qlarity-icon-32.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/brand/qlarity-icon-180.png" />
+  <link rel="manifest" href="/site.webmanifest" />
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%233A0F34'/%3E%3Cpath d='M42.5 38.2A17 17 0 1 0 36.2 44.5' fill='none' stroke='%23F4F6F8' stroke-width='6' stroke-linecap='round'/%3E%3Crect x='20' y='28' width='4.2' height='8' rx='2' fill='%23F4F6F8' opacity='0.65'/%3E%3Crect x='26.5' y='23' width='4.2' height='13' rx='2' fill='%23F4F6F8' opacity='0.85'/%3E%3Crect x='33' y='18' width='4.2' height='18' rx='2' fill='%23F4F6F8'/%3E%3Cline x1='38' y1='38' x2='49' y2='49' stroke='%23EAAA00' stroke-width='6.5' stroke-linecap='round'/%3E%3C/svg%3E" />
 
-/* screen layout: 3 spacious columns */
-.screen{display:grid;grid-template-columns:185px minmax(0,1fr) 265px;background:var(--bg);min-height:540px;font-size:12px;color:var(--fg)}
+  <!-- Open Graph / Social Meta -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Qlarity" />
+  <meta property="og:title" content="Qlarity — Make Every Marketing Rupee Count" />
+  <meta property="og:description" content="Built for Indian performance agencies and brands. Track multi-currency client ad spend alongside AI lead scoring and transparent INR plans." />
+  <meta property="og:url" content="https://getqlarity.online/" />
+  <meta property="og:image" content="https://getqlarity.online/brand/qlarity-og.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Qlarity: AI-powered performance marketing analytics" />
+  <meta property="og:locale" content="en_IN" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Qlarity — Make Every Marketing Rupee Count" />
+  <meta name="twitter:description" content="Built for Indian performance agencies and brands. Track multi-currency client ad spend alongside AI lead scoring and transparent INR plans." />
+  <meta name="twitter:image" content="https://getqlarity.online/brand/qlarity-og.png" />
 
-/* 1. left sidebar */
-.d-side{background:var(--panel);border-right:1px solid var(--line);padding:16px 12px;display:flex;flex-direction:column;gap:5px}
-.d-logo{padding:4px 8px 12px;display:flex;align-items:center;color:var(--coral)}
-.d-logo svg{width:24px;height:24px}
-.d-nav-item{display:flex;align-items:center;gap:9px;padding:8px 11px;border-radius:9px;color:var(--muted);font-size:12px;font-weight:500;white-space:nowrap}
-.d-nav-item svg{width:15px;height:15px;flex-shrink:0}
-.d-nav-item.active{background:var(--coral-soft);color:var(--coral);font-weight:700}
-.d-nav-item.active svg{color:var(--coral)}
-.d-nav-item.parent{justify-content:space-between}
-.d-nav-item .chevron{font-size:10px;opacity:.7}
-.d-nav-sub{padding-left:28px;display:grid;gap:5px;font-size:11px;color:var(--muted);margin-bottom:6px}
-.d-nav-sub span{cursor:pointer;opacity:.85;transition:color .15s}.d-nav-sub span:hover{color:var(--coral);opacity:1}
+  <!-- Structured Data (JSON-LD with Logo for SERP) -->
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "WebSite",
+          "@id": "https://getqlarity.online/#site",
+          "url": "https://getqlarity.online/",
+          "name": "Qlarity",
+          "publisher": { "@id": "https://getqlarity.online/#org" },
+          "inLanguage": "en-IN"
+        },
+        {
+          "@type": "Organization",
+          "@id": "https://getqlarity.online/#org",
+          "name": "Qlarity",
+          "url": "https://getqlarity.online/",
+          "logo": {
+            "@type": "ImageObject",
+            "@id": "https://getqlarity.online/#logo",
+            "url": "https://getqlarity.online/brand/qlarity-icon-512.png",
+            "contentUrl": "https://getqlarity.online/brand/qlarity-icon-512.png",
+            "width": 512,
+            "height": 512,
+            "caption": "Qlarity"
+          },
+          "image": { "@id": "https://getqlarity.online/#logo" },
+          "email": "harikrishnashetty1@gmail.com"
+        },
+        {
+          "@type": "SoftwareApplication",
+          "name": "Qlarity",
+          "url": "https://getqlarity.online/",
+          "applicationCategory": "BusinessApplication",
+          "applicationSubCategory": "Performance marketing analytics",
+          "operatingSystem": "Web",
+          "publisher": { "@id": "https://getqlarity.online/#org" },
+          "image": "https://getqlarity.online/brand/qlarity-icon-512.png",
+          "description": "AI-powered performance marketing and lead-quality attribution platform built for Indian agencies and brands managing domestic and international client ad spend.",
+          "offers": {
+            "@type": "AggregateOffer",
+            "lowPrice": "11999",
+            "highPrice": "34999",
+            "priceCurrency": "INR",
+            "offerCount": "3"
+          },
+          "featureList": [
+            "Campaign analytics",
+            "AI lead scoring",
+            "Multi-currency ad spend tracking",
+            "Cost Per Qualified Lead (CPQL)",
+            "Automated budget anomaly alerts",
+            "White-label agency dashboards"
+          ]
+        }
+      ]
+    }
+  </script>
 
-/* 2. center area */
-.d-center{padding:16px 18px;display:grid;gap:14px;align-content:start;min-width:0}
-.d-top-strip{display:flex;gap:14px;align-items:center;flex-wrap:nowrap;overflow-x:auto;padding-bottom:2px}
-.d-search{display:flex;align-items:center;gap:7px;background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:6px 14px;font-size:11.5px;color:var(--muted);width:130px;flex-shrink:0}
-.d-search svg{width:13px;height:13px}
-.d-ticker{display:flex;gap:18px;align-items:center;flex-wrap:nowrap;overflow-x:auto}
-.d-tick{display:flex;flex-direction:column;gap:1px;white-space:nowrap}
-.d-tick .k{font-size:10.5px;color:var(--muted);font-weight:500}
-.d-tick .v{font-size:13px;font-weight:700;color:var(--ink);display:flex;align-items:baseline;gap:5px}
-.d-tick em{font-style:normal;font-size:10px;font-weight:600;padding:1px 6px;border-radius:999px}
-.d-tick em.up{color:var(--emerald);background:var(--emerald-soft)}
-.d-tick em.down{color:var(--bad);background:var(--bad-bg)}
-.d-tick small{color:var(--muted);font-size:10.5px;font-weight:500}
+  <!-- Google Fonts: Playfair Display + Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet" />
 
-/* cards */
-.d-card{background:var(--panel);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);padding:16px}
-.d-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;font-size:12.5px}
-.d-title{display:flex;align-items:center;gap:7px}
-.d-title b{font-weight:700;color:var(--ink);font-size:13.5px}
-.d-head .dots{color:var(--muted);cursor:pointer;letter-spacing:1px}
-.d-period{font-size:10.5px;color:var(--muted);border:1px solid var(--line);padding:2px 8px;border-radius:999px}
-.d-series-tog{display:flex;gap:12px;font-size:11px;font-weight:500}
-.d-series-tog .coral{color:var(--coral)} .d-series-tog .blue{color:var(--blue)} .d-series-tog .cyan{color:var(--cyan)}
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            aubergine: {
+              DEFAULT: '#3A0F34',
+              dark: '#260822',
+              light: '#521A4A',
+            },
+            marigold: {
+              DEFAULT: '#EAAA00',
+              hover: '#D49A00',
+            },
+            icesilver: {
+              canvas: '#F4F6F8',
+              top: '#E8EDF1',
+              card: '#DDE3E8',
+            },
+          },
+          fontFamily: {
+            serif: ['"Playfair Display"', 'Georgia', 'serif'],
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+          },
+        },
+      },
+    };
+  </script>
 
-/* trends chart */
-.d-chart-box{position:relative;margin-top:6px}
-.d-chart-box svg{width:100%;height:120px;display:block}
-.d-tooltip{position:absolute;right:14%;top:8px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:6px 11px;box-shadow:0 8px 24px rgba(0,0,0,.08);font-size:10.5px;display:grid;gap:3px;z-index:2}
-.d-tooltip i.dot{display:inline-block;width:6px;height:6px;border-radius:50%;margin-right:4px}
-.d-tooltip i.dot.coral{background:var(--coral)}.d-tooltip i.dot.blue{background:var(--blue)}.d-tooltip i.dot.cyan{background:var(--cyan)}
-
-/* lead quality table */
-.d-leads-card{padding:14px 16px}
-.d-pills-bar{display:flex;gap:6px;margin-bottom:12px;overflow-x:auto}
-.pill-tab{padding:4px 11px;border-radius:999px;font-size:11px;color:var(--muted);background:var(--soft);cursor:pointer;white-space:nowrap;font-weight:500}
-.pill-tab.on{background:var(--coral-soft);color:var(--coral);font-weight:700}
-.d-table-wrap{width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:thin}
-.d-table{width:100%;border-collapse:collapse;font-size:11px;min-width:540px}
-.d-table th{color:var(--muted);text-align:left;font-weight:600;padding:6px 8px;border-bottom:1px solid var(--line);text-transform:uppercase;font-size:10px;letter-spacing:.04em}
-.d-table td{padding:7px 8px;border-bottom:1px solid var(--line-soft);white-space:nowrap}
-.badge{display:inline-block;padding:2px 7px;border-radius:5px;font-size:10px;font-weight:600;text-transform:uppercase}
-.badge.review{background:var(--coral-soft);color:var(--coral);border:1px solid var(--coral-line)}
-.badge.good{background:var(--emerald-soft);color:var(--emerald);border:1px solid var(--emerald-line)}
-.badge.neutral{background:var(--soft);color:var(--muted);border:1px solid var(--line)}
-
-/* expanded lead card */
-.d-expanded-lead{background:var(--panel);border:1px solid var(--line);border-top:3px solid var(--coral);border-radius:12px;padding:12px 14px;margin-top:10px;display:grid;grid-template-columns:1fr auto;gap:14px;box-shadow:0 3px 12px rgba(0,0,0,.03)}
-.lead-info{display:grid;gap:7px}
-.lead-top{font-size:11.5px;color:var(--ink);display:flex;align-items:center;gap:7px;flex-wrap:wrap}
-.lead-top small{color:var(--muted);font-size:10.5px}
-.lead-meta{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 12px;font-size:10.5px;color:var(--muted)}
-.lead-meta b{color:var(--ink)}
-.lead-meta .tag{font-style:normal;background:var(--blue-soft);color:var(--blue);padding:1px 6px;border-radius:4px;font-size:9.5px;font-weight:600}
-.lead-acts{display:flex;gap:7px;margin-top:4px}
-.d-btn{border:0;padding:6px 14px;border-radius:999px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;display:inline-flex;align-items:center;justify-content:center;text-decoration:none}
-.d-btn.coral{background:var(--coral);color:#ffffff;box-shadow:0 2px 8px rgba(26,115,232,.28)}
-:root[data-theme="dark"] .d-btn.coral{color:#202124}
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .d-btn.coral{color:#202124}}
-.d-btn.soft{background:var(--coral-soft);color:var(--coral);border:1px solid var(--coral-line)}
-.d-btn.ghost{background:transparent;border:1px solid var(--line);color:var(--muted)}
-.lead-score{display:grid;place-items:center}
-.score-circle{position:relative;width:56px;height:56px}
-.score-circle svg{width:100%;height:100%;transform:rotate(-90deg)}
-.score-text{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1}
-.score-text strong{font-size:15px;color:var(--ink);font-weight:800}
-.score-text small{font-size:8.5px;color:var(--coral);font-weight:700;text-transform:uppercase}
-
-/* 3. right widgets */
-.d-right{padding:16px 14px 16px 0;display:grid;gap:14px;align-content:start}
-.d-widget{padding:14px}
-.d-w-kpi{margin-bottom:8px}
-.d-w-kpi small{font-size:10px;color:var(--muted);display:block}
-.d-w-kpi strong{font-size:16px;color:var(--ink);font-weight:800;display:flex;align-items:baseline;gap:5px}
-.d-w-kpi em{font-style:normal;font-size:10.5px;font-weight:700;color:var(--emerald);background:var(--emerald-soft);padding:1px 6px;border-radius:999px}
-.d-w-mid{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}
-.d-w-sub small{font-size:9.5px;color:var(--muted);display:block}
-.d-w-sub strong{font-size:13.5px;color:var(--ink);font-weight:700;display:flex;align-items:baseline;gap:4px}
-.d-w-sub em{font-style:normal;font-size:10px;color:var(--emerald)}
-.d-donut svg{width:38px;height:38px;display:block}
-.d-w-stats{display:grid;gap:4px;font-size:10.5px;color:var(--muted);border-top:1px solid var(--line-soft);padding-top:7px}
-.d-w-stats div{display:flex;justify-content:space-between}
-.d-w-stats b{color:var(--ink);font-weight:600}
-.d-w-stats small.down{color:#c5221f;font-size:9.5px;font-weight:600}
-.d-w-stats small.up{color:var(--emerald);font-size:9.5px;font-weight:600}
-.d-posts-sec{margin-top:8px;border-top:1px solid var(--line-soft);padding-top:7px}
-.d-posts-sec small{font-size:10px;font-weight:700;color:var(--ink);display:block;margin-bottom:5px}
-.d-posts-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px}
-.d-post{height:36px;border-radius:6px;background:linear-gradient(135deg,#1a73e8,#8ab4f8);display:flex;align-items:flex-end;padding:3px;color:#fff;font-size:8.5px;font-weight:600}
-.d-post.p1{background:linear-gradient(135deg,#137333,#1a73e8)}
-.d-post.p2{background:linear-gradient(135deg,#b06000,#c5221f)}
-.d-post.p3{background:linear-gradient(135deg,#1967d2,#8ab4f8)}
-.d-post.p4{background:linear-gradient(135deg,#007b83,#1a73e8)}
-
-/* X.com bars chart */
-.d-bars-chart{display:flex;align-items:flex-end;justify-content:space-between;gap:5px;height:72px;margin-bottom:8px;padding-top:10px}
-.bar-col{display:flex;flex-direction:column;align-items:center;gap:3px;flex:1}
-.b-fill{width:100%;max-width:14px;background:var(--blue);border-radius:999px;transition:height .3s}
-.bar-col small{font-size:9.5px;color:var(--muted)}
-
-/* cards: modern rounded 16px style */
-.grid{display:grid;gap:var(--gap)}
-.cols-3{grid-template-columns:repeat(3,minmax(0,1fr))}
-.cols-4{grid-template-columns:repeat(4,minmax(0,1fr))}
-.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:var(--card-pad);height:100%;box-shadow:var(--shadow);transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease}
-.card:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg);border-color:var(--coral-line)}
-.ic{width:46px;height:46px;border-radius:12px;display:inline-flex;align-items:center;justify-content:center;margin-bottom:18px;background:rgba(26,115,232,.08);border:1px solid rgba(26,115,232,.18);color:var(--coral);box-shadow:0 1px 3px rgba(26,115,232,.06);transition:transform .2s ease,background-color .2s ease,border-color .2s ease,box-shadow .2s ease}
-:root[data-theme="dark"] .ic{background:rgba(138,180,248,.10);border-color:rgba(138,180,248,.22);color:#8ab4f8;box-shadow:0 2px 10px rgba(0,0,0,.25),inset 0 1px 0 rgba(255,255,255,.05)}
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .ic{background:rgba(138,180,248,.10);border-color:rgba(138,180,248,.22);color:#8ab4f8;box-shadow:0 2px 10px rgba(0,0,0,.25),inset 0 1px 0 rgba(255,255,255,.05)}}
-.card:hover .ic{transform:translateY(-2px);background:rgba(26,115,232,.14);border-color:rgba(26,115,232,.35);box-shadow:0 6px 16px rgba(26,115,232,.20)}
-:root[data-theme="dark"] .card:hover .ic{background:rgba(138,180,248,.18);border-color:rgba(138,180,248,.45);box-shadow:0 6px 20px rgba(138,180,248,.22)}
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .card:hover .ic{background:rgba(138,180,248,.18);border-color:rgba(138,180,248,.45);box-shadow:0 6px 20px rgba(138,180,248,.22)}}
-.ic svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;transition:transform .2s ease}
-.card:hover .ic svg{transform:scale(1.08)}
-
-/* thematic card icon accents */
-#problem .ic{background:rgba(197,34,31,.08);border-color:rgba(197,34,31,.20);color:#c5221f;box-shadow:0 1px 3px rgba(197,34,31,.06)}
-:root[data-theme="dark"] #problem .ic{background:rgba(242,139,130,.12);border-color:rgba(242,139,130,.25);color:#f28b82;box-shadow:0 2px 10px rgba(0,0,0,.25),inset 0 1px 0 rgba(255,255,255,.05)}
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) #problem .ic{background:rgba(242,139,130,.12);border-color:rgba(242,139,130,.25);color:#f28b82;box-shadow:0 2px 10px rgba(0,0,0,.25),inset 0 1px 0 rgba(255,255,255,.05)}}
-#problem .card:hover .ic{background:rgba(197,34,31,.14);border-color:rgba(197,34,31,.35);box-shadow:0 6px 16px rgba(197,34,31,.20)}
-:root[data-theme="dark"] #problem .card:hover .ic{background:rgba(242,139,130,.20);border-color:rgba(242,139,130,.45);box-shadow:0 6px 20px rgba(242,139,130,.22)}
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) #problem .card:hover .ic{background:rgba(242,139,130,.20);border-color:rgba(242,139,130,.45);box-shadow:0 6px 20px rgba(242,139,130,.22)}}
-
-#who .ic{background:rgba(19,115,51,.08);border-color:rgba(19,115,51,.20);color:#137333;box-shadow:0 1px 3px rgba(19,115,51,.06)}
-:root[data-theme="dark"] #who .ic{background:rgba(129,201,149,.12);border-color:rgba(129,201,149,.25);color:#81c995;box-shadow:0 2px 10px rgba(0,0,0,.25),inset 0 1px 0 rgba(255,255,255,.05)}
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) #who .ic{background:rgba(129,201,149,.12);border-color:rgba(129,201,149,.25);color:#81c995;box-shadow:0 2px 10px rgba(0,0,0,.25),inset 0 1px 0 rgba(255,255,255,.05)}}
-#who .card:hover .ic{background:rgba(19,115,51,.14);border-color:rgba(19,115,51,.35);box-shadow:0 6px 16px rgba(19,115,51,.20)}
-:root[data-theme="dark"] #who .card:hover .ic{background:rgba(129,201,149,.20);border-color:rgba(129,201,149,.45);box-shadow:0 6px 20px rgba(129,201,149,.22)}
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) #who .card:hover .ic{background:rgba(129,201,149,.20);border-color:rgba(129,201,149,.45);box-shadow:0 6px 20px rgba(129,201,149,.22)}}
-.card p{font-size:15px;line-height:1.55;color:var(--fg)}
-.step .n{display:block;margin-bottom:12px;font:800 16px/1 "Plus Jakarta Sans",sans-serif;color:var(--accent-text);letter-spacing:.04em}
-:root[data-theme="dark"] .step .n{color:var(--coral)}
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .step .n{color:var(--coral)}}
-.feature{transition:border-color .15s,transform .15s}
-.feature:hover{border-color:rgba(26,115,232,.35);transform:translateY(-2px)}
-/* AI */
-.ai{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:56px;align-items:center}
-.ai .intro{margin-bottom:28px}
-.chat{margin:0;background:var(--panel);border:1px solid var(--line);border-radius:20px;overflow:hidden;box-shadow:var(--shadow-lg);color:var(--fg)}
-.chat-h{display:flex;align-items:center;gap:12px;padding:16px 18px;border-bottom:1px solid var(--line)}
-.chat-h .av{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;background:var(--grad);color:#fff}
-.chat-h .av svg{width:19px;height:19px}
-.chat-h b{display:block;font:700 15.5px/1.2 "Plus Jakarta Sans",sans-serif;color:var(--ink)}.chat-h small{font-size:12px;color:var(--muted)}
-.chat-b{padding:18px;display:grid;gap:14px;font-size:14.5px;line-height:1.5}
-.q{justify-self:end;max-width:90%;padding:10px 14px;border-radius:14px 14px 4px 14px;background:var(--soft);color:var(--ink);font-weight:500}
-.a ul{margin:6px 0 0;padding-left:18px}.a b{color:var(--ink)}
-.chat-f{padding:0 18px 16px;font-size:11.5px;color:var(--muted)}
-/* trust list */
-.trust-card{display:flex;gap:16px;align-items:flex-start}
-.trust-card .ic{margin:0;flex:none}
-/* FAQ */
-.faq{max-width:860px;display:grid;gap:10px}
-.faq details{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:0 22px}
-.faq summary{cursor:pointer;list-style:none;padding:19px 0;font:600 17px/1.4 "Plus Jakarta Sans",sans-serif;color:var(--ink);display:flex;justify-content:space-between;gap:16px}
-.faq summary::-webkit-details-marker{display:none}
-.faq summary:after{content:"+";font-size:22px;font-weight:500;line-height:1;color:var(--coral)}
-.faq details[open] summary:after{content:"–"}
-.faq p{padding:0 0 19px;font-size:16px;color:var(--fg);line-height:1.6}
-/* final */
-.final{padding:0 0 64px}
-.final .box{border-radius:24px;padding:48px 32px;text-align:center}
-.final .intro{margin:14px auto 28px}
-.final .actions{justify-content:center}
-.final .trust{justify-content:center;color:rgba(255,255,255,.7)}
-.final .trust svg{color:var(--cyan)}
-/* footer */
-footer{background:var(--navy,#111622);color:rgba(255,255,255,.78);padding:48px 0 32px;font-size:15px}
-footer .row{display:flex;flex-wrap:wrap;gap:24px 40px;align-items:flex-start;justify-content:space-between}
-footer img{height:30px;width:auto;margin-bottom:12px}
-footer p{max-width:420px}
-footer nav{display:flex;flex-wrap:wrap;gap:22px}
-footer a{color:rgba(255,255,255,.75);text-decoration:none;transition:color .15s}
-footer a:hover{color:#fff}
-footer .bottom{margin-top:36px;padding-top:20px;border-top:1px solid rgba(255,255,255,.12);font-size:13.5px}
-:root[data-theme="dark"] footer{background:#171d29;border-top:1px solid var(--line)}
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) footer{background:#171d29;border-top:1px solid var(--line)}}
-/* tablet: 2-column or stacked widgets */
-@media (max-width:1040px){
-  .hero{padding:48px 0 60px}
-  .ai{grid-template-columns:minmax(0,1fr);gap:44px}
-  .cols-3,.cols-4{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .nav nav{display:none}.nav .wrap{justify-content:space-between}
-  .screen{grid-template-columns:150px minmax(0,1fr)}
-  .d-right{grid-column:1 / -1;padding:0 16px 16px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
-}
-/* mobile: tailored responsive layout, full touch friendliness */
-@media (max-width:768px){
-  body{font-size:16px}
-  section{padding:48px 0}
-  .hero{padding:36px 0 48px}
-  .final{padding:0 0 44px}
-  .wrap{padding:0 16px}
-  .cols-3,.cols-4{grid-template-columns:minmax(0,1fr)}
-  :root{--card-pad:20px}
-  .head{margin-bottom:20px}
-  .hero-intro{margin-bottom:28px}
-  .hero h1{font-size:clamp(30px,7.5vw,42px);line-height:1.12;margin-bottom:14px}
-  .hero .lede{font-size:16px;line-height:1.5;margin-bottom:22px}
-  .hero .actions{flex-direction:column;width:100%;max-width:320px;margin:0 auto}
-  .hero .actions .btn{width:100%}
-  .trust{font-size:12.5px;gap:8px 16px;margin-top:18px}
-  .works{font-size:12px;margin-top:16px;padding-top:14px}
-  
-  /* device mobile fixes */
-  .device{border-radius:16px;margin:20px 0 0}
-  .device-bar{padding:8px 12px;gap:8px}
-  .device-dots{gap:5px}
-  .d-dot{width:8px;height:8px}
-  .device-nav{display:none}
-  .device-url{max-width:240px;font-size:10.5px;padding:3px 10px}
-  .screen{display:flex;flex-direction:column;min-height:auto}
-  .d-side{display:none}
-  .d-center{padding:12px;gap:10px}
-  .d-top-strip{gap:8px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:4px;scrollbar-width:none}
-  .d-top-strip::-webkit-scrollbar{display:none}
-  .d-search{width:95px;padding:4px 10px;font-size:10.5px}
-  .d-ticker{gap:12px}
-  .d-tick .k{font-size:9.5px}
-  .d-tick .v{font-size:11.5px}
-  .d-card{padding:12px;border-radius:14px}
-  .d-title b{font-size:12.5px}
-  .d-series-tog{font-size:10px;gap:8px}
-  .d-chart-box svg{height:100px}
-  .d-tooltip{right:8px;top:6px;padding:5px 8px;font-size:9.5px}
-  
-  /* table scrollable wrapper on mobile */
-  .d-table-wrap{width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:thin;margin:4px 0}
-  .d-table{min-width:480px;font-size:10px}
-  .d-table th, .d-table td{padding:5px 6px}
-  
-  /* expanded lead stacked for mobile */
-  .d-expanded-lead{grid-template-columns:1fr;gap:10px;padding:11px}
-  .lead-top{font-size:11px}
-  .lead-meta{grid-template-columns:1fr;gap:5px;font-size:10.5px}
-  .lead-acts{flex-wrap:wrap;gap:6px;margin-top:6px}
-  .lead-acts .d-btn{flex:1 1 calc(50% - 6px);text-align:center;justify-content:center;padding:7px 10px;font-size:10.5px}
-  .lead-acts .d-btn.ghost{flex:1 1 100%;margin-left:0!important}
-  .lead-score{order:-1;justify-self:start;display:flex;align-items:center;gap:10px}
-  .score-circle{width:46px;height:46px}
-  .score-text strong{font-size:13px}
-  .score-text small{font-size:8px}
-  
-  /* right social cards on mobile */
-  .d-right{padding:0 12px 14px;display:grid;grid-template-columns:1fr;gap:10px}
-  .d-widget{padding:12px}
-  .d-posts-grid{gap:4px}
-  .d-post{height:32px;font-size:8px}
-  .d-bars-chart{height:60px}
-  
-  .nav .btn.secondary{display:none}
-  .final .box{padding:48px 20px}
-}
-@media (max-width:400px){
-  .hero h1{font-size:28px}
-  .d-top-strip{gap:6px}
-  .d-search{width:85px;font-size:9.5px}
-  .lead-acts .d-btn{flex:1 1 100%}
-}
-@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*{transition:none!important}}
-/* v4 additions: centred solution band, four steps */
-.center{text-align:center}.center .intro{margin-left:auto;margin-right:auto}
-#solution{padding:80px 0}
-</style>
+  <style>
+    .hero-diagonal-bg {
+      background: linear-gradient(173deg, #E8EDF1 0%, #F4F6F8 55%, #FFFFFF 55.3%);
+    }
+    .bar-transition {
+      transition: height 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    /* Custom Range Slider Styling */
+    input[type="range"].qlarity-slider {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 8px;
+      border-radius: 999px;
+      background: #DDE3E8;
+      outline: none;
+    }
+    input[type="range"].qlarity-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: #3A0F34;
+      border: 3px solid #EAAA00;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(58, 15, 52, 0.25);
+      transition: transform 0.15s ease;
+    }
+    input[type="range"].qlarity-slider::-webkit-slider-thumb:hover {
+      transform: scale(1.1);
+    }
+    input[type="range"].qlarity-slider::-moz-range-thumb {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: #3A0F34;
+      border: 3px solid #EAAA00;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(58, 15, 52, 0.25);
+    }
+  </style>
 </head>
-<body>
-<a class="skip" href="#main">Skip to content</a>
+<body class="font-sans text-[#1E1B24] bg-white antialiased selection:bg-marigold selection:text-aubergine overflow-x-hidden">
 
-<header class="nav" id="top">
-  <div class="wrap">
-    <a class="logo" href="/" aria-label="Qlarity home"><img class="lt" src="brand/qlarity-logo.png" alt="Qlarity" width="620" height="200"><img class="dk" src="brand/qlarity-logo-dark.png" alt="Qlarity" width="620" height="200"></a>
-    <nav aria-label="Main"><a href="#solution">Solution</a><a href="#features">Features</a><a href="#who">Who It's For</a><a href="#how">How It Works</a></nav>
-    <div class="actions">
-      <button class="theme-btn" id="theme-btn" type="button" aria-label="Switch to dark theme" title="Switch to dark theme"></button>
-      <a class="btn secondary sm" href="/app" data-signin>Sign In</a>
-      <a class="btn primary sm" href="/app?signup=1" data-start>Request a Demo</a>
+  <!-- 1. Sticky Top Navbar -->
+  <header class="sticky top-0 z-50 bg-icesilver-top/90 backdrop-blur-md border-b border-icesilver-card/80">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 h-20 flex items-center justify-between">
+      <!-- Unified Qlarity Logotype ("Measure • Analyse • Grow") -->
+      <a href="#" aria-label="Qlarity — Measure, Analyse, Grow" class="inline-flex items-center group select-none shrink-0">
+        <svg viewBox="0 0 300 116" class="h-12 sm:h-14 w-auto" fill="none" role="img" aria-label="Qlarity Measure Analyse Grow">
+          <defs>
+            <linearGradient id="qlarityBarGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#3A0F34" />
+              <stop offset="68%" stop-color="#5B1F52" />
+              <stop offset="100%" stop-color="#A6749E" stop-opacity="0.45" />
+            </linearGradient>
+          </defs>
+          <!-- Magnifying Glass Q Ring with Notch for Handle -->
+          <path d="M 73.2 61.8 A 31 31 0 1 0 60.8 73.2" stroke="#3A0F34" stroke-width="10.5" stroke-linecap="round" />
+          <!-- Three Ascending Analytics Bars Inside Q -->
+          <rect x="33" y="45" width="7.2" height="15" rx="3" fill="url(#qlarityBarGrad)" opacity="0.72" />
+          <rect x="43.5" y="37" width="7.2" height="23" rx="3" fill="url(#qlarityBarGrad)" opacity="0.88" />
+          <rect x="54" y="29" width="7.2" height="31" rx="3" fill="url(#qlarityBarGrad)" />
+          <!-- Marigold Magnifying Glass Handle -->
+          <line x1="63" y1="63" x2="82" y2="82" stroke="#EAAA00" stroke-width="11.5" stroke-linecap="round" />
+          <!-- Editorial Serif "larity" -->
+          <text x="88" y="74" fill="#3A0F34" font-family="'Playfair Display', Georgia, serif" font-size="68" font-weight="800" letter-spacing="-0.02em">
+            larity
+          </text>
+          <!-- Sub-Tagline Centered Directly Below Full "Qlarity" Lockup -->
+          <text x="150" y="106" text-anchor="middle" fill="#47424F" font-family="Inter, system-ui, sans-serif" font-size="14.5" font-weight="500" letter-spacing="0.08em">
+            Measure <tspan fill="#EAAA00" font-size="16">&#8226;</tspan> Analyse <tspan fill="#EAAA00" font-size="16">&#8226;</tspan> Grow
+          </text>
+        </svg>
+      </a>
+
+      <!-- Desktop Primary Navigation -->
+      <nav aria-label="Primary Navigation" class="hidden md:flex items-center gap-7 text-sm font-medium text-[#2A2433]">
+        <a href="#features" class="hover:text-aubergine transition py-2">Features</a>
+        <a href="#how-it-works" class="hover:text-aubergine transition py-2">How It Works</a>
+        <a href="#roi-calculator" class="hover:text-aubergine transition py-2">ROI Calculator</a>
+        <a href="#pricing" class="hover:text-aubergine transition py-2">Pricing</a>
+        <a href="#faq" class="hover:text-aubergine transition py-2">FAQ</a>
+        <a href="/app" class="hover:text-aubergine font-semibold transition py-2 inline-flex items-center gap-1">Open App &rarr;</a>
+      </nav>
+
+      <!-- Header Actions -->
+      <div class="flex items-center gap-3">
+        <button
+          type="button"
+          data-open-demo
+          class="bg-marigold hover:bg-marigold-hover text-aubergine font-semibold text-sm px-5 py-2.5 rounded-full shadow-sm transition cursor-pointer"
+        >
+          Request a Demo
+        </button>
+
+        <!-- Mobile Menu Button -->
+        <button
+          type="button"
+          id="mobile-menu-btn"
+          aria-expanded="false"
+          aria-controls="mobile-menu"
+          aria-label="Toggle navigation menu"
+          class="md:hidden p-2.5 rounded-xl border border-icesilver-card bg-white/85 text-aubergine cursor-pointer"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+      </div>
     </div>
-  </div>
-</header>
 
-<main id="main">
-<!-- 1. hero -->
-<section class="hero" aria-labelledby="hero-title">
-  <div class="wrap">
-    <div class="hero-intro">
-      <p class="eyebrow">AI-Powered Performance Marketing</p>
-      <h1 id="hero-title">Know Which Campaigns Bring <span>Quality Customers.</span></h1>
-      <p class="lede">Track your ad spend, leads, and customer data in one place. Discover what works, spot wasted spend, and make smarter marketing decisions.</p>
-      <div class="actions">
-        <a class="btn primary" href="/app?signup=1" data-start>Request a Demo <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
-        <a class="btn secondary" href="#solution">Explore Qlarity</a>
-      </div>
-      <div class="trust">
-        <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg> No credit card required</span>
-        <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg> 5-minute setup</span>
-        <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg> Realtime attribution</span>
-      </div>
-      <div class="works">
-        <span>Works with your stack: <b>Google Ads</b> · <b>Meta Ads</b> · <b>LinkedIn</b> · <b>GA4</b> · <b>HubSpot</b> · <b>Shopify</b></span>
-      </div>
-    </div>
+    <!-- Mobile Navigation Drawer -->
+    <nav id="mobile-menu" aria-label="Mobile Navigation" class="hidden md:hidden bg-white border-b border-icesilver-card px-6 py-4 space-y-2">
+      <a href="#features" class="mobile-nav-link block py-2 text-sm font-medium text-aubergine">Features</a>
+      <a href="#how-it-works" class="mobile-nav-link block py-2 text-sm font-medium text-aubergine">How It Works</a>
+      <a href="#roi-calculator" class="mobile-nav-link block py-2 text-sm font-medium text-aubergine">ROI Calculator</a>
+      <a href="#pricing" class="mobile-nav-link block py-2 text-sm font-medium text-aubergine">Pricing</a>
+      <a href="#faq" class="mobile-nav-link block py-2 text-sm font-medium text-aubergine">FAQ</a>
+      <a href="/app" class="mobile-nav-link block py-2 text-sm font-bold text-aubergine border-t border-icesilver-card pt-3">Open App &rarr;</a>
+    </nav>
+  </header>
 
-    <figure class="device" aria-label="Qlarity AI Performance Marketing Dashboard">
-      <div class="device-bar">
-        <div class="device-dots">
-          <span class="d-dot red"></span>
-          <span class="d-dot yellow"></span>
-          <span class="d-dot green"></span>
+  <!-- Main Content -->
+  <main id="main-content">
+
+    <!-- 2. Hero Section -->
+    <section aria-labelledby="hero-heading" class="hero-diagonal-bg pt-12 sm:pt-16 pb-10 px-4 sm:px-6">
+      <div class="max-w-4xl mx-auto text-center">
+        <h1 id="hero-heading" class="font-serif text-4xl sm:text-5xl md:text-[56px] font-extrabold text-aubergine leading-[1.08] tracking-tight uppercase">
+          Make Every Marketing<br />Rupee Count
+        </h1>
+        <p class="mt-5 text-base sm:text-lg text-[#3D3746] max-w-2xl mx-auto leading-relaxed">
+          AI-powered performance marketing &amp; lead-quality attribution built for Indian agencies and brands&mdash;with multi-currency spend tracking for domestic and global client accounts.
+        </p>
+
+        <!-- Hero CTAs -->
+        <div class="mt-8 flex flex-wrap items-center justify-center gap-4">
+          <button
+            type="button"
+            data-open-demo
+            class="bg-marigold hover:bg-marigold-hover text-aubergine font-semibold text-sm px-6 py-3 rounded-full shadow-sm inline-flex items-center gap-2 transition cursor-pointer"
+          >
+            <span>Request a Demo</span>
+            <span aria-hidden="true">&rarr;</span>
+          </button>
+          <a
+            href="#how-it-works"
+            class="bg-white/85 hover:bg-white text-aubergine font-medium text-sm px-6 py-3 rounded-full border border-aubergine/30 transition"
+          >
+            See How It Works
+          </a>
         </div>
-        <div class="device-nav">&lt; &gt;</div>
-        <div class="device-url">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-          <span>https://getqlarity.online/app</span>
-        </div>
       </div>
-      <div class="screen">
-        <!-- 1. Left Sidebar -->
-        <aside class="d-side" aria-label="Dashboard navigation">
-          <div class="d-logo">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-          </div>
-          <div class="d-nav-item active">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-            <span>Realtime Overview</span>
-          </div>
-          <div class="d-nav-item parent">
-            <span style="display:flex;align-items:center;gap:9px">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-              <span>SEO</span>
-            </span>
-            <span class="chevron">▾</span>
-          </div>
-          <div class="d-nav-item parent">
-            <span style="display:flex;align-items:center;gap:9px">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
-              <span>Paid Ads</span>
-            </span>
-            <span class="chevron">▾</span>
-          </div>
-          <div class="d-nav-item parent">
-            <span style="display:flex;align-items:center;gap:9px">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
-              <span>Social Media</span>
-            </span>
-            <span class="chevron">▾</span>
-          </div>
-          <div class="d-nav-item parent">
-            <span style="display:flex;align-items:center;gap:9px">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
-              <span>Data Sources</span>
-            </span>
-            <span class="chevron">▾</span>
-          </div>
-          <div class="d-nav-sub">
-            <span>Google Analytics</span>
-            <span>Google Ads</span>
-            <span>Meta Ads</span>
-            <span>Social Platforms</span>
-          </div>
-          <div class="d-nav-item">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-            <span>Reports</span>
-          </div>
-          <div class="d-nav-item">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-            <span>Settings</span>
-          </div>
-        </aside>
 
-        <!-- 2. Center Area -->
-        <div class="d-center">
-          <!-- Top Strip: Search + KPI Tickers -->
-          <div class="d-top-strip">
-            <div class="d-search">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-              <span>Search...</span>
-            </div>
-            <div class="d-ticker">
-              <div class="d-tick">
-                <span class="k">Traffic</span>
-                <span class="v">982 <em class="up">+5%</em></span>
-              </div>
-              <div class="d-tick">
-                <span class="k">ROI</span>
-                <span class="v">+15% <em class="up">+3%</em></span>
-              </div>
-              <div class="d-tick">
-                <span class="k">Conversions</span>
-                <span class="v">473 <em class="up">+9%</em></span>
-              </div>
-              <div class="d-tick">
-                <span class="k">Expenses</span>
-                <span class="v">$884 <em class="down">-2%</em></span>
-              </div>
-              <div class="d-tick">
-                <span class="k">CTR</span>
-                <span class="v">2.5% <small class="down">-0.2%</small></span>
-              </div>
-              <div class="d-tick">
-                <span class="k">CPA</span>
-                <span class="v">$5.41 <small class="up">-$0.34</small></span>
-              </div>
-            </div>
-          </div>
+      <!-- Floating Interactive SaaS Dashboard Preview -->
+      <div class="max-w-3xl mx-auto mt-12 relative">
+        <!-- Floating AI Pill -->
+        <div class="flex justify-center -mb-3.5 relative z-20">
+          <span class="bg-icesilver-canvas border border-icesilver-card shadow-sm text-[11px] font-semibold tracking-wider uppercase text-aubergine px-3.5 py-1 rounded-full inline-flex items-center gap-1.5">
+            <span class="text-marigold" aria-hidden="true">&#10022;</span> AI-Powered Insights
+          </span>
+        </div>
 
-          <!-- Trends Multi-Series Chart Card -->
-          <div class="d-card">
-            <div class="d-head">
-              <div class="d-title">
-                <b>Trends</b>
-                <span class="dots">···</span>
-                <div class="d-series-tog" style="margin-left:10px">
-                  <span class="coral">● Traffic</span>
-                  <span class="blue">● ROI</span>
-                  <span class="cyan">● Conversions</span>
+        <!-- Dashboard Window -->
+        <div class="bg-white rounded-2xl shadow-xl border border-icesilver-card overflow-hidden grid grid-cols-1 md:grid-cols-12">
+          <!-- Deep Aubergine Sidebar -->
+          <aside class="md:col-span-3 bg-aubergine text-white p-4 flex flex-col justify-between">
+            <div>
+              <!-- Unified Sidebar Logotype (Light-on-Aubergine Version) -->
+              <div class="px-2 mb-5 select-none">
+                <svg viewBox="0 0 260 88" class="h-8 w-auto" fill="none" aria-label="Qlarity">
+                  <path d="M 59.5 50 A 25 25 0 1 0 49.5 59.5" stroke="#F4F6F8" stroke-width="8.5" stroke-linecap="round" />
+                  <rect x="27" y="37" width="5.8" height="12" rx="2.5" fill="#F4F6F8" opacity="0.6" />
+                  <rect x="35.5" y="30.5" width="5.8" height="18.5" rx="2.5" fill="#F4F6F8" opacity="0.82" />
+                  <rect x="44" y="24" width="5.8" height="25" rx="2.5" fill="#F4F6F8" />
+                  <line x1="51" y1="51" x2="66" y2="66" stroke="#EAAA00" stroke-width="9.5" stroke-linecap="round" />
+                  <text x="72" y="60" fill="#FFFFFF" font-family="'Playfair Display', Georgia, serif" font-size="55" font-weight="800" letter-spacing="-0.02em">
+                    larity
+                  </text>
+                </svg>
+              </div>
+
+              <ul class="space-y-1 text-xs">
+                <li class="bg-white/15 text-white font-medium px-3 py-2 rounded-lg flex items-center gap-2">
+                  <span class="w-2 h-2 rounded-full bg-marigold"></span>
+                  <span>Dashboard</span>
+                </li>
+                <li class="text-white/70 px-3 py-2 rounded-lg">Projects</li>
+                <li class="text-white/70 px-3 py-2 rounded-lg">Integrations</li>
+                <li class="text-white/70 px-3 py-2 rounded-lg">Campaigns</li>
+                <li class="text-white/70 px-3 py-2 rounded-lg">Users</li>
+                <li class="text-white/70 px-3 py-2 rounded-lg">Settings</li>
+              </ul>
+            </div>
+
+            <div class="hidden md:block pt-6 border-t border-white/10 text-[11px] text-white/65 px-2">
+              Workspace: Growth Agency
+            </div>
+          </aside>
+
+          <!-- Main Dashboard Content Area -->
+          <div class="md:col-span-9 p-5 bg-[#FAFBFD]">
+            <!-- Top Toolbar with Multi-Currency + Timeframe Switcher -->
+            <div class="flex flex-wrap items-center justify-between gap-2 border-b border-icesilver-card pb-3 mb-4">
+              <div class="flex items-center gap-2">
+                <span class="text-xs font-bold text-aubergine">Performance Overview</span>
+                <select
+                  id="dash-currency-select"
+                  aria-label="Client ad spend currency"
+                  class="text-[11px] font-semibold bg-white text-aubergine border border-icesilver-card rounded-lg px-2 py-1 focus:outline-none focus:border-aubergine cursor-pointer"
+                >
+                  <option value="INR" selected>&#8377; INR (India)</option>
+                  <option value="USD">$ USD (US Client)</option>
+                  <option value="GBP">&pound; GBP (UK Client)</option>
+                  <option value="EUR">&euro; EUR (EU Client)</option>
+                  <option value="AED">&#1583;.&#1573; AED (UAE Client)</option>
+                </select>
+              </div>
+              <div class="inline-flex items-center bg-icesilver-canvas p-1 rounded-lg border border-icesilver-card" role="group" aria-label="Dashboard timeframe">
+                <button
+                  type="button"
+                  data-timeframe="7d"
+                  class="tf-btn text-[11px] font-medium px-2.5 py-1 rounded-md text-aubergine/75 hover:text-aubergine transition cursor-pointer"
+                >
+                  Last 7 Days
+                </button>
+                <button
+                  type="button"
+                  data-timeframe="30d"
+                  class="tf-btn text-[11px] font-semibold px-2.5 py-1 rounded-md bg-aubergine text-white shadow-2xs transition cursor-pointer"
+                >
+                  Last 30 Days
+                </button>
+                <button
+                  type="button"
+                  data-timeframe="qtr"
+                  class="tf-btn text-[11px] font-medium px-2.5 py-1 rounded-md text-aubergine/75 hover:text-aubergine transition cursor-pointer"
+                >
+                  Quarter
+                </button>
+              </div>
+            </div>
+
+            <!-- 3 KPI Cards -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
+              <div class="bg-white p-3.5 rounded-xl border border-icesilver-card/90 shadow-2xs">
+                <div class="text-[11px] text-gray-500 font-medium">Total Ad Spend</div>
+                <div id="kpi-spend" class="text-lg font-extrabold text-aubergine mt-1">&#8377;4,52,000</div>
+                <div id="kpi-spend-sub" class="text-[10px] text-emerald-700 font-semibold mt-1">&uarr; 12.4% efficiency</div>
+              </div>
+
+              <div class="bg-white p-3.5 rounded-xl border border-icesilver-card/90 shadow-2xs">
+                <div class="text-[11px] text-gray-500 font-medium">Lead Quality Score</div>
+                <div id="kpi-score" class="text-lg font-extrabold text-aubergine mt-1">87/100</div>
+                <div id="kpi-score-sub" class="text-[10px] text-amber-700 font-semibold mt-1">AI Verified High-Intent</div>
+              </div>
+
+              <div class="bg-white p-3.5 rounded-xl border border-icesilver-card/90 shadow-2xs">
+                <div class="text-[11px] text-gray-500 font-medium">Cost Per Qualified Lead</div>
+                <div id="kpi-cpql" class="text-lg font-extrabold text-aubergine mt-1">&#8377;1,140</div>
+                <div id="kpi-cpql-sub" class="text-[10px] text-emerald-700 font-semibold mt-1">&darr; 18% vs prior period</div>
+              </div>
+            </div>
+
+            <!-- Campaign ROAS Pure CSS Bar Chart -->
+            <div class="bg-white p-4 rounded-xl border border-icesilver-card/90">
+              <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+                <span class="text-xs font-bold text-aubergine">Campaign ROAS (Qualified Pipeline vs Spend)</span>
+                <div class="flex items-center gap-3 text-[10px] text-gray-600 font-medium">
+                  <span class="inline-flex items-center gap-1.5">
+                    <span class="w-2.5 h-2.5 rounded-xs bg-marigold inline-block"></span> Qualified ROI
+                  </span>
+                  <span class="inline-flex items-center gap-1.5">
+                    <span class="w-2.5 h-2.5 rounded-xs bg-aubergine inline-block"></span> Ad Spend
+                  </span>
                 </div>
               </div>
-              <span class="d-period">3M ▾</span>
+
+              <div id="roas-chart" class="h-28 flex items-end justify-between gap-2 pt-4 px-2 border-b border-gray-100">
+                <div class="flex items-end gap-1 flex-1 justify-center h-full">
+                  <div class="roas-gold bar-transition w-2.5 sm:w-3 bg-marigold rounded-t" style="height: 55%;"></div>
+                  <div class="roas-plum bar-transition w-2.5 sm:w-3 bg-aubergine rounded-t" style="height: 32%;"></div>
+                </div>
+                <div class="flex items-end gap-1 flex-1 justify-center h-full">
+                  <div class="roas-gold bar-transition w-2.5 sm:w-3 bg-marigold rounded-t" style="height: 68%;"></div>
+                  <div class="roas-plum bar-transition w-2.5 sm:w-3 bg-aubergine rounded-t" style="height: 40%;"></div>
+                </div>
+                <div class="flex items-end gap-1 flex-1 justify-center h-full">
+                  <div class="roas-gold bar-transition w-2.5 sm:w-3 bg-marigold rounded-t" style="height: 82%;"></div>
+                  <div class="roas-plum bar-transition w-2.5 sm:w-3 bg-aubergine rounded-t" style="height: 48%;"></div>
+                </div>
+                <div class="flex items-end gap-1 flex-1 justify-center h-full">
+                  <div class="roas-gold bar-transition w-2.5 sm:w-3 bg-marigold rounded-t" style="height: 94%;"></div>
+                  <div class="roas-plum bar-transition w-2.5 sm:w-3 bg-aubergine rounded-t" style="height: 54%;"></div>
+                </div>
+                <div class="flex items-end gap-1 flex-1 justify-center h-full">
+                  <div class="roas-gold bar-transition w-2.5 sm:w-3 bg-marigold rounded-t" style="height: 76%;"></div>
+                  <div class="roas-plum bar-transition w-2.5 sm:w-3 bg-aubergine rounded-t" style="height: 42%;"></div>
+                </div>
+                <div class="flex items-end gap-1 flex-1 justify-center h-full">
+                  <div class="roas-gold bar-transition w-2.5 sm:w-3 bg-marigold rounded-t" style="height: 64%;"></div>
+                  <div class="roas-plum bar-transition w-2.5 sm:w-3 bg-aubergine rounded-t" style="height: 70%;"></div>
+                </div>
+                <div class="flex items-end gap-1 flex-1 justify-center h-full">
+                  <div class="roas-gold bar-transition w-2.5 sm:w-3 bg-marigold rounded-t" style="height: 96%;"></div>
+                  <div class="roas-plum bar-transition w-2.5 sm:w-3 bg-aubergine rounded-t" style="height: 58%;"></div>
+                </div>
+              </div>
+              <div class="flex justify-between text-[10px] text-gray-400 px-2 pt-1.5 font-medium">
+                <span>Apr</span><span>May</span><span>Jun</span><span>Jul</span><span>Aug</span><span>Sep</span><span>Oct</span>
+              </div>
             </div>
-            <div class="d-chart-box">
-              <svg viewBox="0 0 460 110" preserveAspectRatio="none" aria-hidden="true">
-                <!-- Grid Lines -->
-                <line x1="0" y1="20" x2="460" y2="20" stroke="rgba(226,232,240,0.6)" stroke-dasharray="3,3"/>
-                <line x1="0" y1="50" x2="460" y2="50" stroke="rgba(226,232,240,0.6)" stroke-dasharray="3,3"/>
-                <line x1="0" y1="80" x2="460" y2="80" stroke="rgba(226,232,240,0.6)" stroke-dasharray="3,3"/>
-                <!-- Cyan series (Conversions) -->
-                <path d="M 0,85 C 40,82 70,68 110,65 C 150,62 170,72 210,58 C 250,44 280,55 330,48 C 370,42 410,50 460,35" fill="none" stroke="#06b6d4" stroke-width="2"/>
-                <!-- Blue series (ROI) -->
-                <path d="M 0,72 C 30,75 60,60 90,62 C 130,64 160,50 200,45 C 240,40 280,48 320,38 C 360,28 400,34 460,22" fill="none" stroke="#3b82f6" stroke-width="2"/>
-                <!-- Primary series (Traffic) -->
-                <path d="M 0,65 C 30,60 50,78 80,68 C 110,58 130,85 160,78 C 190,70 210,88 240,62 C 270,36 300,52 330,42 C 360,32 400,50 460,30" fill="none" stroke="#1a73e8" stroke-width="2.5"/>
-                <!-- Vertical marker indicator at day 25 -->
-                <line x1="330" y1="10" x2="330" y2="92" stroke="#1a73e8" stroke-dasharray="3,3" stroke-width="1.2"/>
-                <circle cx="330" cy="42" r="3.5" fill="#1a73e8" stroke="#1a73e8" stroke-width="1.5"/>
-                <rect x="322" y="93" width="16" height="15" rx="4" fill="#1a73e8"/>
-                <text x="330" y="104" fill="#ffffff" font-size="9" font-weight="700" text-anchor="middle" font-family="'Plus Jakarta Sans',sans-serif">25</text>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. Security & Compliance Trust Strip -->
+      <div class="max-w-4xl mx-auto mt-8">
+        <div class="bg-icesilver-canvas/90 border border-icesilver-card rounded-2xl px-4 py-3.5 shadow-2xs">
+          <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 text-xs font-semibold text-aubergine">
+            <div class="flex items-center justify-center sm:justify-start gap-2 bg-white px-3 py-2 rounded-xl border border-icesilver-card/70">
+              <svg class="w-4 h-4 text-emerald-700 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
               </svg>
-              <!-- Floating Tooltip -->
-              <div class="d-tooltip">
-                <div><i class="dot coral"></i> Traffic: <b>+3.2%</b></div>
-                <div><i class="dot blue"></i> ROI: <b>+4.1%</b></div>
-                <div><i class="dot cyan"></i> Conv.: <b>-2.7%</b></div>
-              </div>
+              <span>Read-Only OAuth 2.0</span>
+            </div>
+
+            <div class="flex items-center justify-center sm:justify-start gap-2 bg-white px-3 py-2 rounded-xl border border-icesilver-card/70">
+              <svg class="w-4 h-4 text-aubergine shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                <path d="M7 11V7a5 5 0 0110 0v4" />
+              </svg>
+              <span>AES-256 Encryption</span>
+            </div>
+
+            <div class="flex items-center justify-center sm:justify-start gap-2 bg-white px-3 py-2 rounded-xl border border-icesilver-card/70">
+              <svg class="w-4 h-4 text-amber-700 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" />
+              </svg>
+              <span>DPDP Act (India) Ready</span>
+            </div>
+
+            <div class="flex items-center justify-center sm:justify-start gap-2 bg-white px-3 py-2 rounded-xl border border-icesilver-card/70">
+              <svg class="w-4 h-4 text-emerald-700 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="12" cy="12" r="9" />
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4" />
+              </svg>
+              <span>Zero Ad Account Mutation</span>
             </div>
           </div>
+        </div>
+      </div>
+    </section>
 
-          <!-- Lead Quality Table Card -->
-          <div class="d-card d-leads-card">
-            <div class="d-pills-bar">
-              <span class="pill-tab on">Lead Quality</span>
-              <span class="pill-tab">Day on Day</span>
-              <span class="pill-tab">Week on Week</span>
-              <span class="pill-tab">SQR</span>
-              <span class="pill-tab">Keyword Performance</span>
-              <span class="pill-tab">Country</span>
-            </div>
-            <div class="d-table-wrap">
-              <table class="d-table">
-                <thead>
-                  <tr>
-                    <th scope="col">Date</th>
-                    <th scope="col">Company</th>
-                    <th scope="col">Email</th>
-                    <th scope="col">UTM</th>
-                    <th scope="col">Lead Quality</th>
-                    <th scope="col">Country</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>● Today, 14:12</td>
-                    <td>–</td>
-                    <td>contact@helpdesk.com</td>
-                    <td><a href="#solution" style="color:var(--muted)">link</a></td>
-                    <td><span class="badge review">Needs Review</span></td>
-                    <td>USA</td>
-                  </tr>
-                  <tr>
-                    <td>● Today, 8:34</td>
-                    <td><b>Innovate.co</b></td>
-                    <td>s.chen@innovate.co</td>
-                    <td><a href="#solution" style="color:var(--muted)">link</a></td>
-                    <td><span class="badge review">Needs Review</span></td>
-                    <td>Canada</td>
-                  </tr>
-                  <tr>
-                    <td>Aug 4, 17:57</td>
-                    <td><b>Webmail</b></td>
-                    <td>maria.g@webmail.net</td>
-                    <td><a href="#solution" style="color:var(--muted)">link</a></td>
-                    <td><span class="badge good">Good</span></td>
-                    <td>Germany</td>
-                  </tr>
-                  <tr>
-                    <td>Aug 4, 13:40</td>
-                    <td>–</td>
-                    <td>john.doe@startup.org</td>
-                    <td><a href="#solution" style="color:var(--muted)">link</a></td>
-                    <td><span class="badge good">Good</span></td>
-                    <td>Australia</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
+    <!-- 4. Feature Cards Grid -->
+    <section id="features" aria-labelledby="features-heading" class="max-w-5xl mx-auto px-4 sm:px-6 pt-4 pb-16">
+      <h2 id="features-heading" class="sr-only">Core Performance Marketing Features</h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <article class="bg-white rounded-2xl p-7 shadow-md border border-icesilver-card/80">
+          <div class="w-10 h-10 rounded-xl bg-icesilver-canvas flex items-center justify-center text-aubergine mb-4">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" aria-hidden="true">
+              <rect x="3" y="3" width="18" height="18" rx="3" />
+              <path d="M3 9h18M9 21V9" />
+            </svg>
+          </div>
+          <h3 class="text-base font-bold text-aubergine">All-in-One Dashboard</h3>
+          <p class="mt-2 text-sm text-gray-600 leading-relaxed">
+            Consolidate Meta, Google Ads, LinkedIn, and CRM funnels into a single multi-brand command center built for agency speed.
+          </p>
+        </article>
 
-            <!-- Expanded Lead Card -->
-            <div class="d-expanded-lead">
-              <div class="lead-info">
-                <div class="lead-top">
-                  <b>Aug 3, 10:22</b> · <b>Designhub</b> · contact@designhub.io · <span class="badge review">Needs Review</span> · <small>UK</small>
+        <article class="bg-white rounded-2xl p-7 shadow-md border border-icesilver-card/80">
+          <div class="w-10 h-10 rounded-xl bg-icesilver-canvas flex items-center justify-center text-aubergine mb-4">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="11" cy="11" r="7" />
+              <path d="M20 20l-3.5-3.5M11 8v6M8 11h6" />
+            </svg>
+          </div>
+          <h3 class="text-base font-bold text-aubergine">AI Lead Scoring (0-100)</h3>
+          <p class="mt-2 text-sm text-gray-600 leading-relaxed">
+            Automatically grade incoming leads by conversion intent and tie qualified pipeline back to exact ad sets and search terms.
+          </p>
+        </article>
+
+        <article class="bg-white rounded-2xl p-7 shadow-md border border-icesilver-card/80">
+          <div class="w-10 h-10 rounded-xl bg-icesilver-canvas flex items-center justify-center text-aubergine mb-4">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M3 17l6-6 4 4 8-8" />
+              <path d="M17 7h4v4" />
+            </svg>
+          </div>
+          <h3 class="text-base font-bold text-aubergine">Multi-Currency ROI Tracking</h3>
+          <p class="mt-2 text-sm text-gray-600 leading-relaxed">
+            Track true Cost Per Qualified Lead (CPQL) across INR, USD, GBP, EUR, and AED client ad accounts in real time without manual forex math.
+          </p>
+        </article>
+      </div>
+    </section>
+
+    <!-- 5. Interactive "See How It Works" 3-Step Walkthrough -->
+    <section id="how-it-works" aria-labelledby="how-heading" class="bg-icesilver-canvas/60 border-y border-icesilver-card/80 py-16 sm:py-20 px-4 sm:px-6">
+      <div class="max-w-5xl mx-auto">
+        <div class="text-center max-w-2xl mx-auto mb-10">
+          <span class="text-xs font-semibold uppercase tracking-wider text-aubergine/75">15-Second Workflow</span>
+          <h2 id="how-heading" class="font-serif text-3xl sm:text-4xl font-bold text-aubergine mt-2">
+            See How Qlarity Turns Ad Spend Into Qualified Revenue
+          </h2>
+          <p class="mt-3 text-sm sm:text-base text-gray-600">
+            Select each step below to preview how raw clicks become verified sales pipeline.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+          <!-- Left: 3 Clickable Step Tabs -->
+          <div role="tablist" aria-label="How Qlarity Works Steps" class="lg:col-span-5 space-y-3">
+            <button
+              type="button"
+              role="tab"
+              id="step-tab-1"
+              aria-selected="true"
+              aria-controls="step-panel-1"
+              data-step-tab="1"
+              class="step-tab-btn w-full text-left p-5 rounded-2xl border-2 border-aubergine bg-white shadow-md transition cursor-pointer"
+            >
+              <div class="flex items-center gap-3">
+                <span class="step-badge w-7 h-7 rounded-full bg-marigold text-aubergine font-bold text-xs flex items-center justify-center shrink-0">1</span>
+                <h3 class="font-bold text-sm sm:text-base text-aubergine">Connect Ad &amp; CRM Accounts</h3>
+              </div>
+              <p class="mt-2 text-xs sm:text-sm text-gray-600 leading-relaxed pl-10">
+                Link Google Ads, Meta Ads, LinkedIn, GA4, and HubSpot in under 10 minutes using read-only OAuth 2.0&mdash;zero engineering required.
+              </p>
+            </button>
+
+            <button
+              type="button"
+              role="tab"
+              id="step-tab-2"
+              aria-selected="false"
+              aria-controls="step-panel-2"
+              data-step-tab="2"
+              class="step-tab-btn w-full text-left p-5 rounded-2xl border border-icesilver-card bg-white/75 hover:bg-white transition cursor-pointer"
+            >
+              <div class="flex items-center gap-3">
+                <span class="step-badge w-7 h-7 rounded-full bg-icesilver-canvas text-aubergine font-bold text-xs flex items-center justify-center shrink-0">2</span>
+                <h3 class="font-bold text-sm sm:text-base text-aubergine">AI Scores Every Lead (0&ndash;100)</h3>
+              </div>
+              <p class="mt-2 text-xs sm:text-sm text-gray-600 leading-relaxed pl-10">
+                Qlarity evaluates search intent, campaign source, and CRM stage progression to separate high-intent buyers from low-quality inquiries.
+              </p>
+            </button>
+
+            <button
+              type="button"
+              role="tab"
+              id="step-tab-3"
+              aria-selected="false"
+              aria-controls="step-panel-3"
+              data-step-tab="3"
+              class="step-tab-btn w-full text-left p-5 rounded-2xl border border-icesilver-card bg-white/75 hover:bg-white transition cursor-pointer"
+            >
+              <div class="flex items-center gap-3">
+                <span class="step-badge w-7 h-7 rounded-full bg-icesilver-canvas text-aubergine font-bold text-xs flex items-center justify-center shrink-0">3</span>
+                <h3 class="font-bold text-sm sm:text-base text-aubergine">Reallocate Budget to High-ROAS Ad Sets</h3>
+              </div>
+              <p class="mt-2 text-xs sm:text-sm text-gray-600 leading-relaxed pl-10">
+                Spot high-CPQL leaks immediately and shift daily ad budgets toward the exact keywords and audiences closing deals.
+              </p>
+            </button>
+          </div>
+
+          <!-- Right: Dynamic Preview Panels -->
+          <div class="lg:col-span-7">
+            <!-- Panel 1 -->
+            <div id="step-panel-1" role="tabpanel" aria-labelledby="step-tab-1" class="step-panel bg-white rounded-2xl border border-icesilver-card shadow-lg p-6">
+              <div class="flex items-center justify-between border-b border-icesilver-card pb-3.5 mb-5">
+                <div>
+                  <span class="text-[11px] font-semibold uppercase tracking-wider text-amber-700">Step 01 &bull; One-Click OAuth</span>
+                  <h4 class="text-sm font-bold text-aubergine mt-0.5">Data Sources &amp; Pipeline Sync</h4>
                 </div>
-                <div class="lead-meta">
-                  <div>Services: <span class="tag">UI/UX Design</span> <span class="tag">Web Dev</span></div>
-                  <div>Note (Aug 3, 15:17) ✏️</div>
-                  <div>Source: <b>Google Ads (Summer Sale)</b></div>
-                  <div>Potential Revenue: <b>$1,500</b></div>
-                  <div>Lead Score: <b>85 (High Potential)</b></div>
-                  <div><small style="color:var(--muted)">⚡ Auto-attributed via Qlarity</small></div>
+                <span class="text-[11px] bg-emerald-50 text-emerald-700 border border-emerald-200 px-3 py-1 rounded-full font-semibold">
+                  5/5 Connected
+                </span>
+              </div>
+
+              <div class="space-y-3 text-xs">
+                <div class="flex items-center justify-between p-3 rounded-xl bg-icesilver-canvas/50 border border-icesilver-card/80">
+                  <div class="flex items-center gap-3">
+                    <span class="w-8 h-8 rounded-lg bg-white border border-icesilver-card flex items-center justify-center font-bold text-aubergine">&#9650;</span>
+                    <div>
+                      <div class="font-bold text-aubergine">Google Ads Account</div>
+                      <div class="text-[11px] text-gray-500">Campaigns, Ad Groups &amp; Search Terms</div>
+                    </div>
+                  </div>
+                  <span class="text-emerald-700 font-semibold">&#10003; Synced 2m ago</span>
                 </div>
-                <div class="lead-acts">
-                  <a href="/app" class="d-btn coral">View Campaign ↗</a>
-                  <a href="/app" class="d-btn soft">Assign to Team 👥</a>
-                  <button type="button" class="d-btn ghost" style="margin-left:auto">Archive Lead 🗑</button>
+
+                <div class="flex items-center justify-between p-3 rounded-xl bg-icesilver-canvas/50 border border-icesilver-card/80">
+                  <div class="flex items-center gap-3">
+                    <span class="w-8 h-8 rounded-lg bg-white border border-icesilver-card flex items-center justify-center font-bold text-[#1877F2]">&#8734;</span>
+                    <div>
+                      <div class="font-bold text-aubergine">Meta Ads Manager</div>
+                      <div class="text-[11px] text-gray-500">Lead Forms, CAPI Events &amp; Creative Spend</div>
+                    </div>
+                  </div>
+                  <span class="text-emerald-700 font-semibold">&#10003; Synced 2m ago</span>
+                </div>
+
+                <div class="flex items-center justify-between p-3 rounded-xl bg-icesilver-canvas/50 border border-icesilver-card/80">
+                  <div class="flex items-center gap-3">
+                    <span class="w-8 h-8 rounded-lg bg-white border border-icesilver-card flex items-center justify-center font-bold text-[#FF7A59]">H</span>
+                    <div>
+                      <div class="font-bold text-aubergine">HubSpot CRM Lifecycle</div>
+                      <div class="text-[11px] text-gray-500">MQL, SQL, Deal Stage &amp; Closed-Won Revenue</div>
+                    </div>
+                  </div>
+                  <span class="text-emerald-700 font-semibold">&#10003; Real-Time Webhook</span>
                 </div>
               </div>
-              <div class="lead-score">
-                <div class="score-circle">
-                  <svg viewBox="0 0 36 36">
-                    <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#e2e8f0" stroke-width="3"/>
-                    <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#1a73e8" stroke-width="3" stroke-dasharray="85, 100"/>
-                  </svg>
-                  <div class="score-text">
-                    <strong>85</strong>
-                    <small>AI Score</small>
+            </div>
+
+            <!-- Panel 2 -->
+            <div id="step-panel-2" role="tabpanel" aria-labelledby="step-tab-2" class="step-panel hidden bg-white rounded-2xl border border-icesilver-card shadow-lg p-6">
+              <div class="flex items-center justify-between border-b border-icesilver-card pb-3.5 mb-5">
+                <div>
+                  <span class="text-[11px] font-semibold uppercase tracking-wider text-amber-700">Step 02 &bull; AI Lead Quality Engine</span>
+                  <h4 class="text-sm font-bold text-aubergine mt-0.5">Live Incoming Lead Scoring Feed</h4>
+                </div>
+                <span class="text-[11px] bg-aubergine text-marigold px-3 py-1 rounded-full font-semibold">
+                  Avg Score: 87/100
+                </span>
+              </div>
+
+              <div class="space-y-3 text-xs">
+                <div class="p-3.5 rounded-xl bg-icesilver-canvas/45 border border-icesilver-card flex flex-wrap items-center justify-between gap-2">
+                  <div>
+                    <div class="font-bold text-aubergine">Rohan Mehta &bull; FinEdge India</div>
+                    <div class="text-[11px] text-gray-500">Source: Google Search &mdash; &ldquo;enterprise payroll software&rdquo;</div>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <span class="text-[11px] text-gray-600">Est. Deal: <strong>&#8377;4,80,000</strong></span>
+                    <span class="bg-emerald-100 text-emerald-800 font-bold px-2.5 py-1 rounded-full">94 / 100</span>
+                  </div>
+                </div>
+
+                <div class="p-3.5 rounded-xl bg-icesilver-canvas/45 border border-icesilver-card flex flex-wrap items-center justify-between gap-2">
+                  <div>
+                    <div class="font-bold text-aubergine">Sarah Jenkins &bull; US Client Account</div>
+                    <div class="text-[11px] text-gray-500">Source: LinkedIn Sponsored &mdash; VP Ops Audience</div>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <span class="text-[11px] text-gray-600">Est. Deal: <strong>$18,500</strong></span>
+                    <span class="bg-emerald-100 text-emerald-800 font-bold px-2.5 py-1 rounded-full">88 / 100</span>
+                  </div>
+                </div>
+
+                <div class="p-3.5 rounded-xl bg-red-50/60 border border-red-200 flex flex-wrap items-center justify-between gap-2">
+                  <div>
+                    <div class="font-bold text-gray-700">Generic Gmail Inquiry &bull; Unverified</div>
+                    <div class="text-[11px] text-gray-500">Source: Meta Broad Interest Ad Set #04</div>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <span class="text-[11px] text-red-700 font-medium">Low Intent Flagged</span>
+                    <span class="bg-red-100 text-red-800 font-bold px-2.5 py-1 rounded-full">26 / 100</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Panel 3 -->
+            <div id="step-panel-3" role="tabpanel" aria-labelledby="step-tab-3" class="step-panel hidden bg-aubergine text-white rounded-2xl border border-aubergine-light shadow-lg p-6">
+              <div class="flex items-center justify-between border-b border-white/15 pb-3.5 mb-5">
+                <div>
+                  <span class="text-[11px] font-semibold uppercase tracking-wider text-marigold">Step 03 &bull; Automated Budget Alerts</span>
+                  <h4 class="text-sm font-bold text-white mt-0.5">Recommended Budget Reallocation</h4>
+                </div>
+                <span class="text-[11px] bg-marigold text-aubergine px-3 py-1 rounded-full font-bold">
+                  +&#8377;1,85,000 Saved/Mo
+                </span>
+              </div>
+
+              <div class="space-y-3 text-xs">
+                <div class="p-3.5 rounded-xl bg-white/10 border border-white/15 flex items-center justify-between gap-3">
+                  <div>
+                    <span class="text-[10px] uppercase tracking-wider bg-red-500/25 text-red-200 px-2 py-0.5 rounded font-semibold">Pause / Trim</span>
+                    <div class="font-bold text-white mt-1">Meta Broad Audience &mdash; Prospecting</div>
+                    <div class="text-[11px] text-white/70">CPQL spiked to &#8377;3,840 (3.4x target)</div>
+                  </div>
+                  <div class="text-right">
+                    <div class="text-sm font-bold text-red-300">-&#8377;45,000</div>
+                    <div class="text-[10px] text-white/60">Weekly Cap</div>
+                  </div>
+                </div>
+
+                <div class="p-3.5 rounded-xl bg-white/10 border border-marigold/50 flex items-center justify-between gap-3">
+                  <div>
+                    <span class="text-[10px] uppercase tracking-wider bg-marigold text-aubergine px-2 py-0.5 rounded font-bold">Scale Winner</span>
+                    <div class="font-bold text-white mt-1">Google Search &mdash; High-Intent B2B</div>
+                    <div class="text-[11px] text-white/70">CPQL at &#8377;1,140 &bull; 5.1x Verified ROAS</div>
+                  </div>
+                  <div class="text-right">
+                    <div class="text-sm font-bold text-marigold">+&#8377;45,000</div>
+                    <div class="text-[10px] text-white/60">Reallocated</div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
+      </div>
+    </section>
 
-        <!-- 3. Right Widgets -->
-        <aside class="d-right" aria-label="Social media analytics">
-          <!-- Instagram Card -->
-          <div class="d-card d-widget">
-            <div class="d-head">
-              <div class="d-title"><b>Instagram</b> <span class="dots">···</span></div>
-              <span class="d-period">7D ▾</span>
+    <!-- 6. Interactive Wasted Ad Spend & CPQL ROI Calculator (Multi-Currency Client Ad Spend) -->
+    <section id="roi-calculator" aria-labelledby="calc-heading" class="max-w-5xl mx-auto px-4 sm:px-6 py-20">
+      <div class="text-center max-w-2xl mx-auto mb-12">
+        <span class="text-xs font-semibold uppercase tracking-wider text-aubergine/75">Client Ad Spend Savings Estimator</span>
+        <h2 id="calc-heading" class="font-serif text-3xl sm:text-4xl font-bold text-aubergine mt-2">
+          How Much Client Ad Spend Is Lost to Unqualified Leads?
+        </h2>
+        <p class="mt-3 text-sm sm:text-base text-gray-600">
+          Select your client&rsquo;s ad account currency (INR, USD, GBP, EUR, or AED) and adjust monthly spend to estimate recoverable budget.
+        </p>
+      </div>
+
+      <div class="bg-white rounded-3xl border border-icesilver-card shadow-xl overflow-hidden grid grid-cols-1 lg:grid-cols-12">
+        <!-- Left Sliders -->
+        <div class="lg:col-span-7 p-6 sm:p-9 bg-icesilver-canvas/45 flex flex-col justify-between space-y-7">
+          <!-- Client Ad Spend Currency Selector -->
+          <div class="flex flex-wrap items-center justify-between gap-2 pb-4 border-b border-icesilver-card">
+            <span class="text-xs font-bold uppercase tracking-wider text-aubergine/80">Client Ad Spend Currency</span>
+            <div class="inline-flex flex-wrap gap-1.5" role="group" aria-label="Calculator currency selector">
+              <button type="button" data-calc-currency="INR" class="calc-curr-btn px-3 py-1 rounded-full text-xs font-bold bg-aubergine text-white transition cursor-pointer">&#8377; INR</button>
+              <button type="button" data-calc-currency="USD" class="calc-curr-btn px-3 py-1 rounded-full text-xs font-semibold bg-white border border-icesilver-card text-aubergine hover:border-aubergine transition cursor-pointer">$ USD</button>
+              <button type="button" data-calc-currency="GBP" class="calc-curr-btn px-3 py-1 rounded-full text-xs font-semibold bg-white border border-icesilver-card text-aubergine hover:border-aubergine transition cursor-pointer">&pound; GBP</button>
+              <button type="button" data-calc-currency="EUR" class="calc-curr-btn px-3 py-1 rounded-full text-xs font-semibold bg-white border border-icesilver-card text-aubergine hover:border-aubergine transition cursor-pointer">&euro; EUR</button>
+              <button type="button" data-calc-currency="AED" class="calc-curr-btn px-3 py-1 rounded-full text-xs font-semibold bg-white border border-icesilver-card text-aubergine hover:border-aubergine transition cursor-pointer">AED</button>
             </div>
-            <div class="d-w-kpi">
-              <small>Followers</small>
-              <strong>135,145 <em>+16</em></strong>
+          </div>
+
+          <div>
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+              <label for="calc-spend-slider" id="calc-spend-label" class="text-sm font-bold text-aubergine">
+                Monthly Client Ad Spend (INR)
+              </label>
+              <span id="calc-spend-display" class="text-lg sm:text-xl font-extrabold text-aubergine bg-white px-3.5 py-1 rounded-xl border border-icesilver-card shadow-2xs">
+                &#8377;5,00,000
+              </span>
             </div>
-            <div class="d-w-mid">
-              <div class="d-w-sub">
-                <small>Interactions</small>
-                <strong>1,356 <em>+7</em></strong>
+            <input
+              id="calc-spend-slider"
+              type="range"
+              min="100000"
+              max="5000000"
+              step="50000"
+              value="500000"
+              class="qlarity-slider"
+            />
+            <div class="flex justify-between text-[11px] text-gray-500 mt-2 font-medium">
+              <span id="calc-min-label">&#8377;1,00,000</span>
+              <span id="calc-mid-label">&#8377;25,00,000</span>
+              <span id="calc-max-label">&#8377;50,00,000</span>
+            </div>
+          </div>
+
+          <div>
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+              <label for="calc-qual-slider" class="text-sm font-bold text-aubergine">
+                Current Lead-to-Qualified Rate (%)
+              </label>
+              <span id="calc-qual-display" class="text-lg sm:text-xl font-extrabold text-aubergine bg-white px-3.5 py-1 rounded-xl border border-icesilver-card shadow-2xs">
+                20%
+              </span>
+            </div>
+            <input
+              id="calc-qual-slider"
+              type="range"
+              min="5"
+              max="50"
+              step="1"
+              value="20"
+              class="qlarity-slider"
+            />
+            <div class="flex justify-between text-[11px] text-gray-500 mt-2 font-medium">
+              <span>5% (High Junk Volume)</span>
+              <span>25% (Industry Avg)</span>
+              <span>50% (Highly Tuned)</span>
+            </div>
+          </div>
+
+          <p class="text-xs text-gray-500 leading-relaxed border-t border-icesilver-card pt-4">
+            *Benchmarked against Indian performance agencies &amp; B2B brands shifting 22%&ndash;28% of low-intent ad spend into high-scoring campaigns within 60 days.
+          </p>
+        </div>
+
+        <!-- Right Output Panel -->
+        <div class="lg:col-span-5 p-6 sm:p-9 bg-aubergine text-white flex flex-col justify-between">
+          <div>
+            <span class="inline-block text-[11px] font-bold uppercase tracking-wider bg-white/15 text-marigold px-3 py-1 rounded-full">
+              Projected Annual Impact
+            </span>
+
+            <div class="mt-5">
+              <div class="text-xs text-white/75">Annual Recoverable Wasted Spend</div>
+              <div id="calc-annual-savings" class="font-serif text-3xl sm:text-4xl font-extrabold text-marigold mt-1">
+                &#8377;16,80,000
               </div>
-              <div class="d-donut">
-                <svg viewBox="0 0 36 36">
-                  <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#e2e8f0" stroke-width="3.5"/>
-                  <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#ff4d2d" stroke-width="3.5" stroke-dasharray="68, 100"/>
-                </svg>
+            </div>
+
+            <div class="mt-6 grid grid-cols-2 gap-3 pt-5 border-t border-white/15">
+              <div class="bg-white/10 rounded-xl p-3.5">
+                <div class="text-[11px] text-white/70">Current Est. CPQL</div>
+                <div id="calc-current-cpql" class="text-lg font-bold text-white mt-1">&#8377;2,250</div>
               </div>
-            </div>
-            <div class="d-w-stats">
-              <div><span>Likes</span> <b>697</b></div>
-              <div><span>Comments</span> <b>22</b></div>
-              <div><span>Saves</span> <b>566</b></div>
-              <div><span>Shares</span> <b>71</b></div>
-            </div>
-            <div class="d-posts-sec">
-              <small>Top Posts</small>
-              <div class="d-posts-grid">
-                <div class="d-post p1">JUL 30</div>
-                <div class="d-post p2">AUG 1</div>
-                <div class="d-post p3">JUL 31</div>
-                <div class="d-post p4">AUG 3</div>
+              <div class="bg-white/15 rounded-xl p-3.5 border border-marigold/40">
+                <div class="text-[11px] text-marigold font-medium">With Qlarity AI</div>
+                <div id="calc-projected-cpql" class="text-lg font-bold text-white mt-1">&#8377;1,530</div>
               </div>
             </div>
           </div>
 
-          <!-- X.com Card -->
-          <div class="d-card d-widget">
-            <div class="d-head">
-              <div class="d-title"><b>X.com</b> <span class="dots">···</span></div>
-              <span class="d-period">7D ▾</span>
+          <div class="mt-8">
+            <button
+              type="button"
+              id="claim-roi-btn"
+              class="w-full bg-marigold hover:bg-marigold-hover text-aubergine font-bold text-sm py-3.5 px-5 rounded-full shadow-md transition cursor-pointer flex items-center justify-center gap-2"
+            >
+              <span>Claim This ROI in a Demo</span>
+              <span aria-hidden="true">&rarr;</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 7. Integrations Hub -->
+    <section id="integrations" aria-labelledby="integrations-heading" class="max-w-5xl mx-auto px-4 sm:px-6 pb-20">
+      <div class="text-center max-w-xl mx-auto mb-12">
+        <span class="text-xs font-semibold uppercase tracking-wider text-aubergine/75">Native Connectors</span>
+        <h2 id="integrations-heading" class="font-serif text-3xl font-bold text-aubergine mt-1">
+          Every Ad Channel &amp; CRM in One Sync
+        </h2>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-12 items-center gap-6">
+        <!-- Left Platforms -->
+        <div class="md:col-span-3 flex flex-row md:flex-col justify-center items-center md:items-end gap-4">
+          <div class="bg-white px-5 py-3 rounded-full shadow-sm border border-icesilver-card text-sm font-semibold text-[#1877F2] inline-flex items-center gap-2">
+            <span>&#8734;</span> Meta
+          </div>
+          <div class="bg-white px-5 py-3 rounded-full shadow-sm border border-icesilver-card text-sm font-semibold text-gray-800 inline-flex items-center gap-2">
+            <span class="text-amber-500">&#9650;</span> Google Ads
+          </div>
+        </div>
+
+        <!-- Center Mini Attribution Card -->
+        <div class="md:col-span-6 bg-white rounded-2xl shadow-lg border border-icesilver-card overflow-hidden">
+          <div class="grid grid-cols-4">
+            <div class="col-span-1 bg-aubergine p-3 text-white text-[10px] space-y-2">
+              <div class="font-serif font-bold text-xs mb-3">Qlarity</div>
+              <div class="bg-white/15 px-2 py-1 rounded">Overview</div>
+              <div class="text-white/60 px-2">Leads</div>
+              <div class="text-white/60 px-2">Sources</div>
+              <div class="text-white/60 px-2">Alerts</div>
             </div>
-            <div class="d-w-kpi">
-              <small>Followers</small>
-              <strong>45,015 <em>+7</em></strong>
-            </div>
-            <div class="d-bars-chart">
-              <div class="bar-col"><div class="b-fill" style="height:35px"></div><small>27</small></div>
-              <div class="bar-col"><div class="b-fill" style="height:15px"></div><small>28</small></div>
-              <div class="bar-col"><div class="b-fill" style="height:25px"></div><small>29</small></div>
-              <div class="bar-col"><div class="b-fill" style="height:30px"></div><small>30</small></div>
-              <div class="bar-col"><div class="b-fill" style="height:55px"></div><small>31</small></div>
-              <div class="bar-col"><div class="b-fill" style="height:20px"></div><small>1</small></div>
-              <div class="bar-col"><div class="b-fill" style="height:38px"></div><small>2</small></div>
-            </div>
-            <div class="d-w-stats">
-              <div><span>Impressions</span> <b>933 <small class="down">-57%</small></b></div>
-              <div><span>Engagement Rate</span> <b>15.8% <small class="up">+82%</small></b></div>
-              <div><span>Engagement</span> <b>148 <small class="up">+22%</small></b></div>
+            <div class="col-span-3 p-4 bg-[#FAFBFD]">
+              <div class="text-xs font-bold text-aubergine mb-2.5">Multi-Currency Client Attribution</div>
+              <div class="grid grid-cols-3 gap-2 mb-3">
+                <div class="bg-white p-2 rounded-lg border border-icesilver-card/70">
+                  <div class="text-[9px] text-gray-400">Spend (INR)</div>
+                  <div class="text-xs font-bold text-aubergine">&#8377;4,52,000</div>
+                </div>
+                <div class="bg-white p-2 rounded-lg border border-icesilver-card/70">
+                  <div class="text-[9px] text-gray-400">US Client CPQL</div>
+                  <div class="text-xs font-bold text-aubergine">$42</div>
+                </div>
+                <div class="bg-white p-2 rounded-lg border border-icesilver-card/70">
+                  <div class="text-[9px] text-gray-400">ROAS</div>
+                  <div class="text-xs font-bold text-emerald-700">4.6x</div>
+                </div>
+              </div>
+              <div class="space-y-1.5 text-[10px]">
+                <div class="flex justify-between bg-white px-2.5 py-1.5 rounded-lg border border-icesilver-card/60">
+                  <span class="font-medium text-gray-800">Google Search &mdash; Brand</span>
+                  <span class="text-emerald-700 font-bold">Score 92</span>
+                </div>
+                <div class="flex justify-between bg-white px-2.5 py-1.5 rounded-lg border border-icesilver-card/60">
+                  <span class="font-medium text-gray-800">Meta Lead Gen &mdash; Lookalike</span>
+                  <span class="text-amber-700 font-bold">Score 84</span>
+                </div>
+                <div class="flex justify-between bg-white px-2.5 py-1.5 rounded-lg border border-icesilver-card/60">
+                  <span class="font-medium text-gray-800">LinkedIn Sponsored</span>
+                  <span class="text-emerald-700 font-bold">Score 89</span>
+                </div>
+              </div>
             </div>
           </div>
-        </aside>
+        </div>
+
+        <!-- Right Platforms -->
+        <div class="md:col-span-3 flex flex-wrap md:flex-col justify-center items-center md:items-start gap-4">
+          <div class="bg-white px-5 py-3 rounded-full shadow-sm border border-icesilver-card text-sm font-semibold text-amber-600 inline-flex items-center gap-2">
+            <span>&#9646;</span> GA4
+          </div>
+          <div class="bg-white px-5 py-3 rounded-full shadow-sm border border-icesilver-card text-sm font-semibold text-[#0A66C2] inline-flex items-center gap-2">
+            LinkedIn
+          </div>
+          <div class="bg-white px-5 py-3 rounded-full shadow-sm border border-icesilver-card text-sm font-semibold text-[#FF7A59] inline-flex items-center gap-2">
+            HubSpot
+          </div>
+        </div>
       </div>
-    </figure>
-  </div>
-</section>
+    </section>
 
-<!-- 2. the problem -->
-<section class="soft" id="problem" aria-labelledby="problem-title">
-  <div class="wrap">
-    <div class="head"><p class="eyebrow">The Problem</p><h2 id="problem-title">Are Your Ads Delivering Real Results?</h2></div>
-    <div class="grid cols-4">
-      <div class="card"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="5" r="3"/><circle cx="5" cy="19" r="3"/><circle cx="19" cy="19" r="3"/><line x1="12" y1="8" x2="12" y2="12"/><path d="m5 16 4-4M19 16l-4-4"/></svg></span><h3>Scattered Data</h3><p>Your marketing data is spread across multiple platforms.</p></div>
-      <div class="card"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><path d="M9 10a2 2 0 1 1 3 1.7c-.5.3-.8.8-.8 1.3v.5"/><circle cx="11.2" cy="16" r=".5" fill="currentColor"/></svg></span><h3>Unclear Results</h3><p>It's hard to know which campaigns bring quality leads and customers.</p></div>
-      <div class="card"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="22 17 13.5 8.5 8.5 13.5 2 7"/><polyline points="16 17 22 17 22 11"/></svg></span><h3>Wasted Spend</h3><p>Your budget may be going to campaigns that underperform.</p></div>
-      <div class="card"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/><circle cx="12" cy="14" r="4"/><polyline points="12 12 12 14 13.5 15"/></svg></span><h3>Manual Reporting</h3><p>Collecting and comparing reports takes valuable time.</p></div>
+    <!-- 8. Transparent INR Pricing Tiers (India-Only Product Pricing) -->
+    <section id="pricing" aria-labelledby="pricing-heading" class="bg-icesilver-canvas/60 border-y border-icesilver-card/80 py-20 px-4 sm:px-6">
+      <div class="max-w-5xl mx-auto">
+        <div class="text-center max-w-2xl mx-auto">
+          <span class="text-xs font-semibold uppercase tracking-wider text-aubergine/75">India-First INR Pricing</span>
+          <h2 id="pricing-heading" class="font-serif text-3xl sm:text-4xl font-bold text-aubergine mt-2">
+            Built for Indian Growth Brands &amp; Agencies
+          </h2>
+          <p class="mt-3 text-sm sm:text-base text-gray-600">
+            Pay in INR with GST-compliant invoicing&mdash;even when managing international USD, GBP, EUR, or AED client ad accounts.
+          </p>
+
+          <!-- Monthly / Annual Billing Toggle -->
+          <div class="mt-7 inline-flex items-center gap-2 bg-white p-1.5 rounded-full border border-icesilver-card shadow-2xs" role="group" aria-label="Billing cycle toggle">
+            <button
+              type="button"
+              data-billing="monthly"
+              aria-pressed="true"
+              class="billing-btn px-4 py-2 rounded-full text-xs font-bold bg-aubergine text-white transition cursor-pointer"
+            >
+              Monthly Billing
+            </button>
+            <button
+              type="button"
+              data-billing="annual"
+              aria-pressed="false"
+              class="billing-btn px-4 py-2 rounded-full text-xs font-semibold text-aubergine/80 hover:text-aubergine transition cursor-pointer inline-flex items-center gap-1.5"
+            >
+              <span>Annual Billing</span>
+              <span class="bg-marigold text-aubergine text-[10px] font-extrabold px-2 py-0.5 rounded-full">Save 20%</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- 3 Pricing Cards -->
+        <div class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
+          <!-- Tier 1: Growth Brand -->
+          <article class="bg-white rounded-2xl p-7 border border-icesilver-card shadow-sm flex flex-col justify-between">
+            <div>
+              <div class="text-xs font-bold uppercase tracking-wider text-aubergine/70">Growth Brand</div>
+              <h3 class="font-serif text-2xl font-bold text-aubergine mt-1">Single Brand</h3>
+              <p class="text-xs text-gray-600 mt-2">
+                Ideal for fast-growing Indian D2C &amp; B2B companies tracking up to &#8377;25L/mo in ad spend.
+              </p>
+
+              <div class="mt-6 pb-6 border-b border-icesilver-card">
+                <div class="flex items-baseline gap-1">
+                  <span id="price-growth" class="text-3xl font-extrabold text-aubergine">&#8377;14,999</span>
+                  <span class="text-xs text-gray-500 font-medium">/ month</span>
+                </div>
+                <div id="price-growth-note" class="text-[11px] text-gray-500 mt-1">Billed monthly + GST &bull; Cancel anytime</div>
+              </div>
+
+              <ul class="mt-6 space-y-3 text-xs text-gray-700">
+                <li class="flex items-start gap-2"><span class="text-emerald-700 font-bold">&#10003;</span> 1 Brand Workspace &amp; 4 Ad/CRM Connectors</li>
+                <li class="flex items-start gap-2"><span class="text-emerald-700 font-bold">&#10003;</span> Multi-Currency Ad Account Support (INR, USD, GBP, EUR, AED)</li>
+                <li class="flex items-start gap-2"><span class="text-emerald-700 font-bold">&#10003;</span> AI Lead Scoring (up to 5,000 leads/mo)</li>
+                <li class="flex items-start gap-2"><span class="text-emerald-700 font-bold">&#10003;</span> Slack &amp; Email Spend Anomaly Alerts</li>
+              </ul>
+            </div>
+
+            <button
+              type="button"
+              data-open-demo
+              data-plan="Growth Brand"
+              class="mt-8 w-full py-3 px-5 rounded-full border border-aubergine text-aubergine hover:bg-aubergine hover:text-white font-semibold text-xs transition cursor-pointer"
+            >
+              Start With Growth Brand
+            </button>
+          </article>
+
+          <!-- Tier 2: Multi-Brand Agency -->
+          <article class="bg-aubergine text-white rounded-2xl p-7 border-2 border-marigold shadow-xl flex flex-col justify-between relative">
+            <span class="absolute -top-3.5 right-6 bg-marigold text-aubergine text-[10px] font-extrabold uppercase tracking-wider px-3 py-1 rounded-full shadow-xs">
+              Most Popular
+            </span>
+            <div>
+              <div class="text-xs font-bold uppercase tracking-wider text-marigold">Multi-Brand Agency</div>
+              <h3 class="font-serif text-2xl font-bold text-white mt-1">Agency Command</h3>
+              <p class="text-xs text-white/75 mt-2">
+                Built for Indian performance agencies managing 5&ndash;15 domestic and international client accounts.
+              </p>
+
+              <div class="mt-6 pb-6 border-b border-white/15">
+                <div class="flex items-baseline gap-1">
+                  <span id="price-agency" class="text-3xl font-extrabold text-marigold">&#8377;34,999</span>
+                  <span class="text-xs text-white/70 font-medium">/ month</span>
+                </div>
+                <div id="price-agency-note" class="text-[11px] text-white/65 mt-1">Billed monthly + GST &bull; Cancel anytime</div>
+              </div>
+
+              <ul class="mt-6 space-y-3 text-xs text-white/90">
+                <li class="flex items-start gap-2"><span class="text-marigold font-bold">&#10003;</span> Up to 12 Client Brand Workspaces</li>
+                <li class="flex items-start gap-2"><span class="text-marigold font-bold">&#10003;</span> Native Multi-Currency Reporting per Client (INR, USD, GBP, EUR, AED)</li>
+                <li class="flex items-start gap-2"><span class="text-marigold font-bold">&#10003;</span> White-Label Client Executive Dashboards</li>
+                <li class="flex items-start gap-2"><span class="text-marigold font-bold">&#10003;</span> Search Query (SQR) Waste Detection</li>
+                <li class="flex items-start gap-2"><span class="text-marigold font-bold">&#10003;</span> Priority WhatsApp/Slack &amp; Dedicated Onboarding</li>
+              </ul>
+            </div>
+
+            <button
+              type="button"
+              data-open-demo
+              data-plan="Multi-Brand Agency"
+              class="mt-8 w-full py-3 px-5 rounded-full bg-marigold hover:bg-marigold-hover text-aubergine font-bold text-xs shadow-sm transition cursor-pointer"
+            >
+              Book Agency Demo &rarr;
+            </button>
+          </article>
+
+          <!-- Tier 3: Enterprise -->
+          <article class="bg-white rounded-2xl p-7 border border-icesilver-card shadow-sm flex flex-col justify-between">
+            <div>
+              <div class="text-xs font-bold uppercase tracking-wider text-aubergine/70">Enterprise</div>
+              <h3 class="font-serif text-2xl font-bold text-aubergine mt-1">Custom Scale</h3>
+              <p class="text-xs text-gray-600 mt-2">
+                For large Indian enterprises and agency networks managing &#8377;2Cr+ in monthly ad spend.
+              </p>
+
+              <div class="mt-6 pb-6 border-b border-icesilver-card">
+                <div class="flex items-baseline gap-1">
+                  <span class="text-3xl font-extrabold text-aubergine">Custom</span>
+                </div>
+                <div class="text-[11px] text-gray-500 mt-1">Tailored INR volume &amp; SLA pricing</div>
+              </div>
+
+              <ul class="mt-6 space-y-3 text-xs text-gray-700">
+                <li class="flex items-start gap-2"><span class="text-emerald-700 font-bold">&#10003;</span> Unlimited Brand Workspaces &amp; Seats</li>
+                <li class="flex items-start gap-2"><span class="text-emerald-700 font-bold">&#10003;</span> Custom CRM / ERP &amp; Offline Conversion API</li>
+                <li class="flex items-start gap-2"><span class="text-emerald-700 font-bold">&#10003;</span> Dedicated India Data Residency &amp; DPDP Audit</li>
+                <li class="flex items-start gap-2"><span class="text-emerald-700 font-bold">&#10003;</span> Custom AI Lead Scoring Model Tuning</li>
+              </ul>
+            </div>
+
+            <button
+              type="button"
+              data-open-demo
+              data-plan="Enterprise Custom"
+              class="mt-8 w-full py-3 px-5 rounded-full border border-aubergine text-aubergine hover:bg-aubergine hover:text-white font-semibold text-xs transition cursor-pointer"
+            >
+              Contact Enterprise Sales
+            </button>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- 9. Customer Testimonials -->
+    <section id="testimonials" aria-labelledby="testimonials-heading" class="max-w-5xl mx-auto px-4 sm:px-6 py-20">
+      <h2 id="testimonials-heading" class="sr-only">Trusted by Indian Marketing Agencies and Brands</h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <blockquote class="bg-white p-6 rounded-2xl border border-icesilver-card/80 shadow-2xs">
+          <div class="text-marigold text-sm tracking-wider mb-2" aria-label="5 out of 5 stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+          <p class="text-sm text-gray-700 leading-relaxed">
+            &ldquo;Qlarity finally showed us which Meta and Google campaigns drive real sales-qualified leads instead of cheap junk form fills.&rdquo;
+          </p>
+          <footer class="mt-4 text-xs font-bold text-aubergine">&mdash; Growth Lead, Performance Agency</footer>
+        </blockquote>
+
+        <blockquote class="bg-white p-6 rounded-2xl border border-icesilver-card/80 shadow-2xs">
+          <div class="text-marigold text-sm tracking-wider mb-2" aria-label="5 out of 5 stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+          <p class="text-sm text-gray-700 leading-relaxed">
+            &ldquo;We cut wasted ad spend by 24% in three weeks by shifting budget toward high-CPQL keywords surfaced inside Qlarity.&rdquo;
+          </p>
+          <footer class="mt-4 text-xs font-bold text-aubergine">&mdash; Founder, B2B SaaS Brand</footer>
+        </blockquote>
+
+        <blockquote class="bg-white p-6 rounded-2xl border border-icesilver-card/80 shadow-2xs">
+          <div class="text-marigold text-sm tracking-wider mb-2" aria-label="5 out of 5 stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+          <p class="text-sm text-gray-700 leading-relaxed">
+            &ldquo;Managing 8 Indian accounts in INR and 4 US/UK accounts in USD and GBP used to take hours of spreadsheet cleanup every Monday. Now Qlarity handles it natively.&rdquo;
+          </p>
+          <footer class="mt-4 text-xs font-bold text-aubergine">&mdash; Managing Partner, Digital Studio (Bengaluru)</footer>
+        </blockquote>
+      </div>
+    </section>
+
+    <!-- SEO FAQ Accordion Section -->
+    <section id="faq" aria-labelledby="faq-heading" class="max-w-3xl mx-auto px-4 sm:px-6 pb-20">
+      <div class="text-center mb-10">
+        <span class="text-xs font-semibold uppercase tracking-wider text-aubergine/75">Common Questions</span>
+        <h2 id="faq-heading" class="font-serif text-3xl font-bold text-aubergine mt-1">
+          Frequently Asked Questions
+        </h2>
+      </div>
+
+      <div class="space-y-3">
+        <div class="border border-icesilver-card rounded-2xl overflow-hidden bg-white">
+          <h3>
+            <button
+              type="button"
+              aria-expanded="false"
+              class="faq-trigger w-full px-6 py-4 text-left flex items-center justify-between gap-4 font-semibold text-sm text-aubergine hover:bg-icesilver-canvas/40 transition cursor-pointer"
+            >
+              <span>We are an Indian agency with US, UK, and UAE clients. Does Qlarity support their ad account currencies?</span>
+              <span class="faq-icon text-lg font-bold text-marigold">+</span>
+            </button>
+          </h3>
+          <div class="faq-panel hidden px-6 pb-5 text-sm text-gray-600 leading-relaxed">
+            Yes. Qlarity automatically detects and reports each client workspace in its native ad account currency (INR, USD, GBP, EUR, AED, and more) so your international clients see exact spend and CPQL in their local currency, while your agency pays a simple INR subscription.
+          </div>
+        </div>
+
+        <div class="border border-icesilver-card rounded-2xl overflow-hidden bg-white">
+          <h3>
+            <button
+              type="button"
+              aria-expanded="false"
+              class="faq-trigger w-full px-6 py-4 text-left flex items-center justify-between gap-4 font-semibold text-sm text-aubergine hover:bg-icesilver-canvas/40 transition cursor-pointer"
+            >
+              <span>Is my ad account and CRM data secure under India&rsquo;s DPDP Act?</span>
+              <span class="faq-icon text-lg font-bold text-marigold">+</span>
+            </button>
+          </h3>
+          <div class="faq-panel hidden px-6 pb-5 text-sm text-gray-600 leading-relaxed">
+            Yes. Qlarity uses read-only OAuth 2.0 tokens with AES-256 encryption and adheres to India&rsquo;s Digital Personal Data Protection (DPDP) Act standards. Qlarity never alters your live bids, budgets, or ad creatives.
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- 10. Deep Aubergine Footer -->
+  <footer class="bg-aubergine text-white pt-14 pb-10 px-4 sm:px-6">
+    <div class="max-w-5xl mx-auto">
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-8 pb-10 border-b border-white/15 text-sm">
+        <div>
+          <h3 class="font-semibold mb-3 text-white">Navigation</h3>
+          <ul class="space-y-2 text-white/75 text-xs">
+            <li><a href="/app" class="hover:text-white transition">Open Dashboard</a></li>
+            <li><a href="#features" class="hover:text-white transition">Features</a></li>
+            <li><a href="#how-it-works" class="hover:text-white transition">How It Works</a></li>
+            <li><a href="/privacy" class="hover:text-white transition">Privacy Policy</a></li>
+            <li><a href="/terms" class="hover:text-white transition">Terms of Service</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h3 class="font-semibold mb-3 text-white">Integrations</h3>
+          <ul class="space-y-2 text-white/75 text-xs">
+            <li><a href="#integrations" class="hover:text-white transition">Google &amp; Meta Ads</a></li>
+            <li><a href="#integrations" class="hover:text-white transition">HubSpot &amp; GA4</a></li>
+            <li><a href="#roi-calculator" class="hover:text-white transition">ROI Calculator</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h3 class="font-semibold mb-3 text-white">Pricing</h3>
+          <ul class="space-y-2 text-white/75 text-xs">
+            <li><a href="#pricing" class="hover:text-white transition">Plans &amp; Pricing</a></li>
+            <li><a href="#faq" class="hover:text-white transition">FAQ</a></li>
+            <li><button type="button" data-open-demo class="hover:text-white transition cursor-pointer">Contact Sales</button></li>
+          </ul>
+        </div>
+
+        <div>
+          <h3 class="font-semibold mb-3 text-white">Connect</h3>
+          <div class="text-xs text-white/75 mb-3 leading-relaxed">
+            Made for Indian Agencies &amp; Growth Brands.<br />
+            <a href="mailto:harikrishnashetty1@gmail.com" class="underline hover:text-marigold transition">harikrishnashetty1@gmail.com</a>
+          </div>
+          <div class="text-xs text-white/75">Getqlarity.online</div>
+        </div>
+      </div>
+
+      <div class="pt-8 text-center">
+        <button
+          type="button"
+          data-open-demo
+          class="inline-block bg-marigold hover:bg-marigold-hover text-aubergine font-semibold text-sm px-7 py-2.5 rounded-full transition cursor-pointer"
+        >
+          Get Started
+        </button>
+        <p class="mt-5 text-xs text-white/60">
+          Copyright &copy; 2026 Getqlarity.online. All rights reserved.
+        </p>
+      </div>
     </div>
-  </div>
-</section>
+  </footer>
 
-<!-- 3. the solution -->
-<section class="dark" id="solution" aria-labelledby="solution-title">
-  <div class="wrap center">
-    <p class="eyebrow">The Solution</p>
-    <h2 id="solution-title">All Your Marketing Data. One Clear View.</h2>
-    <p class="intro">Bring your advertising and CRM data together in one dashboard. See what's working, understand your results, and find ways to improve performance.</p>
-  </div>
-</section>
+  <!-- Interactive Request a Demo Modal -->
+  <div
+    id="demo-modal"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="modal-title"
+    class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-aubergine-dark/70 backdrop-blur-xs"
+  >
+    <div class="bg-white rounded-2xl max-w-md w-full p-6 sm:p-8 shadow-2xl border border-icesilver-card relative">
+      <button
+        type="button"
+        id="close-modal-btn"
+        aria-label="Close demo request modal"
+        class="absolute top-4 right-4 w-8 h-8 rounded-full bg-icesilver-canvas hover:bg-icesilver-card text-aubergine flex items-center justify-center font-bold cursor-pointer"
+      >
+        &times;
+      </button>
 
-<!-- 4. key features -->
-<section id="features" aria-labelledby="features-title">
-  <div class="wrap">
-    <div class="head"><p class="eyebrow">Key Features</p><h2 id="features-title">Everything You Need to Track Marketing Performance.</h2></div>
-    <div class="grid cols-4">
-      <article class="card feature"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="m19 9-5 5-4-4-3 3"/></svg></span><h3>Campaign Analytics</h3><p>Monitor ad spend, reach, clicks, and conversions across campaigns.</p></article>
-      <article class="card feature"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 11 18-5v12L3 14v-3z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/></svg></span><h3>Brand Awareness Tracking</h3><p>Understand campaign reach, impressions, and clicks to measure brand visibility.</p></article>
-      <article class="card feature"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><polyline points="17 11 19 13 23 9"/></svg></span><h3>Lead &amp; Conversion Tracking</h3><p>Track leads, lead quality, and conversions to understand campaign effectiveness.</p></article>
-      <article class="card feature"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg></span><h3>E-commerce Performance</h3><p>Monitor online sales, revenue, conversion rates, and return on ad spend (ROAS).</p></article>
-      <article class="card feature"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/><line x1="12" y1="6" x2="12" y2="8"/><line x1="12" y1="16" x2="12" y2="18"/></svg></span><h3>Ad Spend &amp; ROI</h3><p>Understand where your budget goes and how your marketing contributes to business results.</p></article>
-      <article class="card feature"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/><circle cx="18" cy="4" r="2" fill="currentColor"/></svg></span><h3>Reports &amp; Alerts</h3><p>Get performance updates without checking every platform manually.</p></article>
-      <article class="card feature"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg></span><h3>Multi-Brand Dashboard</h3><p>Track multiple brands, campaigns, and ad accounts in one place.</p></article>
-    </div>
-  </div>
-</section>
+      <!-- Form View -->
+      <div id="demo-form-container">
+        <span class="text-[11px] font-semibold uppercase tracking-wider text-amber-700">Live Product Walkthrough</span>
+        <h2 id="modal-title" class="font-serif text-2xl font-bold text-aubergine mt-1">
+          Request Your Qlarity Demo
+        </h2>
+        <p class="text-xs text-gray-600 mt-1.5">
+          See how Qlarity tracks your exact CPQL and ROAS across every ad channel.
+        </p>
 
-<!-- 5. who is it for -->
-<section class="soft" id="who" aria-labelledby="who-title">
-  <div class="wrap">
-    <div class="head"><p class="eyebrow">Who Is Qlarity For?</p><h2 id="who-title">Built for Every Business.</h2></div>
-    <div class="grid cols-4">
-      <div class="card"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg></span><h3>CEOs &amp; Business Owners</h3><p>See where your marketing budget goes.</p></div>
-      <div class="card"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span><h3>Marketing Agencies</h3><p>Manage campaigns and reports across clients.</p></div>
-      <div class="card"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="22" y1="12" x2="18" y2="12"/><line x1="6" y1="12" x2="2" y2="12"/><line x1="12" y1="6" x2="12" y2="2"/><line x1="12" y1="22" x2="12" y2="18"/><circle cx="12" cy="12" r="3"/></svg></span><h3>Performance Marketers</h3><p>Identify what works and improve campaign results.</p></div>
-      <div class="card"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg></span><h3>Marketing Leaders</h3><p>Get a clear view of overall marketing performance.</p></div>
-    </div>
-  </div>
-</section>
+        <form id="demo-form" class="mt-5 space-y-4" novalidate>
+          <div>
+            <label for="lead-name" class="block text-xs font-semibold text-aubergine mb-1">Full Name *</label>
+            <input
+              id="lead-name"
+              name="name"
+              type="text"
+              required
+              placeholder="Alex Morgan"
+              class="w-full px-3.5 py-2.5 rounded-xl border border-icesilver-card text-sm focus:outline-none focus:border-aubergine"
+            />
+          </div>
 
-<!-- 6. how it works -->
-<section id="how" aria-labelledby="how-title">
-  <div class="wrap">
-    <div class="head"><p class="eyebrow">How It Works</p><h2 id="how-title">From Data to Better Decisions.</h2></div>
-    <div class="grid cols-4">
-      <div class="card step"><span class="n">01</span><h3>Connect</h3><p>Bring your marketing data together.</p></div>
-      <div class="card step"><span class="n">02</span><h3>Track</h3><p>Monitor campaigns, leads, and ad spend.</p></div>
-      <div class="card step"><span class="n">03</span><h3>Analyse</h3><p>See what's working and what needs improvement.</p></div>
-      <div class="card step"><span class="n">04</span><h3>Optimise</h3><p>Make smarter marketing and budget decisions.</p></div>
-    </div>
-  </div>
-</section>
+          <div>
+            <label for="lead-email" class="block text-xs font-semibold text-aubergine mb-1">Work Email *</label>
+            <input
+              id="lead-email"
+              name="email"
+              type="email"
+              required
+              placeholder="alex@growthagency.com"
+              class="w-full px-3.5 py-2.5 rounded-xl border border-icesilver-card text-sm focus:outline-none focus:border-aubergine"
+            />
+          </div>
 
-<!-- 7. final CTA -->
-<section class="final" aria-labelledby="final-title">
-  <div class="wrap">
-    <div class="box dark">
-      <h2 id="final-title">Make Every Marketing Rupee Count.</h2>
-      <p class="intro">Understand your performance, spot wasted spend, and make smarter marketing decisions with Qlarity.</p>
-      <div class="actions">
-        <a class="btn primary" href="/app?signup=1" data-start>Request a Demo <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+          <div>
+            <label for="lead-spend" class="block text-xs font-semibold text-aubergine mb-1">Monthly Client Ad Spend Managed</label>
+            <select
+              id="lead-spend"
+              name="spend"
+              class="w-full px-3.5 py-2.5 rounded-xl border border-icesilver-card text-sm bg-white focus:outline-none focus:border-aubergine"
+            >
+              <option value="under-2l">Under &#8377;2,00,000 / month (or &lt; $2.5k)</option>
+              <option value="2l-10l" selected>&#8377;2,00,000 &ndash; &#8377;10,00,000 / month ($2.5k &ndash; $12k)</option>
+              <option value="10l-50l">&#8377;10,00,000 &ndash; &#8377;50,00,000 / month ($12k &ndash; $60k)</option>
+              <option value="50l-plus">&#8377;50,00,000+ / month ($60k+ Multi-Brand Agency)</option>
+            </select>
+          </div>
+
+          <p id="form-error" class="hidden text-xs text-red-600 font-medium">
+            Please enter your full name and a valid work email address.
+          </p>
+
+          <button
+            type="submit"
+            class="w-full bg-marigold hover:bg-marigold-hover text-aubergine font-bold text-sm py-3 px-5 rounded-full shadow-sm transition cursor-pointer"
+          >
+            Confirm Demo Request &rarr;
+          </button>
+        </form>
+      </div>
+
+      <!-- Success View -->
+      <div id="demo-success-container" class="hidden text-center py-4">
+        <div class="w-12 h-12 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center mx-auto text-xl font-bold mb-3">&#10003;</div>
+        <h3 class="font-serif text-xl font-bold text-aubergine">Demo Request Received!</h3>
+        <p id="demo-success-msg" class="text-xs text-gray-600 mt-2 leading-relaxed">
+          Thanks! We have sent a calendar invite for your personalized Qlarity walkthrough.
+        </p>
+        <button
+          type="button"
+          id="reset-modal-btn"
+          class="mt-5 bg-aubergine text-white text-xs font-semibold py-2.5 px-6 rounded-full hover:bg-aubergine-light transition cursor-pointer"
+        >
+          Close
+        </button>
       </div>
     </div>
   </div>
-</section>
-</main>
 
-<!-- footer: links only to live pages -->
-<footer>
-  <div class="wrap">
-    <div class="row">
-      <div><img src="brand/qlarity-logo-dark.png" alt="Qlarity" width="620" height="200"><p>AI-powered performance marketing analytics: ad spend, leads and customer outcomes in one place.</p></div>
-      <nav aria-label="Footer"><a href="/privacy">Privacy Policy</a><a href="/terms">Terms of Service</a><a href="mailto:harikrishnashetty1@gmail.com">Contact</a><a href="/app" data-signin>Sign In</a></nav>
-    </div>
-    <p class="bottom">© 2026 Qlarity · Make Every Marketing Rupee Count.</p>
-  </div>
-</footer>
+  <!-- Interactive Scripts -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      // 1. Mobile Navigation Drawer Toggle
+      var mobileBtn = document.getElementById('mobile-menu-btn');
+      var mobileMenu = document.getElementById('mobile-menu');
+      var mobileLinks = document.querySelectorAll('.mobile-nav-link');
 
-<script>
-/* 1. links from older emails (/?verify=… or /?reset=…) belong to the dashboard: forward them with their token
-   2. already signed in on this browser: the buttons open the dashboard
-   3. a hairline under the menu once the page scrolls
-   4. the light / dark switch (choice kept as lp-theme, shared with the dashboard; otherwise the device setting) */
-(function(){
-  var q = location.search;
-  if (/[?&](verify|reset)=/.test(q)) { location.replace("/app" + q + location.hash); return; }
-  try {
-    var s = JSON.parse(localStorage.getItem("lp-session") || "null"), t = s && s.token ? JSON.parse(atob(s.token.split(".")[1].replace(/-/g, "+").replace(/_/g, "/"))) : null;
-    if (t && t.exp * 1000 > Date.now()) {
-      [].forEach.call(document.querySelectorAll("[data-start]"), function(a){ a.href = "/app"; if (a.firstChild && a.firstChild.nodeType === 3) a.firstChild.nodeValue = "Open Dashboard "; });
-      [].forEach.call(document.querySelectorAll("[data-signin]"), function(a){ a.style.display = "none"; });
-    }
-  } catch (e) {}
-  var tb = document.getElementById("theme-btn");
-  var themeNow = function(){ var t = document.documentElement.getAttribute("data-theme"); if (t) return t; return window.matchMedia && matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"; };
-  var paint = function(){ var dark = themeNow() === "dark", label = dark ? "Switch to light theme" : "Switch to dark theme";
-    tb.innerHTML = dark ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>'
-      : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></svg>';
-    tb.setAttribute("aria-label", label); tb.title = label; };
-  tb.addEventListener("click", function(){ var next = themeNow() === "dark" ? "light" : "dark"; document.documentElement.setAttribute("data-theme", next);
-    try { localStorage.setItem("lp-theme", next); } catch (e) {} paint(); });
-  if (window.matchMedia) { var mq = matchMedia("(prefers-color-scheme: dark)"); if (mq.addEventListener) mq.addEventListener("change", paint); }
-  paint();
-  var nav = document.getElementById("top");
-  var onScroll = function(){ nav.className = "nav" + (window.scrollY > 8 ? " scrolled" : ""); };
-  window.addEventListener("scroll", onScroll, {passive: true}); onScroll();
-})();
-</script>
+      if (mobileBtn && mobileMenu) {
+        mobileBtn.addEventListener('click', function () {
+          var isExpanded = mobileBtn.getAttribute('aria-expanded') === 'true';
+          mobileBtn.setAttribute('aria-expanded', String(!isExpanded));
+          mobileMenu.classList.toggle('hidden');
+        });
+
+        mobileLinks.forEach(function (link) {
+          link.addEventListener('click', function () {
+            mobileMenu.classList.add('hidden');
+            mobileBtn.setAttribute('aria-expanded', 'false');
+          });
+        });
+      }
+
+      // 2. Interactive Hero Dashboard Timeframe + Multi-Currency Switcher
+      var currentDashCurrency = 'INR';
+      var currentDashTimeframe = '30d';
+
+      var dashCurrencyConfig = {
+        INR: { symbol: '₹', locale: 'en-IN', spendMult: 1, cpqlMult: 1 },
+        USD: { symbol: '$', locale: 'en-US', spendMult: 0.012, cpqlMult: 0.037 },
+        GBP: { symbol: '£', locale: 'en-GB', spendMult: 0.0095, cpqlMult: 0.029 },
+        EUR: { symbol: '€', locale: 'de-DE', spendMult: 0.011, cpqlMult: 0.034 },
+        AED: { symbol: 'AED ', locale: 'en-US', spendMult: 0.044, cpqlMult: 0.135 }
+      };
+
+      var dashboardSnapshots = {
+        '7d': {
+          baseSpendInr: 112000,
+          spendSub: '↑ 9.1% efficiency',
+          score: '89/100',
+          scoreSub: 'AI Verified High-Intent',
+          baseCpqlInr: 1020,
+          cpqlSub: '↓ 21% vs prior week',
+          gold: [48, 60, 72, 85, 78, 88, 95],
+          plum: [30, 35, 42, 46, 40, 44, 50]
+        },
+        '30d': {
+          baseSpendInr: 452000,
+          spendSub: '↑ 12.4% efficiency',
+          score: '87/100',
+          scoreSub: 'AI Verified High-Intent',
+          baseCpqlInr: 1140,
+          cpqlSub: '↓ 18% vs prior period',
+          gold: [55, 68, 82, 94, 76, 64, 96],
+          plum: [32, 40, 48, 54, 42, 70, 58]
+        },
+        'qtr': {
+          baseSpendInr: 1380000,
+          spendSub: '↑ 16.8% efficiency',
+          score: '85/100',
+          scoreSub: '3,240 Qualified Leads',
+          baseCpqlInr: 1210,
+          cpqlSub: '↓ 24% vs last quarter',
+          gold: [62, 70, 75, 88, 91, 86, 98],
+          plum: [44, 48, 50, 56, 60, 52, 62]
+        }
+      };
+
+      var tfBtns = document.querySelectorAll('.tf-btn');
+      var dashCurrencySelect = document.getElementById('dash-currency-select');
+      var kpiSpend = document.getElementById('kpi-spend');
+      var kpiSpendSub = document.getElementById('kpi-spend-sub');
+      var kpiScore = document.getElementById('kpi-score');
+      var kpiScoreSub = document.getElementById('kpi-score-sub');
+      var kpiCpql = document.getElementById('kpi-cpql');
+      var kpiCpqlSub = document.getElementById('kpi-cpql-sub');
+      var goldBars = document.querySelectorAll('.roas-gold');
+      var plumBars = document.querySelectorAll('.roas-plum');
+
+      function formatByCurrency(amount, currCode) {
+        var cfg = dashCurrencyConfig[currCode] || dashCurrencyConfig.INR;
+        var rounded = Math.round(amount);
+        try {
+          return cfg.symbol + rounded.toLocaleString(cfg.locale);
+        } catch (e) {
+          return cfg.symbol + String(rounded);
+        }
+      }
+
+      function renderHeroDashboard() {
+        var data = dashboardSnapshots[currentDashTimeframe];
+        var cfg = dashCurrencyConfig[currentDashCurrency] || dashCurrencyConfig.INR;
+        if (!data) return;
+
+        var convertedSpend = data.baseSpendInr * cfg.spendMult;
+        var convertedCpql = data.baseCpqlInr * cfg.cpqlMult;
+
+        if (kpiSpend) kpiSpend.textContent = formatByCurrency(convertedSpend, currentDashCurrency);
+        if (kpiSpendSub) kpiSpendSub.textContent = data.spendSub;
+        if (kpiScore) kpiScore.textContent = data.score;
+        if (kpiScoreSub) kpiScoreSub.textContent = data.scoreSub;
+        if (kpiCpql) kpiCpql.textContent = formatByCurrency(convertedCpql, currentDashCurrency);
+        if (kpiCpqlSub) kpiCpqlSub.textContent = data.cpqlSub;
+
+        goldBars.forEach(function (bar, i) {
+          if (typeof data.gold[i] === 'number') {
+            bar.style.height = data.gold[i] + '%';
+          }
+        });
+        plumBars.forEach(function (bar, i) {
+          if (typeof data.plum[i] === 'number') {
+            bar.style.height = data.plum[i] + '%';
+          }
+        });
+      }
+
+      tfBtns.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          var key = btn.getAttribute('data-timeframe');
+          if (!dashboardSnapshots[key]) return;
+          currentDashTimeframe = key;
+
+          tfBtns.forEach(function (b) {
+            b.classList.remove('bg-aubergine', 'text-white', 'font-semibold', 'shadow-2xs');
+            b.classList.add('text-aubergine/75', 'font-medium');
+          });
+          btn.classList.add('bg-aubergine', 'text-white', 'font-semibold', 'shadow-2xs');
+          btn.classList.remove('text-aubergine/75', 'font-medium');
+
+          renderHeroDashboard();
+        });
+      });
+
+      if (dashCurrencySelect) {
+        dashCurrencySelect.addEventListener('change', function () {
+          currentDashCurrency = dashCurrencySelect.value || 'INR';
+          renderHeroDashboard();
+        });
+      }
+
+      // 3. Interactive "See How It Works" 3-Step Tabs
+      var stepTabs = document.querySelectorAll('.step-tab-btn');
+      var stepPanels = document.querySelectorAll('.step-panel');
+
+      stepTabs.forEach(function (tab) {
+        tab.addEventListener('click', function () {
+          var stepId = tab.getAttribute('data-step-tab');
+
+          stepTabs.forEach(function (t) {
+            t.setAttribute('aria-selected', 'false');
+            t.classList.remove('border-2', 'border-aubergine', 'bg-white', 'shadow-md');
+            t.classList.add('border', 'border-icesilver-card', 'bg-white/75');
+            var badge = t.querySelector('.step-badge');
+            if (badge) {
+              badge.classList.remove('bg-marigold', 'text-aubergine');
+              badge.classList.add('bg-icesilver-canvas', 'text-aubergine');
+            }
+          });
+
+          tab.setAttribute('aria-selected', 'true');
+          tab.classList.add('border-2', 'border-aubergine', 'bg-white', 'shadow-md');
+          tab.classList.remove('border', 'border-icesilver-card', 'bg-white/75');
+          var activeBadge = tab.querySelector('.step-badge');
+          if (activeBadge) {
+            activeBadge.classList.add('bg-marigold', 'text-aubergine');
+            activeBadge.classList.remove('bg-icesilver-canvas', 'text-aubergine');
+          }
+
+          stepPanels.forEach(function (panel) {
+            if (panel.id === 'step-panel-' + stepId) {
+              panel.classList.remove('hidden');
+            } else {
+              panel.classList.add('hidden');
+            }
+          });
+        });
+      });
+
+      // 4. Interactive Multi-Currency Client Ad Spend ROI Calculator
+      var calcCurrency = 'INR';
+      var calcCurrencyPresets = {
+        INR: { code: 'INR', min: 100000, max: 5000000, step: 50000, val: 500000, cpl: 450, minTxt: '₹1,00,000', midTxt: '₹25,00,000', maxTxt: '₹50,00,000' },
+        USD: { code: 'USD', min: 2000, max: 100000, step: 1000, val: 15000, cpl: 35, minTxt: '$2,000', midTxt: '$50,00,000', maxTxt: '$100,000' },
+        GBP: { code: 'GBP', min: 2000, max: 80000, step: 1000, val: 12000, cpl: 28, minTxt: '£2,000', midTxt: '£40,000', maxTxt: '£80,000' },
+        EUR: { code: 'EUR', min: 2000, max: 90000, step: 1000, val: 14000, cpl: 32, minTxt: '€2,000', midTxt: '€45,000', maxTxt: '€90,000' },
+        AED: { code: 'AED', min: 10000, max: 350000, step: 5000, val: 55000, cpl: 130, minTxt: 'AED 10,000', midTxt: 'AED 175,000', maxTxt: 'AED 350,000' }
+      };
+
+      var calcCurrBtns = document.querySelectorAll('.calc-curr-btn');
+      var spendSlider = document.getElementById('calc-spend-slider');
+      var qualSlider = document.getElementById('calc-qual-slider');
+      var spendLabelEl = document.getElementById('calc-spend-label');
+      var spendDisplay = document.getElementById('calc-spend-display');
+      var qualDisplay = document.getElementById('calc-qual-display');
+      var minLabelEl = document.getElementById('calc-min-label');
+      var midLabelEl = document.getElementById('calc-mid-label');
+      var maxLabelEl = document.getElementById('calc-max-label');
+      var annualSavingsEl = document.getElementById('calc-annual-savings');
+      var currentCpqlEl = document.getElementById('calc-current-cpql');
+      var projectedCpqlEl = document.getElementById('calc-projected-cpql');
+      var claimRoiBtn = document.getElementById('claim-roi-btn');
+
+      function updateRoiCalculator() {
+        if (!spendSlider || !qualSlider) return;
+        var preset = calcCurrencyPresets[calcCurrency] || calcCurrencyPresets.INR;
+        var monthlySpend = Number(spendSlider.value) || preset.val;
+        var qualPct = Number(qualSlider.value) || 20;
+        var qualRate = qualPct / 100;
+
+        var totalLeads = monthlySpend / preset.cpl;
+        var qualifiedLeads = Math.max(1, totalLeads * qualRate);
+        var currentCpql = monthlySpend / qualifiedLeads;
+
+        var wasteRecoveryFactor = Math.min(0.32, Math.max(0.18, 0.36 - qualRate * 0.4));
+        var annualRecoverable = monthlySpend * wasteRecoveryFactor * 12;
+        var projectedCpql = currentCpql * (1 - wasteRecoveryFactor * 1.15);
+
+        if (spendDisplay) spendDisplay.textContent = formatByCurrency(monthlySpend, calcCurrency);
+        if (qualDisplay) qualDisplay.textContent = qualPct + '%';
+        if (annualSavingsEl) annualSavingsEl.textContent = formatByCurrency(annualRecoverable, calcCurrency);
+        if (currentCpqlEl) currentCpqlEl.textContent = formatByCurrency(currentCpql, calcCurrency);
+        if (projectedCpqlEl) projectedCpqlEl.textContent = formatByCurrency(projectedCpql, calcCurrency);
+      }
+
+      calcCurrBtns.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          var selected = btn.getAttribute('data-calc-currency');
+          var preset = calcCurrencyPresets[selected];
+          if (!preset || !spendSlider) return;
+
+          calcCurrency = selected;
+          calcCurrBtns.forEach(function (b) {
+            b.classList.remove('bg-aubergine', 'text-white', 'font-bold');
+            b.classList.add('bg-white', 'border', 'border-icesilver-card', 'text-aubergine', 'font-semibold');
+          });
+          btn.classList.add('bg-aubergine', 'text-white', 'font-bold');
+          btn.classList.remove('bg-white', 'border', 'border-icesilver-card', 'text-aubergine', 'font-semibold');
+
+          spendSlider.min = String(preset.min);
+          spendSlider.max = String(preset.max);
+          spendSlider.step = String(preset.step);
+          spendSlider.value = String(preset.val);
+
+          if (spendLabelEl) spendLabelEl.textContent = 'Monthly Client Ad Spend (' + selected + ')';
+          if (minLabelEl) minLabelEl.textContent = preset.minTxt;
+          if (midLabelEl) midLabelEl.textContent = preset.midTxt;
+          if (maxLabelEl) maxLabelEl.textContent = preset.maxTxt;
+
+          updateRoiCalculator();
+        });
+      });
+
+      if (spendSlider && qualSlider) {
+        spendSlider.addEventListener('input', updateRoiCalculator);
+        qualSlider.addEventListener('input', updateRoiCalculator);
+        updateRoiCalculator();
+      }
+
+      // 5. India-Only INR Pricing Toggle (Monthly vs Annual)
+      var billingBtns = document.querySelectorAll('.billing-btn');
+      var priceGrowth = document.getElementById('price-growth');
+      var priceGrowthNote = document.getElementById('price-growth-note');
+      var priceAgency = document.getElementById('price-agency');
+      var priceAgencyNote = document.getElementById('price-agency-note');
+
+      billingBtns.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          var cycle = btn.getAttribute('data-billing');
+          billingBtns.forEach(function (b) {
+            b.setAttribute('aria-pressed', 'false');
+            b.classList.remove('bg-aubergine', 'text-white', 'font-bold');
+            b.classList.add('text-aubergine/80', 'font-semibold');
+          });
+          btn.setAttribute('aria-pressed', 'true');
+          btn.classList.add('bg-aubergine', 'text-white', 'font-bold');
+          btn.classList.remove('text-aubergine/80', 'font-semibold');
+
+          if (cycle === 'annual') {
+            if (priceGrowth) priceGrowth.textContent = '₹11,999';
+            if (priceGrowthNote) priceGrowthNote.textContent = 'Billed annually (₹1,43,988/yr + GST) • Save ₹36,000';
+            if (priceAgency) priceAgency.textContent = '₹27,999';
+            if (priceAgencyNote) priceAgencyNote.textContent = 'Billed annually (₹3,35,988/yr + GST) • Save ₹84,000';
+          } else {
+            if (priceGrowth) priceGrowth.textContent = '₹14,999';
+            if (priceGrowthNote) priceGrowthNote.textContent = 'Billed monthly + GST • Cancel anytime';
+            if (priceAgency) priceAgency.textContent = '₹34,999';
+            if (priceAgencyNote) priceAgencyNote.textContent = 'Billed monthly + GST • Cancel anytime';
+          }
+        });
+      });
+
+      // 6. FAQ Accordion
+      var faqTriggers = document.querySelectorAll('.faq-trigger');
+      faqTriggers.forEach(function (trigger) {
+        trigger.addEventListener('click', function () {
+          var isExpanded = trigger.getAttribute('aria-expanded') === 'true';
+          var heading = trigger.parentElement;
+          var panel = heading ? heading.nextElementSibling : null;
+          var icon = trigger.querySelector('.faq-icon');
+
+          trigger.setAttribute('aria-expanded', String(!isExpanded));
+          if (panel) {
+            if (isExpanded) {
+              panel.classList.add('hidden');
+            } else {
+              panel.classList.remove('hidden');
+            }
+          }
+          if (icon) {
+            icon.textContent = isExpanded ? '+' : '−';
+          }
+        });
+      });
+
+      // 7. Request a Demo Modal
+      var modal = document.getElementById('demo-modal');
+      var openBtns = document.querySelectorAll('[data-open-demo]');
+      var closeBtn = document.getElementById('close-modal-btn');
+      var resetBtn = document.getElementById('reset-modal-btn');
+      var demoForm = document.getElementById('demo-form');
+      var formContainer = document.getElementById('demo-form-container');
+      var successContainer = document.getElementById('demo-success-container');
+      var successMsg = document.getElementById('demo-success-msg');
+      var formError = document.getElementById('form-error');
+      var spendSelect = document.getElementById('lead-spend');
+      var leadNameInput = document.getElementById('lead-name');
+      var leadEmailInput = document.getElementById('lead-email');
+
+      function openModal(presetSpendValue) {
+        if (!modal) return;
+        if (presetSpendValue && spendSelect) {
+          spendSelect.value = presetSpendValue;
+        }
+        modal.classList.remove('hidden');
+        if (leadNameInput) leadNameInput.focus();
+      }
+
+      function closeModal() {
+        if (!modal) return;
+        modal.classList.add('hidden');
+        if (formError) formError.classList.add('hidden');
+        if (formContainer) formContainer.classList.remove('hidden');
+        if (successContainer) successContainer.classList.add('hidden');
+        if (demoForm) demoForm.reset();
+      }
+
+      openBtns.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          var plan = btn.getAttribute('data-plan');
+          if (plan === 'Multi-Brand Agency') {
+            openModal('10l-50l');
+          } else if (plan === 'Enterprise Custom') {
+            openModal('50l-plus');
+          } else {
+            openModal();
+          }
+        });
+      });
+
+      if (claimRoiBtn && spendSlider) {
+        claimRoiBtn.addEventListener('click', function () {
+          var rawVal = Number(spendSlider.value) || 500000;
+          var inrRates = { INR: 1, USD: 84, GBP: 106, EUR: 91, AED: 23 };
+          var approxInr = rawVal * (inrRates[calcCurrency] || 1);
+          var tier = '2l-10l';
+          if (approxInr < 200000) tier = 'under-2l';
+          else if (approxInr <= 1000000) tier = '2l-10l';
+          else if (approxInr <= 5000000) tier = '10l-50l';
+          else tier = '50l-plus';
+          openModal(tier);
+        });
+      }
+
+      if (closeBtn) closeBtn.addEventListener('click', closeModal);
+      if (resetBtn) resetBtn.addEventListener('click', closeModal);
+
+      if (modal) {
+        modal.addEventListener('click', function (e) {
+          if (e.target === modal) closeModal();
+        });
+      }
+
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && modal && !modal.classList.contains('hidden')) {
+          closeModal();
+        }
+      });
+
+      if (demoForm) {
+        demoForm.addEventListener('submit', function (e) {
+          e.preventDefault();
+          var nameVal = leadNameInput ? leadNameInput.value.trim() : '';
+          var emailVal = leadEmailInput ? leadEmailInput.value.trim() : '';
+
+          if (!nameVal || !emailVal || emailVal.indexOf('@') === -1) {
+            if (formError) formError.classList.remove('hidden');
+            return;
+          }
+
+          if (formError) formError.classList.add('hidden');
+          if (successMsg) {
+            successMsg.textContent =
+              'Thanks, ' + nameVal + '! We have sent a calendar invite to ' + emailVal + ' for your personalized Qlarity walkthrough.';
+          }
+          if (formContainer) formContainer.classList.add('hidden');
+          if (successContainer) successContainer.classList.remove('hidden');
+        });
+      }
+    });
+  </script>
 </body>
 </html>
