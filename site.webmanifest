@@ -5,7 +5,7 @@
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#1a73e8",
+  "theme_color": "#14213D",
   "icons": [
     {
       "src": "/brand/qlarity-icon-48.png",
