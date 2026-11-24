@@ -154,7 +154,7 @@ console.log("✓ performance.js direct unit verification passed (5 views rendere
   const attrCode = fs.readFileSync(path.join(__dirname, "../attribution.js"), "utf8");
   const pmCode = fs.readFileSync(path.join(__dirname, "../performance.js"), "utf8");
 
-  html = html.replace(/<script src="https:\/\/cdnjs[^"]*"><\/script>/, "")
+  html = html.replace(/<script src="https:\/\/cdnjs[^"]*"><\/script>/, "").replace(/<script src="vendor\/[^"]*"><\/script>/, "")
              .replace('<script src="attribution.js"></script>', "<script>" + attrCode.split("</script>").join("<\\/script>") + "</script>")
              .replace('<script src="performance.js"></script>', "<script>" + pmCode.split("</script>").join("<\\/script>") + "</script>");
 

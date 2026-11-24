@@ -1,3 +1,5 @@
 # keep Unix line endings in the repo: the server scripts and SQL run on Linux (a Windows CR breaks bash)
 * text=auto eol=lf
 *.png binary
+# third-party files are kept byte-for-byte (checked against the publisher's release)
+vendor/** -text

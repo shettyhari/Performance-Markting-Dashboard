@@ -20,19 +20,19 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
 <style>
-/* Qlarity Console: Linen 60% (#F1ECE3), Navy 30% (#14213D), Amber 10% (#FFB020) */
+/* Qlarity Console: same palette as the dashboard — charcoal chrome (#2e2e30), white canvas, blue actions (#4573d2), coral highlight (#f06a6a) */
 :root{
-  --cyan:#007b83;--cyan2:#ffb020;--blue:#14213d;--deep:#0c1527;--navy:#14213d;
-  --bg:#f1ece3;--panel:#ffffff;--soft:#e8e1d5;--ink:#14213d;--fg:#1c2d52;--muted:#52607b;--line:#ded6c8;--line2:#e8e1d5;
-  --series:#14213d;--series-soft:rgba(20,33,61,.12);--accent-text:#14213d;--shadow:0 1px 3px rgba(20,33,61,.06),0 1px 2px rgba(0,0,0,.04);
+  --cyan:#007b83;--cyan2:#f06a6a;--blue:#4573d2;--deep:#3a62b8;--navy:#2e2e30;
+  --bg:#ffffff;--panel:#ffffff;--soft:#f5f4f3;--ink:#1e1f21;--fg:#1e1f21;--muted:#6d6e6f;--line:#e0e0e0;--line2:#edeae9;
+  --series:#4573d2;--series-soft:rgba(69,115,210,.14);--accent-text:#4573d2;--shadow:0 1px 2px rgba(30,31,33,.06);
   --good:#137333;--warn:#b06000;--serious:#e37400;--crit:#c5221f;--good-bg:#e6f4ea;--warn-bg:#fef7e0;--crit-bg:#fce8e6;
   color-scheme:light;
 }
-:root[data-theme="dark"]{--bg:#0c1527;--panel:#1a2845;--soft:#223354;--ink:#ffffff;--fg:#e6ebf5;--muted:#94a3b8;--line:#273754;--line2:#1f2e4a;
-  --series:#ffb020;--series-soft:rgba(255,176,32,.16);--accent-text:#ffb020;--shadow:0 1px 2px rgba(0,0,0,.3),0 10px 30px rgba(0,0,0,.25);
+:root[data-theme="dark"]{--bg:#1e1f21;--panel:#2a2b2d;--soft:#313234;--ink:#f5f4f3;--fg:#e8e7e6;--muted:#a2a0a2;--line:#424244;--line2:#353638;
+  --series:#6a95e3;--series-soft:rgba(69,115,210,.22);--accent-text:#6a95e3;--shadow:0 1px 2px rgba(0,0,0,.3),0 10px 30px rgba(0,0,0,.25);
   --good:#81c995;--warn:#fdd663;--serious:#f2994a;--crit:#f28b82;--good-bg:#1e3a2a;--warn-bg:#3a3420;--crit-bg:#3c2524;color-scheme:dark}
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#0c1527;--panel:#1a2845;--soft:#223354;--ink:#ffffff;--fg:#e6ebf5;--muted:#94a3b8;--line:#273754;--line2:#1f2e4a;
-  --series:#ffb020;--series-soft:rgba(255,176,32,.16);--accent-text:#ffb020;--shadow:0 1px 2px rgba(0,0,0,.3),0 10px 30px rgba(0,0,0,.25);
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#1e1f21;--panel:#2a2b2d;--soft:#313234;--ink:#f5f4f3;--fg:#e8e7e6;--muted:#a2a0a2;--line:#424244;--line2:#353638;
+  --series:#6a95e3;--series-soft:rgba(69,115,210,.22);--accent-text:#6a95e3;--shadow:0 1px 2px rgba(0,0,0,.3),0 10px 30px rgba(0,0,0,.25);
   --good:#81c995;--warn:#fdd663;--serious:#f2994a;--crit:#f28b82;--good-bg:#1e3a2a;--warn-bg:#3a3420;--crit-bg:#3c2524;color-scheme:dark}}
 *{box-sizing:border-box}
 html,body{margin:0}
@@ -42,10 +42,10 @@ button{font:inherit;cursor:pointer}
 a{color:var(--accent-text)}
 .num{font-variant-numeric:tabular-nums}
 /* top bar */
-.top{position:sticky;top:0;z-index:30;background:linear-gradient(120deg,var(--navy) 0%,var(--deep) 70%,#14213d 100%);color:#fff;border-bottom:1px solid rgba(255,255,255,.08)}
+.top{position:sticky;top:0;z-index:30;background:var(--navy);color:#fff;border-bottom:1px solid #424244}
 .top-in{max-width:1840px;margin:0 auto;padding:12px 24px;display:flex;align-items:center;gap:14px}
 .top img{height:30px;width:auto;display:block}
-.badge-console{font:700 11px/1 Inter;letter-spacing:.14em;text-transform:uppercase;padding:6px 9px;border-radius:999px;background:rgba(255,176,32,.15);color:var(--cyan2);border:1px solid rgba(255,176,32,.35)}
+.badge-console{font:700 11px/1 Inter;letter-spacing:.14em;text-transform:uppercase;padding:6px 9px;border-radius:999px;background:rgba(240,106,106,.15);color:var(--cyan2);border:1px solid rgba(240,106,106,.4)}
 .top .sp{flex:1}
 .top .who{font-size:13px;color:rgba(255,255,255,.75);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:260px}
 .ibtn{height:36px;min-width:36px;padding:0 12px;display:inline-flex;align-items:center;justify-content:center;gap:7px;border-radius:9px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.06);color:#fff;font-size:13px;font-weight:500;text-decoration:none}
