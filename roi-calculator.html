@@ -93,19 +93,37 @@
       theme: {
         extend: {
           colors: {
+            linen: {
+              DEFAULT: '#F1ECE3',
+              canvas: '#F1ECE3',
+              top: '#E8E1D5',
+              card: '#DFD7C7',
+              soft: '#F8F5F0',
+            },
+            navy: {
+              DEFAULT: '#14213D',
+              dark: '#0C1527',
+              light: '#1F3158',
+              soft: '#E8EBF2',
+            },
+            amber: {
+              DEFAULT: '#FFB020',
+              hover: '#E59A12',
+              light: '#FFF4E0',
+            },
             aubergine: {
-              DEFAULT: '#3A0F34',
-              dark: '#260822',
-              light: '#521A4A',
+              DEFAULT: '#14213D',
+              dark: '#0C1527',
+              light: '#1F3158',
             },
             marigold: {
-              DEFAULT: '#EAAA00',
-              hover: '#D49A00',
+              DEFAULT: '#FFB020',
+              hover: '#E59A12',
             },
             icesilver: {
-              canvas: '#F4F6F8',
-              top: '#E8EDF1',
-              card: '#DDE3E8',
+              canvas: '#F1ECE3',
+              top: '#E8E1D5',
+              card: '#DFD7C7',
             },
           },
           fontFamily: {
@@ -125,7 +143,7 @@
       width: 100%;
       height: 8px;
       border-radius: 999px;
-      background: #DDE3E8;
+      background: #DFD7C7;
       outline: none;
     }
     input[type="range"].qlarity-slider::-webkit-slider-thumb {
@@ -134,10 +152,10 @@
       width: 22px;
       height: 22px;
       border-radius: 50%;
-      background: #3A0F34;
-      border: 3px solid #EAAA00;
+      background: #14213D;
+      border: 3px solid #FFB020;
       cursor: pointer;
-      box-shadow: 0 2px 6px rgba(58, 15, 52, 0.25);
+      box-shadow: 0 2px 6px rgba(20, 33, 61, 0.25);
       transition: transform 0.15s ease;
     }
     input[type="range"].qlarity-slider::-webkit-slider-thumb:hover {
@@ -147,14 +165,14 @@
       width: 22px;
       height: 22px;
       border-radius: 50%;
-      background: #3A0F34;
-      border: 3px solid #EAAA00;
+      background: #14213D;
+      border: 3px solid #FFB020;
       cursor: pointer;
-      box-shadow: 0 2px 6px rgba(58, 15, 52, 0.25);
+      box-shadow: 0 2px 6px rgba(20, 33, 61, 0.25);
     }
   </style>
 </head>
-<body class="font-sans text-[#1E1B24] bg-white antialiased selection:bg-marigold selection:text-aubergine overflow-x-hidden">
+<body class="font-sans text-[#14213D] bg-[#F1ECE3] antialiased selection:bg-amber selection:text-navy overflow-x-hidden">
   <!-- Google Tag Manager (noscript) -->
   <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-TVJXDRJR"
   height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
